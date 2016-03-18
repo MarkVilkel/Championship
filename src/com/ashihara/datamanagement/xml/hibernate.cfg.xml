@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+     
+ <!-- 
+        <property name="hibernate.cglib.use_reflection_optimizer">true</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.password">AshiharaKarate</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/TEST</property>
+        <property name="hibernate.connection.username">AshiharaKarate</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+ 
+ -->
+		<property name="hibernate.connection.driver_class">org.h2.Driver</property>
+		<property name="hibernate.connection.password"></property>
+		<property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.connection.pool_size">100</property>
+		<property name="hibernate.connection.url">jdbc:h2:DataBase/akdb</property>
+        <property name="hibernate.show_sql">false</property>
+        
+        <property name="hibernate.jdbc.batch_size">0</property> 
+        <property name="hibernate.jdbc.use_streams_for_binary">true</property>
+        
+		<property name="hibernate.hbm2ddl.auto">update</property>        
+		<property name="hibernate.cache.enabled">false</property>
+		<property name="hibernate.cache.use_second_level_cache">false</property>
+
+
+        <mapping resource="com/ashihara/datamanagement/xml/AKUser.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/ExceptionHeaderDo.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/ExceptionStackTraceDo.hbm.xml"/>
+        
+        <mapping resource="com/ashihara/datamanagement/xml/Championship.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/ChampionshipFighter.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/Country.hbm.xml"/>
+        
+        <mapping resource="com/ashihara/datamanagement/xml/Fighter.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/FightingGroup.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/GroupChampionshipFighter.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/FighterPhoto.hbm.xml"/>
+        
+        <mapping resource="com/ashihara/datamanagement/xml/YearCategory.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/YearWeightCategoryLink.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/WeightCategory.hbm.xml"/>
+        
+        <mapping resource="com/ashihara/datamanagement/xml/FightSettings.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/FightResult.hbm.xml"/>
+
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2007.29.6 14:55:21 by Hibernate Tools 3.1.0.beta4 -->
+<hibernate-mapping default-lazy="false">
+    <class name="com.ashihara.datamanagement.pojo.GroupChampionshipFighter" table="GROUP_CHAMPIONSHIP_FIGHTER" schema="public">
+    
+       	<!-- BaseDo mapping -->    
+    
+    	<id column="ID" name="id" type="java.lang.Long"> 
+			<generator class="sequence">
+                <param name="sequence">GROUP_CHAMPIONSHIP_FIGHTER_SEQ</param>
+	        </generator>
+        </id>
+        
+        <property column="CREATION_DATE" name="creationDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        <property column="LAST_MODIFIED_DATE" name="lastModifiedDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+
+        <property column="CREATED_USER_ID" name="createdUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+        <property column="LAST_MODIFIED_USER_ID" name="lastModifiedUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+
+       	<!-- FighterGroup mapping -->    
+
+    	<many-to-one lazy="false" column="CHAMPIONSHIP_FIGHTER" name="championshipFighter" class="com.ashihara.datamanagement.pojo.ChampionshipFighter" not-null="true">
+    	</many-to-one>
+    	
+    	<many-to-one lazy="false" column="FIGHTING_GROUP" name="fightingGroup" class="com.ashihara.datamanagement.pojo.FightingGroup" not-null="true">
+    	</many-to-one>
+    	
+    	<property column="OLYMPIC_LEVEL" name="olympicLevel" not-null="false" insert="true" update="true" type="java.lang.Long"/>
+    	
+    </class>
+</hibernate-mapping>

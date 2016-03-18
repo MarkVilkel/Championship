@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="ASHIHARA">
+
+	<property environment="env"/>
+	<property name="ASHIHARA_HOME" value="${env.ASHIHARA_HOME}"/>
+
+	<property name="CODE_PATH" value="${ASHIHARA_HOME}/CHAMPIONSHIP"/>
+	
+	<property name="BUILD_PATH" value="${CODE_PATH}/build"/>
+	<property name="BUILD_LIBS_PATH" value="${BUILD_PATH}/libs"/>
+	<property name="LIB_PATH" value="${CODE_PATH}/lib"/>
+
+	
+	<target name="FULL_APPLICATION_DEPLOY" description="Application deployment">
+		<delete dir="${BUILD_PATH}"/>
+			
+		<!-- Copy Libs -->
+		<copy todir="${BUILD_LIBS_PATH}">
+			<fileset dir="${LIB_PATH}" includes="*.jar"/>
+		</copy>
+		
+		<!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->
+		<pathconvert property="libs.project" pathsep=" ">
+		<mapper>
+	      <chainedmapper>
+
+        	<!-- remove absolute path -->
+    	    <flattenmapper />
+
+	        <!-- add lib/ prefix -->
+        	<globmapper from="*" to="libs/*" />
+    	  </chainedmapper>
+	    </mapper>
+
+	    <path>
+    	  <!-- lib.home contains all jar files, in several subdirectories -->
+	      <fileset dir="${BUILD_LIBS_PATH}">
+    	    <include name="*.jar" />
+	      </fileset>
+    	</path>
+	  </pathconvert>
+  	
+		<!-- Create main programm jar -->
+		<jar destfile="${BUILD_PATH}/Ashihara.jar"
+			basedir="${CODE_PATH}/bin">
+			<manifest>
+        		<attribute name="Main-Class" value="com.ashihara.Main"/>
+				<attribute name="Class-Path" value="${libs.project}"/>
+    	    </manifest>
+	    </jar>
+		
+		<!-- SIGN ALL JARS -->
+		<!--keytool -genkey -alias karate -keypass karate-->
+		<!--http://ant.apache.org/manual/CoreTasks/signjar.html-->
+	
+		<signjar 
+	    	alias="karate" 
+	    	storepass="kaskeypassword"
+		    keypass="karate"
+		    lazy="true">
+	    	<fileset dir="${BUILD_LIBS_PATH}" includes="*.jar" />
+		</signjar>
+
+		<signjar 
+	    	alias="karate" 
+	    	storepass="kaskeypassword"
+		    keypass="karate"
+		    lazy="true">
+	    	<fileset dir="${BUILD_PATH}" includes="*.jar" />
+		</signjar>
+
+	</target >
+	
+</project>

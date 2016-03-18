@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2007.29.6 14:55:21 by Hibernate Tools 3.1.0.beta4 -->
+<hibernate-mapping default-lazy="false">
+    <class name="com.ashihara.datamanagement.pojo.FighterPhoto" table="FIGHTER_PHOTO" schema="public">
+    
+       	<!-- BaseDo mapping -->    
+    
+    	<id column="ID" name="id" type="java.lang.Long"> 
+			<generator class="sequence">
+                <param name="sequence">FIGHTER_PHOTO_SEQ</param>
+	        </generator>
+        </id>
+        
+        <property column="CREATED_USER_ID" name="createdUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+        <property column="LAST_MODIFIED_USER_ID" name="lastModifiedUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+        
+        <property column="CREATION_DATE" name="creationDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        <property column="LAST_MODIFIED_DATE" name="lastModifiedDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        
+
+       	<!-- Photo mapping -->    
+
+        <many-to-one lazy="false" column="FIGHTER" name="fighter" class="com.ashihara.datamanagement.pojo.Fighter" not-null="true">
+    	</many-to-one>
+    	
+        <property name="objectBlob" type="blob" column="PHOTO" not-null="true" />
+<!-- 
+        <property column="CONTENT" name="content" not-null="true" insert="true" update="true" type="java.lang.String" length="4098"/>
+ -->        
+    </class>
+</hibernate-mapping>

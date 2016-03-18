@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2007.29.6 14:55:21 by Hibernate Tools 3.1.0.beta4 -->
+
+<hibernate-mapping default-lazy="false">
+    <class name="com.ashihara.datamanagement.pojo.User" table="AK_USER" schema="public">
+    
+		<!-- BaseDo mapping -->    
+		
+    	<id column="ID" name="id" type="java.lang.Long"> 
+			<generator class="sequence">
+                <param name="sequence">AK_USER_SEQ</param>
+	        </generator>
+        </id>
+        
+        <property column="CREATION_DATE" name="creationDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        <property column="LAST_MODIFIED_DATE" name="lastModifiedDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+
+        <property column="CREATED_USER_ID" name="createdUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+        <property column="LAST_MODIFIED_USER_ID" name="lastModifiedUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+
+
+		<!-- User mapping -->    
+
+        <property column="NAME" name="name" not-null="true" insert="true" update="true" unique="true" type="java.lang.String"/>        
+		<property column="PASSWORD" name="password" not-null="true" insert="true" update="true" type="java.lang.Long"/>
+        <property column="ROLE" name="role" not-null="true" insert="true" update="true" type="java.lang.String"/>        		
+        <property column="UI_LANGUAGE" name="uiLanguage" not-null="true" insert="true" update="true" type="java.lang.String"/>  
+		
+<!--    
+		<property column="EMAIL" name="email" not-null="true" insert="true" update="true" type="java.lang.String"/>        		               
+        <property column="CHANGE_PASSWORD" name="changePassword" not-null="true" insert="true" update="true" type="java.lang.Boolean"/>        		        
+		<property column="EMAIL_SENT" name="emailSent" not-null="true" insert="true" update="true" type="java.lang.Boolean"/>
+		<property column="FIRST_LOGIN" name="firstLogin" not-null="true" insert="true" update="true" type="java.lang.Boolean"/>	
+-->		
+		<property column="LOOK_AND_FEEL" name="lookAndFeel" not-null="true" insert="true" update="true" type="java.lang.String"/>  		
+		<property column="THEME" name="theme" not-null="true" insert="true" update="true" type="java.lang.String"/>  
+    </class>
+</hibernate-mapping>

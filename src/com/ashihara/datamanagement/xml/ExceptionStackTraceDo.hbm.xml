@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2007.29.6 14:55:21 by Hibernate Tools 3.1.0.beta4 -->
+<hibernate-mapping default-lazy="false">
+    <class name="com.ashihara.datamanagement.pojo.ExceptionStackTraceDo" table="EXCEPTION_STACK_TRACE_DO" schema="public">
+    
+       	<!-- BaseDo mapping -->    
+    
+    	<id column="ID" name="id" type="java.lang.Long"> 
+			<generator class="sequence">
+                <param name="sequence">EXCEPTION_STACK_TRACE_DO_SEQ</param>
+	        </generator>
+        </id>
+        
+        <property column="CREATION_DATE" name="creationDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        <property column="LAST_MODIFIED_DATE" name="lastModifiedDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+
+        <property column="CREATED_USER_ID" name="createdUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+        <property column="LAST_MODIFIED_USER_ID" name="lastModifiedUserId" not-null="true" insert="true" update="true" type="java.lang.String"/>
+
+
+       	<!-- ExceptionStackTraceDo mapping -->    
+       	
+    	<many-to-one lazy="false" column="EXCEPTION_HEADER_DO" name="exceptionHeaderDo" class="com.ashihara.datamanagement.pojo.ExceptionHeaderDo" not-null="true">
+    	</many-to-one>
+		
+	    <property column="ONE_TRACE_LINE" name="oneTraceLine" not-null="true" insert="true" update="true" type="java.lang.String" length="2000"/>    	
+
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,313 @@
+/**
+ * The file InviteToFightPanel.java was created on 2010.14.4 at 21:39:35
+ * by
+ * @author Marks Vilkelis.
+ */
+package com.ashihara.ui.app.fight.view;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import com.ashihara.datamanagement.pojo.FightResult;
+import com.ashihara.datamanagement.pojo.FightSettings;
+import com.ashihara.enums.SC;
+import com.ashihara.ui.app.fight.model.IFightModelUI;
+import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
+import com.ashihara.ui.app.fight.view.listener.PointsCountListener;
+import com.ashihara.ui.app.fight.view.listener.WarningsCountListener;
+import com.ashihara.ui.app.utils.UIUtils;
+import com.ashihara.ui.core.mvc.view.UIView;
+import com.ashihara.ui.core.panel.KASPanel;
+import com.ashihara.ui.core.panel.OkButtonPanel;
+import com.ashihara.ui.tools.MessageHelper;
+
+public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
+
+	private static final long serialVersionUID = 1L;
+	
+	private final FightResult fightResult;
+	private final FightResult nextFightResult;
+	
+	private final FightSettings fightSettings;
+	private FighterBattleInfoPanel secondFighterBattleInfoPanel;
+	private FighterBattleInfoPanel firstFighterBattleInfoPanel;
+	
+	private JPanel buttonsPanel;
+	private TimePanel timePanel;
+	private KASPanel fightersPanel;
+	private JButton btnNextRound;
+	private IFightModelUI<?> modelUI;
+	
+	private KASPanel nextFightPanel;
+	private GradientPanel nextBluePanel, nextRedPanel;
+	private JLabel lblNextRedFighter, lblNextBlueFighter, lblNext, lblVs;
+	
+	public FightPanel(
+			FightResult fightResult,
+			FightResult nextFightResult,
+			FightSettings fightSettings,
+			IFightModelUI<?> modelUI
+	) {
+		this.fightResult = fightResult;
+		this.nextFightResult = nextFightResult;
+		this.modelUI = modelUI;
+		this.fightSettings = fightSettings;
+		
+		init();
+	}
+
+	private void init() {
+		
+		add(getTimePanel(), BorderLayout.NORTH);
+		add(getFightersPanel(), BorderLayout.CENTER);
+		
+
+		if (nextFightResult != null) {
+			KASPanel southPanel = new KASPanel();
+			southPanel.add(getNextFightPanel(), BorderLayout.CENTER);
+			southPanel.add(getButtonsPanel(), BorderLayout.SOUTH);
+			add(southPanel, BorderLayout.SOUTH);
+		}
+		else {
+			add(getButtonsPanel(), BorderLayout.SOUTH);
+		}
+	}
+
+	public FighterBattleInfoPanel getFirstFighterBattleInfoPanel() {
+		if (firstFighterBattleInfoPanel == null) {
+			firstFighterBattleInfoPanel = new FighterBattleInfoPanel(
+					fightResult.getRedFighter().getChampionshipFighter(),
+					UIUtils.RED
+			);
+			firstFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
+			firstFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
+			
+			firstFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
+				@Override
+				public void countIncreased(CountPanel countPanel) {
+					performButtonNextRoundEnability();
+				}
+				@Override
+				public void countDecreased(CountPanel countPanel) {
+					performButtonNextRoundEnability();
+				}
+			});
+		}
+		return firstFighterBattleInfoPanel;
+	}
+
+	public FighterBattleInfoPanel getSecondFighterBattleInfoPanel() {
+		if (secondFighterBattleInfoPanel == null) {
+			secondFighterBattleInfoPanel = new FighterBattleInfoPanel(
+					fightResult.getBlueFighter().getChampionshipFighter(),
+					UIUtils.BLUE
+			);
+			secondFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
+			secondFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
+			
+			secondFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
+				@Override
+				public void countIncreased(CountPanel countPanel) {
+					performButtonNextRoundEnability();
+				}
+				@Override
+				public void countDecreased(CountPanel countPanel) {
+					performButtonNextRoundEnability();
+				}
+			});
+		}
+		return secondFighterBattleInfoPanel;
+	}
+	
+	public TimePanel getTimePanel() {
+		if (timePanel == null) {
+			long roundNumber = fightResult.getRoundNumber().longValue();
+			long roundNumberForUI = roundNumber;
+			
+			if (fightResult.getFirstFighter() != null && SC.GROUP_TYPE.OLYMPIC.equals(fightResult.getFirstFighter().getFightingGroup().getType())) {
+				roundNumberForUI ++;
+			}
+			
+			timePanel = new TimePanel(
+					fightSettings.getTatami(),
+					roundNumberForUI,
+					fightSettings.getTimeForRound(roundNumberForUI)
+			);
+		}
+		return timePanel;
+	}
+
+	public void dispose() {
+		getTimePanel().dispose();
+	}
+
+	@Override
+	public IFightModelUI<?> getModelUI() {
+		return modelUI;
+	}
+
+	@Override
+	public void setModelUI(IFightModelUI<?> modelUI) {
+		this.modelUI = modelUI;
+	}
+
+	private JPanel getButtonsPanel() {
+		if (buttonsPanel == null) {
+			buttonsPanel = new JPanel(new BorderLayout(1, 1));
+			
+			OkButtonPanel okButtonPanel = new OkButtonPanel(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					disposeParent();
+				}
+			});
+			
+			JButton btnSwitchFighters = new JButton(uic.SWITCH_FIGHTERS());
+			btnSwitchFighters.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					getModelUI().switchFighters();
+				}
+			});
+			
+			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			panel.add(getBtnNextRound());
+//			panel.add(btnSwitchFighters);
+			
+			buttonsPanel.add(panel, BorderLayout.WEST);
+			buttonsPanel.add(okButtonPanel, BorderLayout.EAST);
+
+		}
+		return buttonsPanel;
+	}
+	
+	private KASPanel getFightersPanel() {
+		if (fightersPanel == null) {
+			fightersPanel = new KASPanel(new GridLayout(1, 2));
+			
+			fightersPanel.add(getFirstFighterBattleInfoPanel());
+			fightersPanel.add(getSecondFighterBattleInfoPanel());
+			
+		}
+		return fightersPanel;
+	}
+
+	protected void performButtonNextRoundEnability() {
+		boolean enabled = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
+		getBtnNextRound().setEnabled(enabled);
+	}
+
+	private JButton getBtnNextRound() {
+		if (btnNextRound == null) {
+			btnNextRound = new JButton(uic.NEXT_ROUND());
+			btnNextRound.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int result = MessageHelper.showConfirmationMessage(
+							null,
+							uic.NEXT_ROUND(),
+							uic.ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_ROUND()
+					);
+					if (JOptionPane.YES_OPTION == result) {
+						getModelUI().nextRound();
+					}
+				}
+			});
+		}
+		return btnNextRound;
+	}
+
+	private KASPanel getNextFightPanel() {
+		if (nextFightPanel == null) {
+			nextFightPanel = new KASPanel(new GridLayout(1, 3));
+			
+			nextFightPanel.add(getNextRedPanel());
+			nextFightPanel.add(getLblNext());
+//			nextFightPanel.add(getLblVs());
+			nextFightPanel.add(getNextBluePanel());
+			
+		}
+		return nextFightPanel;
+	}
+
+	private GradientPanel getNextBluePanel() {
+		if (nextBluePanel == null) {
+			nextBluePanel = new GradientPanel(UIUtils.BLUE);
+			
+			nextBluePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+			
+			nextBluePanel.add(getLblNextBlueFighter());
+		}
+		return nextBluePanel;
+	}
+
+	private GradientPanel getNextRedPanel() {
+		if (nextRedPanel == null) {
+			nextRedPanel = new GradientPanel(UIUtils.RED);
+			
+			nextRedPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+			
+			nextRedPanel.add(getLblNextRedFighter());
+		}
+		return nextRedPanel;
+	}
+	
+	private JLabel createLabel(int size) {
+		JLabel lbl = new JLabel();
+		lbl.setFont(new Font(lbl.getFont().getName(), lbl.getFont().getStyle(), size));
+		return lbl;
+	}
+	
+
+	private JLabel getLblNextRedFighter() {
+		if (lblNextRedFighter == null) {
+			lblNextRedFighter = createLabel(30);
+			
+			if (nextFightResult != null) {
+				lblNextRedFighter.setText(nextFightResult.getRedFighter().getChampionshipFighter().toString());
+			}
+		}
+		return lblNextRedFighter;
+	}
+
+	private JLabel getLblNextBlueFighter() {
+		if (lblNextBlueFighter == null) {
+			lblNextBlueFighter = createLabel(30);
+			
+			if (nextFightResult != null) {
+				lblNextBlueFighter.setText(nextFightResult.getBlueFighter().getChampionshipFighter().toString());
+			}
+		}
+		return lblNextBlueFighter;
+	}
+
+	private JLabel getLblNext() {
+		if (lblNext == null) {
+			lblNext = createLabel(30);
+			
+			lblNext.setText(uic.NEXT_FIGHT().toUpperCase());
+			lblNext.setHorizontalAlignment(SwingUtilities.CENTER);
+		}
+		return lblNext;
+	}
+
+	private JLabel getLblVs() {
+		if (lblVs == null) {
+			lblVs = createLabel(20);
+			
+			lblVs.setText(uic.VS());
+		}
+		return lblVs;
+	}
+
+}
