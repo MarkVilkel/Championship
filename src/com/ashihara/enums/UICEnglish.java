@@ -1265,4 +1265,9 @@ public class UICEnglish implements UIC {
 		return "Olympic fight results";
 	}
 
+	@Override
+	public String ALL() {
+		return "All";
+	}
+
 }

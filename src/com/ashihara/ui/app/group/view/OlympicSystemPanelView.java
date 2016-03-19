@@ -17,10 +17,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import com.ashihara.ui.app.group.model.IOlympicSystemModel;
+import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
 import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterTable;
 import com.ashihara.ui.app.group.view.stuff.OlympicFighterTreeCellPanel;
 import com.ashihara.ui.app.group.view.stuff.RowsPanel;
-import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.tools.UIFactory;
@@ -36,7 +36,6 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 	private JButton btnExportToExel;
 	
 	private ChampionshipFighterTable championshipFighterTable;
-	private KASComboBox cmbFighter;
 	private JSplitPane mainSplitPane;
 	
 	private int maxColumnsNumber;
@@ -44,17 +43,17 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 	private int rowHeight;
 	private int rowsGap;
 	
-	private boolean isOlympicTreeInitialized = false;
-	
+	private final ChampionshipFighterProvider championshipFighterProvider;
 	
 	public OlympicSystemPanelView(
 			IOlympicSystemModel modelUI,
+			ChampionshipFighterProvider championshipFighterProvider,
 			int maxColumnsNumber,
 			int maxRowsNumber,
 			int rowHeight,
 			int rowsGap
 	) {
-		
+		this.championshipFighterProvider = championshipFighterProvider;
 		this.maxColumnsNumber = maxColumnsNumber;
 		this.maxRowsNumber = maxRowsNumber;
 		this.rowHeight = rowHeight;
@@ -186,19 +185,11 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 
 	public ChampionshipFighterTable getChampionshipFighterTable() {
 		if (championshipFighterTable == null) {
-			championshipFighterTable = new ChampionshipFighterTable(getCmbFighter());
+			championshipFighterTable = new ChampionshipFighterTable(championshipFighterProvider);
 		}
 		return championshipFighterTable;
 	}
 	
-	public KASComboBox getCmbFighter() {
-		if (cmbFighter == null) {
-			cmbFighter = new KASComboBox();
-		}
-		return cmbFighter;
-	}
-
-
 	private JSplitPane getMainSplitPane() {
 		if (mainSplitPane == null) {
 			mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -211,14 +202,6 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 		return mainSplitPane;
 	}
 	
-//	public void createOlympicTree() {
-//		if (!isOlympicTreeInitialized) {
-//			isOlympicTreeInitialized = true;			
-//			getMainSplitPane().setBottomComponent(getDetailsPanelScroll());
-//		}
-//	}
-
-
 	public int getMaxColumnsNumber() {
 		return maxColumnsNumber;
 	}

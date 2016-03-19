@@ -6,23 +6,31 @@
 package com.ashihara.ui.app.group.view.stuff;
 
 import java.awt.Component;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import com.ashihara.datamanagement.pojo.ChampionshipFighter;
+import com.ashihara.ui.app.utils.ComboUIHelper;
 import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.editor.KASTableCellEditor;
 
 public class ChampionshipFighterTableCellEditor extends DefaultCellEditor implements KASTableCellEditor {
 	private static final long serialVersionUID = 1L;
 
+	private Map<Integer, KASComboBox> cmbMap = new HashMap<>();
+	private final ChampionshipFighterProvider championshipFighterProvider;
+	
 	private KASComboBox cmb;
 	
-	public ChampionshipFighterTableCellEditor(KASComboBox cmb) {
+	public ChampionshipFighterTableCellEditor(ChampionshipFighterProvider championshipFighterProvider) {
 		super(new JTextField());
 		
-		this.cmb = cmb;
+		this.championshipFighterProvider = championshipFighterProvider;
 	}
 	
 	@Override
@@ -34,14 +42,43 @@ public class ChampionshipFighterTableCellEditor extends DefaultCellEditor implem
 			final int column
 	){
 		if (column == 0) {
+			cmb = getCmb(row);
+			refillEntrySet(cmb, table, row, column);
 			return cmb;
 		}
 		return super.getTableCellEditorComponent(table, value, isSelected, row, column);
 	}
 	
+	private void refillEntrySet(KASComboBox cmb, JTable table, int row, int column) {
+		List<ChampionshipFighter> items = championshipFighterProvider.getItemsCopy();
+		for (int r = 0; r < table.getModel().getRowCount(); r++) {
+			if (r != row) {
+				Object value = table.getValueAt(r, column);
+				items.remove(value);
+			}
+		}
+		
+		Object selected = cmb.getSelectedItem();
+		ComboUIHelper.fillUpEntrySetForCombo(cmb, items, true);
+		if (selected != null) {
+			cmb.tryToSelectIfInEntrySet(selected);
+		}
+		
+	}
+
 	@Override
 	public Object getCellEditorValue() {
 		return cmb.getSelectedItem();
+	}
+
+	public KASComboBox getCmb(int index) {
+		KASComboBox cmb = cmbMap.get(index);
+		if (cmb == null) {
+			cmb = new KASComboBox();
+			cmbMap.put(index, cmb);
+		}
+		
+		return cmb;
 	}
 
 }

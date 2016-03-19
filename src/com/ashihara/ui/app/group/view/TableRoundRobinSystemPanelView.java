@@ -7,8 +7,6 @@ package com.ashihara.ui.app.group.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -19,10 +17,9 @@ import javax.swing.table.TableColumn;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.enums.CM;
 import com.ashihara.ui.app.group.model.ITableRoundRobinSystemModel;
+import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
 import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterTable;
-import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterTableCellEditor;
 import com.ashihara.ui.app.utils.UIUtils;
-import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.KASPanel;
@@ -44,11 +41,13 @@ public class TableRoundRobinSystemPanelView extends KASPanel implements UIView<I
 	
 	private ChampionshipFighterTable championshipFighterTable;
 	private FightResultTable fightResultTable;
-	private KASComboBox cmbFighter;
 	private JSplitPane splitPane;
 	
-	public TableRoundRobinSystemPanelView(ITableRoundRobinSystemModel<?> modelUI) {
+	private final ChampionshipFighterProvider championshipFighterProvider;
+	
+	public TableRoundRobinSystemPanelView(ITableRoundRobinSystemModel<?> modelUI, ChampionshipFighterProvider championshipFighterProvider) {
 		this.modelUI = modelUI;
+		this.championshipFighterProvider = championshipFighterProvider;
 		
 		init();
 	}
@@ -85,7 +84,7 @@ public class TableRoundRobinSystemPanelView extends KASPanel implements UIView<I
 
 	public ChampionshipFighterTable getChampionshipFighterTable() {
 		if (championshipFighterTable == null) {
-			championshipFighterTable = new ChampionshipFighterTable(getCmbFighter());
+			championshipFighterTable = new ChampionshipFighterTable(championshipFighterProvider);
 		}
 		
 		return championshipFighterTable;
@@ -198,14 +197,6 @@ public class TableRoundRobinSystemPanelView extends KASPanel implements UIView<I
 		getModelUI().linkClicked(value, columnId);
 	}
 
-
-	public KASComboBox getCmbFighter() {
-		if (cmbFighter == null) {
-			cmbFighter = new KASComboBox();
-		}
-		return cmbFighter;
-	}
-	
 
 	public JSplitPane getSplitPane() {
 		if (splitPane == null) {

@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.SwingUtilities;
 
 import com.ashihara.datamanagement.core.persistence.exception.AKValidationException;
+import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
@@ -24,8 +25,8 @@ import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.fight.FightJFrame;
 import com.ashihara.ui.app.group.view.OlympicSystemPanelView;
+import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
 import com.ashihara.ui.app.group.view.stuff.OlympicFighterTreeCellPanel;
-import com.ashihara.ui.app.utils.ComboUIHelper;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.core.mvc.model.AKUIEventSender;
 import com.ashihara.ui.core.validator.Validator;
@@ -50,8 +51,11 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	private final int ROW_HEIGHT = 20;
 	private final int ROWS_GAP = 10;
 	
+	private ChampionshipFighterProvider championshipFighterProvider = new ChampionshipFighterProvider();
+	
+	
 	public OlympicSystemModel(FightingGroup group) {
-		viewUI = new OlympicSystemPanelView(AKUIEventSender.newInstance(this), 7, 64, ROW_HEIGHT, ROWS_GAP);
+		viewUI = new OlympicSystemPanelView(AKUIEventSender.newInstance(this), championshipFighterProvider, 7, 64, ROW_HEIGHT, ROWS_GAP);
 		viewUI.setRowHeight(ROW_HEIGHT);
 		viewUI.setRowsGap(ROWS_GAP);
 	}
@@ -312,7 +316,8 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	}
 	
 	private void reloadCombo() throws PersistenceException {
-		ComboUIHelper.reloadFightersSuitableForGroup(getViewUI().getCmbFighter(), getGroup(), true, null);
+		List<ChampionshipFighter> items = getFighterService().loadFightersSuitableForGroup(getGroup());
+		championshipFighterProvider.setItems(items);
 	}
 
 	@Override

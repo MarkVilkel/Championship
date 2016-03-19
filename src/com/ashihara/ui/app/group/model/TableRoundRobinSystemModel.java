@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.ashihara.datamanagement.core.persistence.exception.AKValidationException;
+import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
@@ -18,7 +19,7 @@ import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.fight.FightJFrame;
 import com.ashihara.ui.app.group.view.TableRoundRobinSystemPanelView;
-import com.ashihara.ui.app.utils.ComboUIHelper;
+import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.core.mvc.model.AKUIEventSender;
 import com.ashihara.ui.core.table.KASRow;
@@ -36,9 +37,10 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 	private TableRoundRobinSystemPanelView viewUI;
 	private FightingGroup group;
 	private FightSettings fightSettings;
+	private final ChampionshipFighterProvider championshipFighterProvider = new ChampionshipFighterProvider();
 	
 	public TableRoundRobinSystemModel(FightingGroup group) {
-		this.viewUI = new TableRoundRobinSystemPanelView(AKUIEventSender.newInstance(this));
+		this.viewUI = new TableRoundRobinSystemPanelView(AKUIEventSender.newInstance(this), championshipFighterProvider);
 		this.group = group;
 		
 		this.viewUI.getModelUI().reset();
@@ -54,13 +56,6 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 	}
 	
 	private void doReset() throws PersistenceException {
-//		if (SC.GROUP_STATUS.STARTED.equals(getGroup().getStatus())) {
-//			getViewUI().getFightResultTable().setVisible(true);
-//		}
-//		else {
-//			getViewUI().getFightResultTable().setVisible(false);
-//		}
-		
 		fightSettings = getFightSettingsService().load();
 		
 		reloadCombo();
@@ -68,14 +63,20 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 		List<GroupChampionshipFighter> fighters = getGroupService().loadGroupChampionshipFighters(getGroup());
 		getViewUI().getChampionshipFighterTable().getTable().getKASModel().setDataRows(fighters);
 		
-		if (SC.GROUP_STATUS.STARTED.equals(getGroup().getStatus())) {
+		boolean isTournamentStarted = SC.GROUP_STATUS.STARTED.equals(getGroup().getStatus());
+		getViewUI().getChampionshipFighterTable().setEnabled(!isTournamentStarted);
+		getViewUI().getChampionshipFighterTable().getCommonButtonsPanel().setVisible(!isTournamentStarted);
+
+		
+		if (isTournamentStarted) {
 			List<FightResult> fightResults = getFightResultService().loadOrCreateRoundRobinLastFightResults(getGroup());
 			getViewUI().getFightResultTable().getTable().getKASModel().setDataRows(fightResults);
 		}
 	}
 
 	private void reloadCombo() throws PersistenceException {
-		ComboUIHelper.reloadFightersSuitableForGroup(getViewUI().getCmbFighter(), getGroup(), true, null);
+		List<ChampionshipFighter> items = getFighterService().loadFightersSuitableForGroup(getGroup());
+		championshipFighterProvider.setItems(items);
 	}
 
 	private FightingGroup getGroup() {

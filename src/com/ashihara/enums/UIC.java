@@ -260,4 +260,5 @@ public interface UIC extends Serializable {
 	public String FIRST_COUNTRY();
 	public String SECOND_COUNTRY();
 	public String OLYMPIC_FIGH_RESULTS();
+	public String ALL();
 }
