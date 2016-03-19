@@ -8,6 +8,7 @@ package com.ashihara.ui.core.table;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 public class KASGenericTableModel <T> extends AbstractTableModel{
@@ -19,12 +20,15 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
 	private List<KASRow<T>> added = new ArrayList<KASRow<T>>();
 	private List<KASRow<T>> deleted = new ArrayList<KASRow<T>>();
 	private List<KASRow<T>> modified = new ArrayList<KASRow<T>>();
+	
+	private boolean canEdit = true;
 
 	public KASGenericTableModel(Class<T> rowClass){
 		super();
 		this.rowClass = rowClass;
 	}
 	
+	@Override
 	public Class<?> getColumnClass(int col) {
 		KASColumn kasColumn = getColumns().get(col);
 		
@@ -40,18 +44,22 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
 		return StringPathHelper.getClassByPath(path, rowClass);
 	}
 	
+	@Override
 	public boolean isCellEditable(int rowIndex, int col){
-		return getColumns().get(col).getIsEditable() && getRow(rowIndex).getEditable();
+		return canEdit && getColumns().get(col).getIsEditable() && getRow(rowIndex).getEditable();
 	}
 
+	@Override
 	public int getColumnCount() {
 		return getColumns().size();
 	}
 
+	@Override
 	public int getRowCount() {
 		return getRows().size();	
 	}
 
+	@Override
 	public Object getValueAt(int row, int col){
 		KASColumn kasColumn = getColumns().get(col);
 		
@@ -73,6 +81,7 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
 		return StringPathHelper.invokeGetMethodForPath(path, getDataRow(row));
 	}
 	
+	@Override
 	public void setValueAt(Object value, int row, int col) {
 		KASColumn kasColumn = getColumns().get(col);
 		
@@ -101,6 +110,7 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
         fireTableCellUpdated(row, col);
     }
 	
+	@Override
 	public String getColumnName(int column) {
 		if (getColumns().size()<=column || column<0) {
 			return null;
@@ -358,5 +368,13 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
 			}
 			addRows(rows);
 		}
+	}
+
+	public boolean isCanEdit() {
+		return canEdit;
+	}
+
+	public void setCanEdit(boolean canEdit) {
+		this.canEdit = canEdit;
 	}
 }

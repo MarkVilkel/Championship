@@ -4,7 +4,7 @@
 	<property environment="env"/>
 	<property name="ASHIHARA_HOME" value="${env.ASHIHARA_HOME}"/>
 
-	<property name="CODE_PATH" value="${ASHIHARA_HOME}/CHAMPIONSHIP"/>
+	<property name="CODE_PATH" value="${ASHIHARA_HOME}"/>
 	
 	<property name="BUILD_PATH" value="${CODE_PATH}/build"/>
 	<property name="BUILD_LIBS_PATH" value="${BUILD_PATH}/libs"/>
@@ -52,7 +52,7 @@
 		<!-- SIGN ALL JARS -->
 		<!--keytool -genkey -alias karate -keypass karate-->
 		<!--http://ant.apache.org/manual/CoreTasks/signjar.html-->
-	
+		<!-- 	
 		<signjar 
 	    	alias="karate" 
 	    	storepass="kaskeypassword"
@@ -68,7 +68,7 @@
 		    lazy="true">
 	    	<fileset dir="${BUILD_PATH}" includes="*.jar" />
 		</signjar>
-
+ -->
 	</target >
 	
 </project>

@@ -88,6 +88,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 		getViewUI().getChampionshipFighterTable().getTable().getKASModel().setDataRows(list);
 
 		boolean isTournamentStarted = SC.GROUP_STATUS.STARTED.equals(getGroup().getStatus());
+		getViewUI().getChampionshipFighterTable().getTable().getKASModel().setCanEdit(!isTournamentStarted);
 		getViewUI().getChampionshipFighterTable().setEnabled(!isTournamentStarted);
 		getViewUI().getChampionshipFighterTable().getCommonButtonsPanel().setVisible(!isTournamentStarted);
 		

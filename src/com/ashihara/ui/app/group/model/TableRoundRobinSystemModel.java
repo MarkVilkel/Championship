@@ -64,6 +64,7 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 		getViewUI().getChampionshipFighterTable().getTable().getKASModel().setDataRows(fighters);
 		
 		boolean isTournamentStarted = SC.GROUP_STATUS.STARTED.equals(getGroup().getStatus());
+		getViewUI().getChampionshipFighterTable().getTable().getKASModel().setCanEdit(!isTournamentStarted);
 		getViewUI().getChampionshipFighterTable().setEnabled(!isTournamentStarted);
 		getViewUI().getChampionshipFighterTable().getCommonButtonsPanel().setVisible(!isTournamentStarted);
 
