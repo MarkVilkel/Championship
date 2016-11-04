@@ -45,6 +45,29 @@ public class ChampionshipFighter extends BaseDo {
 		}
 		return super.toString();
 	}
+	
+	public String toShortString() {
+		if (getFighter() != null) {
+			String result = getFighter().toShortString();
+			if (getNumber() != null) {
+				result = "<" + getNumber() + "> " + result;
+			}
+			return result;
+		}
+		return super.toString();
+	}
+
+	public String toLongString() {
+		if (getFighter() != null) {
+			String result = getFighter().toLongString();
+			if (getNumber() != null) {
+				result = "<" + getNumber() + "> " + result;
+			}
+			return result;
+		}
+		return super.toString();
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

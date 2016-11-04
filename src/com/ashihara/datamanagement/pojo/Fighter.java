@@ -5,7 +5,9 @@
  */
 package com.ashihara.datamanagement.pojo;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.ashihara.utils.MathUtils;
 import com.rtu.persistence.core.BaseDo;
@@ -86,6 +88,45 @@ public class Fighter extends BaseDo {
 		
 		return builder.toString();
 	}
+	
+	public String toShortString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getName()).append(" ").append(getSurname());
+		return builder.toString();
+	}
+
+	public String toLongString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getName()).append(" ").append(getSurname());
+		
+		List<String> items = new ArrayList<>();
+		if (getCountry() != null) {
+			items.add(getCountry().getCode());
+		}
+		if (getWeight() != null) {
+			items.add(MathUtils.removeTrailingZeros(getWeight()) + "kg");
+		}
+		if (getDan() != null) {
+			items.add(getDan() + "dan");
+		}
+		if (getKyu() != null) {
+			items.add(getKyu() + "kyu");
+		}
+		
+		if (!items.isEmpty()) {
+			builder.append(" (");
+			for (int i = 0; i < items.size(); i++) {
+				builder.append(items.get(i));
+				if (i < items.size() - 1) {
+					builder.append(", ");
+				}
+			}
+			builder.append(")");
+		}
+		
+		return builder.toString();
+	}
+
 	public Long getKyu() {
 		return kyu;
 	}

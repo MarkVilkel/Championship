@@ -33,7 +33,7 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 	private KASPanel detailsPanel, buttonsUpperPanel;
 	private List<RowsPanel> columnPanels;
 	private JScrollPane detailsPanelScroll;
-	private JButton btnExportToExel;
+	private JButton btnExportToExel, btnExportTreeToExel;
 	
 	private ChampionshipFighterTable championshipFighterTable;
 	private JSplitPane mainSplitPane;
@@ -246,6 +246,7 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 		if (buttonsUpperPanel == null) {
 			buttonsUpperPanel = new KASPanel(new FlowLayout(FlowLayout.LEFT));
 			buttonsUpperPanel.add(getBtnExportToExel());
+			buttonsUpperPanel.add(getBtnExportTreeToExel());
 		}
 		return buttonsUpperPanel;
 	}
@@ -259,5 +260,12 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 		return btnExportToExel;
 	}
 
+	private JButton getBtnExportTreeToExel() {
+		if (btnExportTreeToExel == null) {
+			btnExportTreeToExel = UIFactory.createExcelButton();
+			btnExportTreeToExel.addActionListener((e) -> getModelUI().exportWholeTreeToExcel());
+		}
+		return btnExportTreeToExel;
+	}
 	
 }

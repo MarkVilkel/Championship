@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
@@ -76,6 +78,17 @@ public class ChampionshipFighterTableCellEditor extends DefaultCellEditor implem
 		if (cmb == null) {
 			cmb = new KASComboBox();
 			cmbMap.put(index, cmb);
+			cmb.setRenderer(new DefaultListCellRenderer() {
+				@Override
+				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+					if (value instanceof ChampionshipFighter) {
+						ChampionshipFighter cf = (ChampionshipFighter) value;
+						Component c = super.getListCellRendererComponent(list, cf.toLongString(), index, isSelected, cellHasFocus);
+						return c;
+					}
+					return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				}
+			});
 		}
 		
 		return cmb;

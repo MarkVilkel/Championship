@@ -244,7 +244,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (nextBluePanel == null) {
 			nextBluePanel = new GradientPanel(UIUtils.BLUE);
 			
-			nextBluePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+			nextBluePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 			
 			nextBluePanel.add(getLblNextBlueFighter());
 		}
@@ -255,7 +255,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (nextRedPanel == null) {
 			nextRedPanel = new GradientPanel(UIUtils.RED);
 			
-			nextRedPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+			nextRedPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 			
 			nextRedPanel.add(getLblNextRedFighter());
 		}
@@ -274,7 +274,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			lblNextRedFighter = createLabel(30);
 			
 			if (nextFightResult != null) {
-				lblNextRedFighter.setText(nextFightResult.getRedFighter().getChampionshipFighter().toString());
+				lblNextRedFighter.setText(nextFightResult.getRedFighter().getChampionshipFighter().toShortString());
 			}
 		}
 		return lblNextRedFighter;
@@ -285,7 +285,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			lblNextBlueFighter = createLabel(30);
 			
 			if (nextFightResult != null) {
-				lblNextBlueFighter.setText(nextFightResult.getBlueFighter().getChampionshipFighter().toString());
+				lblNextBlueFighter.setText(nextFightResult.getBlueFighter().getChampionshipFighter().toShortString());
 			}
 		}
 		return lblNextBlueFighter;

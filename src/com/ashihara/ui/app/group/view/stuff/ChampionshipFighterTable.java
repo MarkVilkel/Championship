@@ -41,7 +41,7 @@ public class ChampionshipFighterTable extends AddDeleteButtonsTablePanel<GroupCh
 		getButtonsPanel().add(getBtnAddAllSuitable());
 		
 		CM.GroupChampionshipFighter gcf = new CM.GroupChampionshipFighter(); 
-		getTable().getKASModel().addColumn(new KASColumn(uic.FIGHTERS(), gcf.getChampionshipFighter(), true, championshipFighterTableCellEditor));
+		getTable().getKASModel().addColumn(new KASColumn(uic.FIGHTERS(), gcf.getChampionshipFighter(), true, championshipFighterTableCellEditor, new ChampionshipFighterTableCellRenderer()));
 		showRowCount(uic.FIGHTERS_COUNT());
 	}
 

@@ -12,4 +12,6 @@ public interface IOlympicSystemModel<T extends UIView> extends UIModel<T> {
 
 	void exportToExcel();
 
+	void exportWholeTreeToExcel();
+
 }

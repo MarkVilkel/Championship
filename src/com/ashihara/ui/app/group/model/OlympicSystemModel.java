@@ -377,4 +377,15 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 		}
 	}
 
+	@Override
+	public void exportWholeTreeToExcel() {
+		try {
+			List<FightResult> fightResults = getFightResultService().loadOrCreateOlympicFightResults(group);
+			List<GroupChampionshipFighter> fighters = getGroupService().loadGroupChampionshipFighters(group);
+			TableToExcelExporter.drawWholeTreeToExcel(fightResults, fighters, uic.OLYMPIC_TREE_FIGH_RESULTS() + " " + System.currentTimeMillis(), uic);			
+		} catch (Exception e) {
+			MessageHelper.handleException(getViewUI(), e);
+		}
+	}
+
 }

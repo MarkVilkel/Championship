@@ -10,17 +10,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.contrib.HSSFCellUtil;
+import org.apache.poi.hssf.util.HSSFColor;
 
+import com.ashihara.datamanagement.pojo.FightResult;
+import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
 import com.ashihara.enums.UIC;
 import com.ashihara.ui.core.file.ExcelFileFilter;
 import com.ashihara.ui.core.renderer.KASTableCellRenderer;
@@ -190,4 +196,156 @@ public class TableToExcelExporter {
 			MessageHelper.showLocalizedMessage(null, e);
 		}
 	}
+
+	public static void drawWholeTreeToExcel(List<FightResult> fightResults, List<GroupChampionshipFighter> fighters, String initialFileName, UIC uic) throws IOException {
+		if (initialFileName.length() > 0) {
+			initialFileName += " ";
+		}
+		
+		initialFileName += uic.FORMAT_DATE(new Date());
+		
+		
+		File file = FileUtils.getSavePath(new ExcelFileFilter(), initialFileName);
+		
+		if (file != null) {
+			drawWholeTreeToExcel(fightResults, fighters, file);
+		}
+	}
+
+	private static void drawWholeTreeToExcel(List<FightResult> fightResults, List<GroupChampionshipFighter> fighters, File file) throws IOException {
+		FileOutputStream fileOut = new FileOutputStream(file);
+		
+		HSSFWorkbook book = new HSSFWorkbook();
+		HSSFSheet sheet = book.createSheet();
+		sheet.setDefaultColumnWidth((short)30);
+		
+		drawOlympicNet(fightResults, book, sheet);
+		
+		
+		for (FightResult fr : fightResults) {
+			HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.RED());
+			HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
+			
+			int x = fr.getOlympicLevel().intValue();
+			int y = fr.getOlympicPositionOnLevel().intValue();
+			
+			int theFirstOffset = Math.max(0, (int)(Math.pow(2, x)) - 1);
+			int distance = (int)(Math.pow(2, x + 1));
+			
+			HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+			redRow.setHeightInPoints(25);
+
+			HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
+			whiteRow.setHeightInPoints(25);
+
+			if (fr.getRedFighter() != null) {
+				HSSFCellUtil.createCell(redRow, x, toString(fr.getRedFighter()), redStyle);
+			}
+			
+			if (fr.getBlueFighter() != null) {
+				HSSFCellUtil.createCell(whiteRow, x, toString(fr.getBlueFighter()), whiteStyle);
+			}
+		}
+		
+        book.write(fileOut);
+        fileOut.close();
+        openFileWithSystemEditor(file);
+	}
+	
+	private static void drawOlympicNet(List<FightResult> fightResults, HSSFWorkbook book, HSSFSheet sheet) {
+		int firstLevelFightersCount = 0;
+		int secondLevelFightersCount = 0;
+		
+		for (FightResult fr : fightResults) {
+			if (fr.getOlympicLevel().intValue() == 0) {
+				if (fr.getFirstFighter() != null) {
+					firstLevelFightersCount ++;
+				}
+				if (fr.getSecondFighter() != null) {
+					firstLevelFightersCount ++;
+				}
+			} else if (fr.getOlympicLevel().intValue() == 1) {
+				if (fr.getFirstFighter() != null) {
+					secondLevelFightersCount ++;
+				}
+				if (fr.getSecondFighter() != null) {
+					secondLevelFightersCount ++;
+				}
+			}
+		}
+		
+		int barierCount = 2;
+		for (; !(barierCount > firstLevelFightersCount && barierCount > secondLevelFightersCount); barierCount *= 2) {}
+		
+		int x = 0;
+		for (int maxY = barierCount; maxY > 0; maxY /= 2) {
+			int fightersCount = 0;
+			for (int y = 0; y < maxY; y ++) {
+				if (x == 0 && fightersCount >= firstLevelFightersCount) {
+					break;
+				}
+				
+				int theFirstOffset = Math.max(0, (int)(Math.pow(2, x)) - 1);
+				int distance = (int)(Math.pow(2, x + 1));
+				
+				HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.WHITE());
+				HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+				redRow.setHeightInPoints(25);
+				HSSFCellUtil.createCell(redRow, x, "", redStyle);
+				fightersCount ++;
+				
+				if (x == 0 && fightersCount >= firstLevelFightersCount) {
+					break;
+				}
+				
+				HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
+				HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
+				whiteRow.setHeightInPoints(25);
+				HSSFCellUtil.createCell(whiteRow, x, "", whiteStyle);
+				fightersCount ++;
+				
+				
+			}
+			x++;
+		}
+	}
+
+	private static String toString(GroupChampionshipFighter f) {
+		if (f == null || f.getChampionshipFighter() == null) {
+			return "";
+		}
+		return f.getChampionshipFighter().toString();
+	}
+	
+	private static HSSFCellStyle createCellStyle(HSSFWorkbook book, HSSFColor color) {
+		HSSFCellStyle rowStyle = createStyle(book, 8, true, HSSFCellStyle.ALIGN_CENTER, color.getIndex());
+		rowStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		rowStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		rowStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		rowStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		return rowStyle;
+	}
+	
+    private static HSSFCellStyle createStyle(
+    		HSSFWorkbook wb,
+    		int fontSize,
+    		boolean fontBold,
+    		short alignment,
+    		short backgroung
+    ) { 
+        HSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) fontSize);
+        font.setBoldweight(fontBold ? HSSFFont.BOLDWEIGHT_BOLD : HSSFFont.BOLDWEIGHT_NORMAL);
+        font.setFontName(HSSFFont.FONT_ARIAL);
+        
+        HSSFCellStyle style = wb.createCellStyle();
+        style.setFillForegroundColor(backgroung);
+        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        
+        style.setFont(font);
+        style.setAlignment(alignment);
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        return style;
+    }
+
 }

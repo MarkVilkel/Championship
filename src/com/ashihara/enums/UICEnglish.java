@@ -1270,4 +1270,9 @@ public class UICEnglish implements UIC {
 		return "All";
 	}
 
+	@Override
+	public String OLYMPIC_TREE_FIGH_RESULTS() {
+		return "Olympic tree fight results";
+	}
+
 }

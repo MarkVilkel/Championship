@@ -331,7 +331,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		
 		List<FighterPlace> fighterPlaces = new ArrayList<FighterPlace>();
 		fighterPlaces.addAll(result.values());
-		fighterPlaces = setupPlacesForOlympic(fighterPlaces);
+		fighterPlaces = setupPlaces(fighterPlaces);
 		
 		return fighterPlaces;
 	}
@@ -345,7 +345,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		List<FighterPlace> fighterPlaces = new ArrayList<FighterPlace>();
 		fighterPlaces.addAll(result.values());
 		
-		fighterPlaces = setupPlacesForRoundRobin(fighterPlaces);
+		fighterPlaces = setupPlaces(fighterPlaces);
 		
 		return fighterPlaces;
 	}
@@ -369,102 +369,63 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		return result;
 	}
 	
-	private List<FighterPlace> setupPlacesForOlympic(List<FighterPlace> fighterPlaces) {
+	private List<FighterPlace> setupPlaces(List<FighterPlace> fighterPlaces) {
 		Collections.sort(fighterPlaces, new Comparator<FighterPlace>() {
 			@Override
 			public int compare(FighterPlace o1, FighterPlace o2) {
-				if (o1.getPointsForWin() == o2.getPointsForWin()) {
-					return 0;
-				}
-				else if (o1.getPointsForWin() > o2.getPointsForWin()) {
-					return -1;
-				}
-				else {
-					return 1;
-				}
+				return doCompare(o1, o2);
 			}
 		});
 		
 		int place = 0;
-		long ptsForWin = Long.MAX_VALUE;
-		
+		FighterPlace previous = null;
 		for (FighterPlace fp : fighterPlaces) {
-			if (fp.getPointsForWin() < ptsForWin) {
+			int compared = previous == null ? 0 : doCompare(previous, fp);
+			if (compared != 0 || place == 0) {
 				place ++;
 			}
-			ptsForWin = fp.getPointsForWin();
 			fp.setPlace(place);
+			
+			previous = fp;
 		}
 		
 		return fighterPlaces;
-
 	}
 	
-	private List<FighterPlace> setupPlacesForRoundRobin(List<FighterPlace> fighterPlaces) {
-		Collections.sort(fighterPlaces, new Comparator<FighterPlace>() {
-			@Override
-			public int compare(FighterPlace o1, FighterPlace o2) {
-				if (o1.getPointsForWin() == o2.getPointsForWin()) {
-					if (o1.getPoints() == o2.getPoints()) {
-						if (o1.getFirstCategoryWarnings() == o2.getFirstCategoryWarnings()) {
-							if (o1.getSecondCategoryWarnings() == o2.getSecondCategoryWarnings()) {
-								return 0;
-							}
-							else if (o1.getSecondCategoryWarnings() < o2.getSecondCategoryWarnings()) {
-								return -1;
-							}
-							else {
-								return 1;
-							}
-						}
-						else if (o1.getFirstCategoryWarnings() < o2.getFirstCategoryWarnings()) {
-							return -1;
-						}
-						else {
-							return 1;
-						}
-					}
-					else if (o1.getPoints() > o2.getPoints()) {
-						return -1;
-					}
-					else {
-						return 1;
-					}
-				}
-				else if (o1.getPointsForWin() > o2.getPointsForWin()) {
-					return -1;
-				}
-				else {
+	private int doCompare(FighterPlace o1, FighterPlace o2) {
+		if (o1.getPointsForWin() > o2.getPointsForWin()) {
+			return -1;
+		} else if (o1.getPointsForWin() < o2.getPointsForWin()) {
+			return 1;
+		} else {
+			if (o1.getFirstCategoryWarnings() > o2.getFirstCategoryWarnings()) {
+				return 1;
+			} else if (o1.getFirstCategoryWarnings() < o2.getFirstCategoryWarnings()) {
+				return -1;
+			} else {
+				if (o1.getSecondCategoryWarnings() > o2.getSecondCategoryWarnings()) {
 					return 1;
+				} else if (o1.getSecondCategoryWarnings() < o2.getSecondCategoryWarnings()) {
+					return -1;
+				} else {
+					if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+						return 1;
+					} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+						return -1;
+					} else {
+						if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() > o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
+							return 1;
+						} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() < o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
+							return -1;
+						} else {
+							return 0;
+						}
+					}
 				}
 			}
-		});
-		
-		int place = 0;
-		long ptsForWin = Long.MAX_VALUE;
-		long pts = Long.MAX_VALUE;
-		long firstCategory = Long.MIN_VALUE;
-		long secondCategory = Long.MIN_VALUE;
-		
-		for (FighterPlace fp : fighterPlaces) {
-			if (
-					fp.getPointsForWin() < ptsForWin ||
-					fp.getPoints() < pts ||
-					fp.getFirstCategoryWarnings() > firstCategory ||
-					fp.getSecondCategoryWarnings() > secondCategory
-			) {
-				place ++;
-			}
-			ptsForWin = fp.getPointsForWin();
-			pts = fp.getPoints();
-			firstCategory = fp.getFirstCategoryWarnings();
-			secondCategory = fp.getSecondCategoryWarnings();
-			fp.setPlace(place);
 		}
-		
-		return fighterPlaces;
 	}
-
+	
 	private FighterPlace addPoints(
 			FighterPlace fighterPlace,
 			Fighter fighter,
