@@ -598,6 +598,13 @@ public class UIFactory {
 		return btnExportToExcel;
 	}
 
+	public static JButton createExportButton(){
+		JButton btnExportToExcel = new JButton(ResourceHelper.getImageIcon(ResourceHelper.AUTO_INSERTION));
+		btnExportToExcel.setPreferredSize(new Dimension(21, DEFAULT_BTN_HEIGHT));
+		btnExportToExcel.setToolTipText(uic.EXPORT_OLYMPIC_TREE_TO_FILE());
+		return btnExportToExcel;
+	}
+	
     public static void refreshComponentTreeUI(Component c) {
     	refreshComponentTreeUIByType(c);
         c.invalidate();

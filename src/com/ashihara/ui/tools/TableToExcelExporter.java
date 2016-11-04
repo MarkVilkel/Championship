@@ -34,6 +34,8 @@ import com.ashihara.utils.FileUtils;
 
 public class TableToExcelExporter {
 	
+	private final static float ROW_HEIGHT = 20;
+	
 	public static void drawTableToExcel(JTable table, UIC uic) throws IOException{
 		drawTableToExcel(table, "", uic);
 	}
@@ -197,7 +199,7 @@ public class TableToExcelExporter {
 		}
 	}
 
-	public static void drawWholeTreeToExcel(List<FightResult> fightResults, List<GroupChampionshipFighter> fighters, String initialFileName, UIC uic) throws IOException {
+	public static void drawWholeTreeToExcel(List<FightResult> fightResults, String initialFileName, UIC uic) throws IOException {
 		if (initialFileName.length() > 0) {
 			initialFileName += " ";
 		}
@@ -208,11 +210,11 @@ public class TableToExcelExporter {
 		File file = FileUtils.getSavePath(new ExcelFileFilter(), initialFileName);
 		
 		if (file != null) {
-			drawWholeTreeToExcel(fightResults, fighters, file);
+			drawWholeTreeToExcel(fightResults, file);
 		}
 	}
 
-	private static void drawWholeTreeToExcel(List<FightResult> fightResults, List<GroupChampionshipFighter> fighters, File file) throws IOException {
+	private static void drawWholeTreeToExcel(List<FightResult> fightResults, File file) throws IOException {
 		FileOutputStream fileOut = new FileOutputStream(file);
 		
 		HSSFWorkbook book = new HSSFWorkbook();
@@ -233,10 +235,10 @@ public class TableToExcelExporter {
 			int distance = (int)(Math.pow(2, x + 1));
 			
 			HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
-			redRow.setHeightInPoints(25);
+			redRow.setHeightInPoints(ROW_HEIGHT);
 
 			HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
-			whiteRow.setHeightInPoints(25);
+			whiteRow.setHeightInPoints(ROW_HEIGHT);
 
 			if (fr.getRedFighter() != null) {
 				HSSFCellUtil.createCell(redRow, x, toString(fr.getRedFighter()), redStyle);
@@ -265,48 +267,106 @@ public class TableToExcelExporter {
 					firstLevelFightersCount ++;
 				}
 			} else if (fr.getOlympicLevel().intValue() == 1) {
-				if (fr.getFirstFighter() != null) {
+				if (fr.getFirstFighter() != null && fr.getFirstFighterParent() == null) {
 					secondLevelFightersCount ++;
 				}
-				if (fr.getSecondFighter() != null) {
+				if (fr.getSecondFighter() != null && fr.getSecondFighterParent() == null) {
 					secondLevelFightersCount ++;
 				}
 			}
 		}
 		
-		int barierCount = 2;
-		for (; !(barierCount > firstLevelFightersCount && barierCount > secondLevelFightersCount); barierCount *= 2) {}
+		secondLevelFightersCount = secondLevelFightersCount + firstLevelFightersCount / 2;
+		
 		
 		int x = 0;
-		for (int maxY = barierCount; maxY > 0; maxY /= 2) {
+		boolean twoSemiFinals = false;
+		boolean wasTwoSemiFinals = false;
+		for (int maxY = secondLevelFightersCount; maxY > 0; maxY /= 2) {
 			int fightersCount = 0;
+			boolean wasFightForFirstPlace = false;
 			for (int y = 0; y < maxY; y ++) {
-				if (x == 0 && fightersCount >= firstLevelFightersCount) {
-					break;
+				if (x == 0) {
+					if (fightersCount >= firstLevelFightersCount) {
+						break;
+					}
 				}
 				
 				int theFirstOffset = Math.max(0, (int)(Math.pow(2, x)) - 1);
 				int distance = (int)(Math.pow(2, x + 1));
 				
-				HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.WHITE());
+				HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.RED());
 				HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
-				redRow.setHeightInPoints(25);
+				redRow.setHeightInPoints(ROW_HEIGHT);
 				HSSFCellUtil.createCell(redRow, x, "", redStyle);
 				fightersCount ++;
 				
-				if (x == 0 && fightersCount >= firstLevelFightersCount) {
-					break;
+				if (maxY > 1 || !wasTwoSemiFinals) {
+					boolean textDrawn = false;
+					for (int yLine = (y * 2 * distance) + theFirstOffset + 1; yLine < (y * 2 * distance) + theFirstOffset + distance; yLine ++) {
+						HSSFCellStyle lineStyle = createLineCellStyle(book, new HSSFColor.WHITE());
+						HSSFRow lineRow = sheet.createRow(yLine);
+						lineRow.setHeightInPoints(ROW_HEIGHT);
+						String text = "";
+						if (!textDrawn) {
+							if (maxY == 1) {
+								text = "Final";
+							} else if (maxY == 2) {
+								if (wasTwoSemiFinals) {
+									if (wasFightForFirstPlace) {
+										text = "Final (for the 3-rd place)";
+									} else {
+										text = "Final (for the 1-st place)";
+										wasFightForFirstPlace = true;
+									}
+								} else {
+									text = "Semi-Final";
+								}
+							} else {
+								text = "1/" + maxY;
+							}
+						}
+						HSSFCellUtil.createCell(lineRow, x, text, lineStyle);
+						textDrawn = true;
+					}
+				}
+				
+				if (x == 0) {
+					if (fightersCount >= firstLevelFightersCount) {
+						break;
+					}
 				}
 				
 				HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
 				HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
-				whiteRow.setHeightInPoints(25);
+				whiteRow.setHeightInPoints(ROW_HEIGHT);
 				HSSFCellUtil.createCell(whiteRow, x, "", whiteStyle);
 				fightersCount ++;
-				
-				
+			}
+			
+			if (fightersCount == 4) {
+				twoSemiFinals = !twoSemiFinals;
+				wasTwoSemiFinals = true;
+			}
+			
+			if (twoSemiFinals) {
+				maxY *= 2;
 			}
 			x++;
+		}
+		
+		
+		
+		if (!wasTwoSemiFinals) {
+			int y = 0;
+			
+			int theFirstOffset = Math.max(0, (int)(Math.pow(2, x)) - 1);
+			int distance = (int)(Math.pow(2, x + 1));
+			
+			HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.RED());
+			HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+			redRow.setHeightInPoints(ROW_HEIGHT);
+			HSSFCellUtil.createCell(redRow, x, "", redStyle);
 		}
 	}
 
@@ -316,6 +376,13 @@ public class TableToExcelExporter {
 		}
 		return f.getChampionshipFighter().toString();
 	}
+
+	private static HSSFCellStyle createLineCellStyle(HSSFWorkbook book, HSSFColor color) {
+		HSSFCellStyle rowStyle = createStyle(book, 8, true, HSSFCellStyle.ALIGN_CENTER, color.getIndex());
+		rowStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		return rowStyle;
+	}
+
 	
 	private static HSSFCellStyle createCellStyle(HSSFWorkbook book, HSSFColor color) {
 		HSSFCellStyle rowStyle = createStyle(book, 8, true, HSSFCellStyle.ALIGN_CENTER, color.getIndex());

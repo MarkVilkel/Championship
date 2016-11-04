@@ -262,4 +262,5 @@ public interface UIC extends Serializable {
 	public String OLYMPIC_FIGH_RESULTS();
 	public String ALL();
 	public String OLYMPIC_TREE_FIGH_RESULTS();
+	public String EXPORT_OLYMPIC_TREE_TO_FILE();
 }

@@ -30,7 +30,7 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 	private static final long serialVersionUID = 1L;
 	
 	private IOlympicSystemModel modelUI;
-	private KASPanel detailsPanel, buttonsUpperPanel;
+	private KASPanel graphDetailsPanel, detailsPanel, buttonsUpperPanel;
 	private List<RowsPanel> columnPanels;
 	private JScrollPane detailsPanelScroll;
 	private JButton btnExportToExel, btnExportTreeToExel;
@@ -98,8 +98,6 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 			}
 			
 			detailsPanel.add(subPanel, BorderLayout.CENTER);
-			detailsPanel.add(getButtonsUpperPanel(), BorderLayout.NORTH);
-			
 		}
 		return detailsPanel;
 	}
@@ -195,7 +193,7 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 			mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 			
 			mainSplitPane.setTopComponent(getChampionshipFighterTable());
-			mainSplitPane.setBottomComponent(getDetailsPanelScroll());
+			mainSplitPane.setBottomComponent(getGraphDetailsPanel());
 			mainSplitPane.setDividerLocation(200);
 			mainSplitPane.setOneTouchExpandable(true);
 		}
@@ -262,10 +260,20 @@ public class OlympicSystemPanelView extends KASPanel implements UIView<IOlympicS
 
 	private JButton getBtnExportTreeToExel() {
 		if (btnExportTreeToExel == null) {
-			btnExportTreeToExel = UIFactory.createExcelButton();
+			btnExportTreeToExel = UIFactory.createExportButton();
 			btnExportTreeToExel.addActionListener((e) -> getModelUI().exportWholeTreeToExcel());
 		}
 		return btnExportTreeToExel;
+	}
+
+
+	private KASPanel getGraphDetailsPanel() {
+		if (graphDetailsPanel== null) {
+			graphDetailsPanel = new KASPanel();
+			graphDetailsPanel.add(getDetailsPanelScroll(), BorderLayout.CENTER);
+			graphDetailsPanel.add(getButtonsUpperPanel(), BorderLayout.NORTH);
+		}
+		return graphDetailsPanel;
 	}
 	
 }
