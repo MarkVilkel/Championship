@@ -25,7 +25,7 @@ public class UICEnglish implements UIC {
 
 	@Override
 	public String ASHIHARA_KARATE_CHAMPIONSHIP() {
-		return "Ashihara Karate Championship";
+		return "Josui Karate Championship";
 	}
 
 	@Override
