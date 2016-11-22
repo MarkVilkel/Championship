@@ -29,7 +29,8 @@ public class YearCategoryDetailsDialog extends KASDialog {
 		
 		getMainPanel().add(getYearCategoryDetailsModelUI().getViewUI(), BorderLayout.CENTER);
 		
-		UIFactory.sizeCenterVisible(this, new Dimension(500, 400));
+		pack();
+		UIFactory.centerVisible(this);
 
 	}
 
