@@ -86,7 +86,7 @@ public class FighterBattleInfoPanel extends KASPanel {
 		getTxtName().setText(championshipFighter.getFighter().getName());
 		getTxtSurname().setText(championshipFighter.getFighter().getSurname());
 		getTxtWeight().setText(championshipFighter.getFighter().getWeight().toString());
-		getTxtNumber().setText(championshipFighter.getNumber().toString());
+		getTxtNumber().setText(String.valueOf(championshipFighter.getNumber()));
 	}
 	
 	private KASLabel createLbl(int size) {

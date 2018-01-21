@@ -34,7 +34,9 @@ import com.ashihara.utils.FileUtils;
 
 public class TableToExcelExporter {
 	
-	private final static float ROW_HEIGHT = 20;
+	private final static float ROW_HEIGHT = 10;
+	private final static short ROW_WIDTH = 20;
+	private final static short ROW_Y_OFFSET = 1;
 	
 	public static void drawTableToExcel(JTable table, UIC uic) throws IOException{
 		drawTableToExcel(table, "", uic);
@@ -219,7 +221,7 @@ public class TableToExcelExporter {
 		
 		HSSFWorkbook book = new HSSFWorkbook();
 		HSSFSheet sheet = book.createSheet();
-		sheet.setDefaultColumnWidth((short)30);
+		sheet.setDefaultColumnWidth(ROW_WIDTH);
 		
 		drawOlympicNet(fightResults, book, sheet);
 		
@@ -234,10 +236,10 @@ public class TableToExcelExporter {
 			int theFirstOffset = Math.max(0, (int)(Math.pow(2, x)) - 1);
 			int distance = (int)(Math.pow(2, x + 1));
 			
-			HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+			HSSFRow redRow = sheet.createRow((y * 2 * distance + ROW_Y_OFFSET) + theFirstOffset);
 			redRow.setHeightInPoints(ROW_HEIGHT);
 
-			HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
+			HSSFRow whiteRow = sheet.createRow((y * 2 * distance + ROW_Y_OFFSET) + distance + theFirstOffset);
 			whiteRow.setHeightInPoints(ROW_HEIGHT);
 
 			if (fr.getRedFighter() != null) {
@@ -296,7 +298,7 @@ public class TableToExcelExporter {
 				int distance = (int)(Math.pow(2, x + 1));
 				
 				HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.RED());
-				HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+				HSSFRow redRow = sheet.createRow((y * 2 * distance + ROW_Y_OFFSET) + theFirstOffset);
 				redRow.setHeightInPoints(ROW_HEIGHT);
 				HSSFCellUtil.createCell(redRow, x, "", redStyle);
 				fightersCount ++;
@@ -305,7 +307,7 @@ public class TableToExcelExporter {
 					boolean textDrawn = false;
 					for (int yLine = (y * 2 * distance) + theFirstOffset + 1; yLine < (y * 2 * distance) + theFirstOffset + distance; yLine ++) {
 						HSSFCellStyle lineStyle = createLineCellStyle(book, new HSSFColor.WHITE());
-						HSSFRow lineRow = sheet.createRow(yLine);
+						HSSFRow lineRow = sheet.createRow(yLine + ROW_Y_OFFSET);
 						lineRow.setHeightInPoints(ROW_HEIGHT);
 						String text = "";
 						if (!textDrawn) {
@@ -338,7 +340,7 @@ public class TableToExcelExporter {
 				}
 				
 				HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
-				HSSFRow whiteRow = sheet.createRow((y * 2 * distance) + distance + theFirstOffset);
+				HSSFRow whiteRow = sheet.createRow((y * 2 * distance + ROW_Y_OFFSET) + distance + theFirstOffset);
 				whiteRow.setHeightInPoints(ROW_HEIGHT);
 				HSSFCellUtil.createCell(whiteRow, x, "", whiteStyle);
 				fightersCount ++;
@@ -364,7 +366,7 @@ public class TableToExcelExporter {
 			int distance = (int)(Math.pow(2, x + 1));
 			
 			HSSFCellStyle redStyle = createCellStyle(book, new HSSFColor.RED());
-			HSSFRow redRow = sheet.createRow((y * 2 * distance) + theFirstOffset);
+			HSSFRow redRow = sheet.createRow((y * 2 * distance + ROW_Y_OFFSET) + theFirstOffset);
 			redRow.setHeightInPoints(ROW_HEIGHT);
 			HSSFCellUtil.createCell(redRow, x, "", redStyle);
 		}
