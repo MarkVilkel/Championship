@@ -72,6 +72,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 	private JButton btnExportCompletedGroups;
 	private JButton btnExportGroups;
 	private JButton btnImportGroups;
+	private JButton btnExportEachGroupToExcel;
 	
 
 	public ChampionshipEditPanelViewUI(IChampionshipEditModelUI modelUI) {
@@ -226,6 +227,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			
 			groupTable.showRowCount(uic.GROUPS_COUNT());
 			
+			groupTable.getHeaderRightPanel().add(getBtnExportEachGroupToExcel());
 			groupTable.getHeaderRightPanel().add(Box.createHorizontalStrut(20), 0);
 			groupTable.getHeaderRightPanel().add(getBtnExportCompletedGroups(), 0);
 			groupTable.getHeaderRightPanel().add(getBtnExportGroups(), 0);
@@ -483,6 +485,14 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			});
 		}
 		return btnExportCompletedGroups;
+	}
+
+	private JButton getBtnExportEachGroupToExcel() {
+		if (btnExportEachGroupToExcel == null) {
+			btnExportEachGroupToExcel = UIFactory.createExportButton();
+			btnExportEachGroupToExcel.addActionListener((e) -> getModelUI().exportAllGroupsToExcel());
+		}
+		return btnExportEachGroupToExcel;
 	}
 
 }

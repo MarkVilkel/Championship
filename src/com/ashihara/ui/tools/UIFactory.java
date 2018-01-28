@@ -601,7 +601,7 @@ public class UIFactory {
 	public static JButton createExportButton(){
 		JButton btnExportToExcel = new JButton(ResourceHelper.getImageIcon(ResourceHelper.AUTO_INSERTION));
 		btnExportToExcel.setPreferredSize(new Dimension(21, DEFAULT_BTN_HEIGHT));
-		btnExportToExcel.setToolTipText(uic.EXPORT_OLYMPIC_TREE_TO_FILE());
+		btnExportToExcel.setToolTipText(uic.EXPORT_CONTENT_TO_FILE());
 		return btnExportToExcel;
 	}
 	

@@ -8,6 +8,7 @@ package com.ashihara.ui.app.championship.model;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import com.ashihara.datamanagement.interfaces.MigrationService;
 import com.ashihara.datamanagement.pojo.Championship;
 import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.Country;
+import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.Fighter;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.WeightCategory;
@@ -43,6 +45,7 @@ import com.ashihara.ui.core.mvc.model.AKUIEventSender;
 import com.ashihara.ui.core.validator.Validator;
 import com.ashihara.ui.tools.KASDebuger;
 import com.ashihara.ui.tools.MessageHelper;
+import com.ashihara.ui.tools.TableToExcelExporter;
 import com.ashihara.utils.DataManagementUtils;
 import com.ashihara.utils.FileUtils;
 import com.rtu.exception.PersistenceException;
@@ -452,4 +455,29 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 			MessageHelper.handleException(getViewUI(), e);
 		}
 	}
+	
+	@Override
+	public void exportAllGroupsToExcel() {
+		try {
+			List<FightingGroup> groups = getGroupService().loadStartedWithRealFightResultsGroups(getChampionship());
+			if (groups != null && !groups.isEmpty()) {
+				Map<FightingGroup, List<FightResult>> fightResults = new HashMap<>();
+				for (FightingGroup group : groups) {
+					final List<FightResult> fr;
+					if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
+						fr = getFightResultService().loadOrCreateOlympicFightResults(group);
+					} else if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
+						fr = getFightResultService().loadOrCreateRoundRobinLastFightResults(group);
+					} else {
+						throw new IllegalArgumentException("Unsupported group type " + group.getType());
+					}
+					fightResults.put(group, fr);
+				}
+				TableToExcelExporter.drawWholeTreeToExcel(fightResults, getChampionship().toString(), uic);
+			}
+		} catch (Exception e) {
+			MessageHelper.handleException(getViewUI(), e);
+		}
+	}
+
 }

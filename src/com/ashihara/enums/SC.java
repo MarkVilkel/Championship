@@ -106,6 +106,10 @@ public class SC {
 
 		@Override
 		public String getUICaption(String param, UIC uic) {
+			return getCaption(param, uic);
+		}
+
+		public static String getCaption(String param, UIC uic) {
 			if (MALE.equals(param)) {
 				return uic.MALE();
 			} else if (FEMALE.equals(param)) {
@@ -116,7 +120,7 @@ public class SC {
 				throw new IllegalArgumentException("Unsupported gender");
 			}
 		}
-		
+
 	}
 	
 	public interface Captionable<T> {

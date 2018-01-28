@@ -32,5 +32,6 @@ public interface IChampionshipEditModelUI<T extends UIView> extends UIModel<T> {
 	void exportGroups();
 	void importGroups();
 	void exportFinishedGroups();
+	void exportAllGroupsToExcel();
 
 }

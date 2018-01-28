@@ -1280,4 +1280,9 @@ public class UICEnglish implements UIC {
 		return "Export olympic tree to file";
 	}
 
+	@Override
+	public String EXPORT_CONTENT_TO_FILE() {
+		return "Export content to file";
+	}
+
 }

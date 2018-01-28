@@ -391,40 +391,64 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		
 		return fighterPlaces;
 	}
-	
+
 	private int doCompare(FighterPlace o1, FighterPlace o2) {
 		if (o1.getPointsForWin() > o2.getPointsForWin()) {
 			return -1;
 		} else if (o1.getPointsForWin() < o2.getPointsForWin()) {
 			return 1;
 		} else {
-			if (o1.getFirstCategoryWarnings() > o2.getFirstCategoryWarnings()) {
-				return 1;
-			} else if (o1.getFirstCategoryWarnings() < o2.getFirstCategoryWarnings()) {
+			long pts1 = o1.getPoints() != null ? o1.getPoints().longValue() : 0;
+			long pts2 = o2.getPoints() != null ? o2.getPoints().longValue() : 0;
+			if (pts1 > pts2) {
 				return -1;
+			} else if (pts1 < pts2) {
+				return 1;
 			} else {
-				if (o1.getSecondCategoryWarnings() > o2.getSecondCategoryWarnings()) {
+				if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
 					return 1;
-				} else if (o1.getSecondCategoryWarnings() < o2.getSecondCategoryWarnings()) {
+				} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
 					return -1;
 				} else {
-					if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
-						return 1;
-					} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
-						return -1;
-					} else {
-						if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() > o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
-							return 1;
-						} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() < o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
-							return -1;
-						} else {
-							return 0;
-						}
-					}
+					return 0;
 				}
 			}
 		}
 	}
+
+//	private int doCompare(FighterPlace o1, FighterPlace o2) {
+//		if (o1.getPointsForWin() > o2.getPointsForWin()) {
+//			return -1;
+//		} else if (o1.getPointsForWin() < o2.getPointsForWin()) {
+//			return 1;
+//		} else {
+//			if (o1.getFirstCategoryWarnings() > o2.getFirstCategoryWarnings()) {
+//				return 1;
+//			} else if (o1.getFirstCategoryWarnings() < o2.getFirstCategoryWarnings()) {
+//				return -1;
+//			} else {
+//				if (o1.getSecondCategoryWarnings() > o2.getSecondCategoryWarnings()) {
+//					return 1;
+//				} else if (o1.getSecondCategoryWarnings() < o2.getSecondCategoryWarnings()) {
+//					return -1;
+//				} else {
+//					if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+//						return 1;
+//					} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+//						return -1;
+//					} else {
+//						if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() > o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
+//							return 1;
+//						} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime() < o2.getGCFighter().getChampionshipFighter().getFighter().getBirthday().getTime()) {
+//							return -1;
+//						} else {
+//							return 0;
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	private FighterPlace addPoints(
 			FighterPlace fighterPlace,
