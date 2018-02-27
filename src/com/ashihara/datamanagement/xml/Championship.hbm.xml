@@ -23,5 +23,6 @@
 
         <property column="NAME" name="name" not-null="true" insert="true" update="true" type="java.lang.String"/>    	
         <property column="BEGINNING_DATE" name="beginningDate" not-null="true" insert="true" update="true" type="java.util.Date"/>
+        <property column="RULES" name="rules" not-null="false" insert="true" update="true" type="java.lang.String"/>
     </class>
 </hibernate-mapping>

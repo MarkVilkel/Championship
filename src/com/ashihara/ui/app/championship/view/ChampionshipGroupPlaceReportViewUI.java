@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.CM;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.championship.model.IChampionshipGroupPlaceReportModelUI;
 import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.mvc.view.UIView;
@@ -35,8 +36,11 @@ public class ChampionshipGroupPlaceReportViewUI extends KASPanel implements UIVi
 	private KASPanel searchPanelDetails;
 	private KASComboBox cmbGroups;
 	
-	public ChampionshipGroupPlaceReportViewUI(IChampionshipGroupPlaceReportModelUI<?> modelUI) {
+	private final RulesManager rulesManager;
+	
+	public ChampionshipGroupPlaceReportViewUI(IChampionshipGroupPlaceReportModelUI<?> modelUI, RulesManager rulesManager) {
 		this.modelUI = modelUI;
+		this.rulesManager = rulesManager;
 		
 		init();
 	}
@@ -75,8 +79,10 @@ public class ChampionshipGroupPlaceReportViewUI extends KASPanel implements UIVi
 			fightResultPanel.getTable().getKASModel().addColumn(KASColumn.createLinkColumn(uic.GROUP(), cmFighterPlace.getGCFighter().getFightingGroup()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIGHTER(), cmFighterPlace.getGCFighter().getChampionshipFighter()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.COUNTRY(), cmFighterPlace.getGCFighter().getChampionshipFighter().getFighter().getCountry()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_CATEGORY(), cmFighterPlace.getFirstCategoryWarnings()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_CATEGORY(), cmFighterPlace.getSecondCategoryWarnings()));
+			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFighterPlace.getFirstCategoryWarnings()));
+			if (rulesManager.hasSecondPenaltyCategory()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFighterPlace.getSecondCategoryWarnings()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFighterPlace.getPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFighterPlace.getPointsForWin()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PLACE(), cmFighterPlace.getPlace()));

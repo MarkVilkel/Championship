@@ -123,6 +123,35 @@ public class SC {
 
 	}
 	
+	public static class RULES implements Captionable<String> {
+		public static final String JOSUI_STYLE = "JOSUI_STYLE";
+		public static final String ALL_STYLE = "ALL_STYLE";
+
+		@Override
+		public List<String> getAllValues() {
+			List<String> all = new ArrayList<String>();
+			all.add(JOSUI_STYLE);
+			all.add(ALL_STYLE);
+			return all;
+		}
+
+		@Override
+		public String getUICaption(String param, UIC uic) {
+			return getCaption(param, uic);
+		}
+
+		public static String getCaption(String param, UIC uic) {
+			if (JOSUI_STYLE.equals(param)) {
+				return uic.JOSUI_STYLE_RULES();
+			} else if (ALL_STYLE.equals(param)) {
+				return uic.ALL_STYLE_RULES();
+			} else {
+				throw new IllegalArgumentException("Unsupported rules");
+			}
+		}
+
+	}
+	
 	public interface Captionable<T> {
 		public T getUICaption(T param, UIC uic);
 		public List<T> getAllValues();

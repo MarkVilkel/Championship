@@ -15,6 +15,7 @@ public class Championship extends BaseDo {
 	
 	private String name;
 	private Date beginningDate;
+	private String rules;
 	
 	public String getName() {
 		return name;
@@ -36,13 +37,21 @@ public class Championship extends BaseDo {
 		return getName();
 	}
 
+	public String getRules() {
+		return rules;
+	}
+
+	public void setRules(String rules) {
+		this.rules = rules;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((beginningDate == null) ? 0 : beginningDate.hashCode());
+		result = prime * result + ((beginningDate == null) ? 0 : beginningDate.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((rules == null) ? 0 : rules.hashCode());
 		return result;
 	}
 
@@ -64,6 +73,11 @@ public class Championship extends BaseDo {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (rules == null) {
+			if (other.rules != null)
+				return false;
+		} else if (!rules.equals(other.rules))
 			return false;
 		return true;
 	}

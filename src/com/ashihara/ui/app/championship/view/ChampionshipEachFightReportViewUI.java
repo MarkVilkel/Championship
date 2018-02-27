@@ -18,6 +18,7 @@ import javax.swing.JTable;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.enums.CM;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.championship.model.IChampionshipEachFightReportModelUI;
 import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.mvc.view.UIView;
@@ -42,9 +43,14 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 	private SearchClearButtonPanel searchClearButtonPanel;
 	private KASPanel searchPanelDetails;
 	private KASComboBox cmbGroups, cmbFirstFighter, cmbSecondFighter;
+	private final RulesManager rulesManager;
 	
-	public ChampionshipEachFightReportViewUI(IChampionshipEachFightReportModelUI<?> modelUI) {
+	public ChampionshipEachFightReportViewUI(
+			IChampionshipEachFightReportModelUI<?> modelUI,
+			RulesManager rulesManager
+	) {
 		this.modelUI = modelUI;
+		this.rulesManager = rulesManager;
 		
 		init();
 	}
@@ -85,17 +91,21 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 			
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_FIGHTER(), cmFightResult.getLastRound().getFirstFighter().getChampionshipFighter()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_COUNTRY(), cmFightResult.getLastRound().getFirstFighter().getChampionshipFighter().getFighter().getCountry()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PREVIOUS_ROUNDS_I(), cmFightResult.getPreviousRounds(), new PreviousRoundsCellRenderer(true)));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_CATEGORY(), cmFightResult.getLastRound().getFirstFighterFirstCategoryWarnings()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_CATEGORY(), cmFightResult.getLastRound().getFirstFighterSecondCategoryWarnings()));
+			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PREVIOUS_ROUNDS_I(), cmFightResult.getPreviousRounds(), new PreviousRoundsCellRenderer(true, rulesManager)));
+			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFightResult.getLastRound().getFirstFighterFirstCategoryWarnings()));
+			if (rulesManager.hasSecondPenaltyCategory()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFightResult.getLastRound().getFirstFighterSecondCategoryWarnings()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getFirstFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getFirstFighterPointsForWin()));
 			
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_FIGHTER(), cmFightResult.getLastRound().getSecondFighter().getChampionshipFighter()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_COUNTRY(), cmFightResult.getLastRound().getSecondFighter().getChampionshipFighter().getFighter().getCountry()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PREVIOUS_ROUNDS_II(), cmFightResult.getPreviousRounds(), new PreviousRoundsCellRenderer(false)));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_CATEGORY(), cmFightResult.getLastRound().getSecondFighterFirstCategoryWarnings()));
-			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_CATEGORY(), cmFightResult.getLastRound().getSecondFighterSecondCategoryWarnings()));
+			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PREVIOUS_ROUNDS_II(), cmFightResult.getPreviousRounds(), new PreviousRoundsCellRenderer(false, rulesManager)));
+			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFightResult.getLastRound().getSecondFighterFirstCategoryWarnings()));
+			if (rulesManager.hasSecondPenaltyCategory()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFightResult.getLastRound().getSecondFighterSecondCategoryWarnings()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getSecondFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getSecondFighterPointsForWin()));
 			
@@ -109,9 +119,11 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 	private class PreviousRoundsCellRenderer extends KASDefaultRenderer {
 		private static final long serialVersionUID = 1L;
 		private final boolean first;
+		private final RulesManager rulesManager;
 		
-		public PreviousRoundsCellRenderer(boolean first) {
+		public PreviousRoundsCellRenderer(boolean first, RulesManager rulesManager) {
 			this.first = first;
+			this.rulesManager = rulesManager;
 		}
 		
 		@Override
@@ -126,13 +138,22 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 					str += "Round = " + round;
 					
 					if (first) {
-						str += ", 1 cat = " + fr.getFirstFighterFirstCategoryWarnings();
-						str += ", 2 cat = " + fr.getFirstFighterSecondCategoryWarnings();
+						if (rulesManager.hasSecondPenaltyCategory()) {
+							str += ", 1 cat = " + fr.getFirstFighterFirstCategoryWarnings();
+							str += ", 2 cat = " + fr.getFirstFighterSecondCategoryWarnings();
+						} else { 
+							str += ", penalty = " + fr.getFirstFighterFirstCategoryWarnings();
+						}
+							
 						str += ", pts = " + fr.getFirstFighterPoints() + ";";
 					}
 					else {
-						str += ", 1 cat = " + fr.getSecondFighterFirstCategoryWarnings();
-						str += ", 2 cat = " + fr.getSecondFighterSecondCategoryWarnings();
+						if (rulesManager.hasSecondPenaltyCategory()) {
+							str += ", 1 cat = " + fr.getSecondFighterFirstCategoryWarnings();
+							str += ", 2 cat = " + fr.getSecondFighterSecondCategoryWarnings();
+						} else {
+							str += ", penalty = " + fr.getSecondFighterFirstCategoryWarnings();
+						}
 						str += ", pts = " + fr.getSecondFighterPoints() + "; ";
 					}
 				}

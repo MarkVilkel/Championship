@@ -1285,4 +1285,25 @@ public class UICEnglish implements UIC {
 		return "Export content to file";
 	}
 
+	@Override
+	public String JOSUI_STYLE_RULES() {
+		return "Josui style rules";
+	}
+
+	@Override
+	public String ALL_STYLE_RULES() {
+		return "All style rules";
+	}
+
+	@Override
+	public String RULES() {
+		return "Rules";
+	}
+
+	@Override
+	public String PENALTY() {
+		return "Penalty";
+	}
+
+
 }

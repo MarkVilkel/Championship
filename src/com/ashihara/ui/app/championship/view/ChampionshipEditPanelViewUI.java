@@ -22,11 +22,13 @@ import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.enums.CM;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.championship.model.IChampionshipEditModelUI;
 import com.ashihara.ui.app.fighter.view.FighterSearchPanel;
 import com.ashihara.ui.app.fighter.view.GenderRenderer;
 import com.ashihara.ui.app.yearWeight.view.YearWeightSearchPanel;
 import com.ashihara.ui.core.component.KASLinkLabel;
+import com.ashihara.ui.core.component.combo.KASComboBox;
 import com.ashihara.ui.core.component.date.AKDateChooser;
 import com.ashihara.ui.core.component.textField.KASTextField;
 import com.ashihara.ui.core.mvc.view.UIView;
@@ -57,6 +59,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 	
 	private KASTextField txtName;
 	private AKDateChooser dateChooser;
+	private KASComboBox cmbRules;
 	private KASPanel champioshipDetailsPanel;
 	private JSplitPane fightersGroupsSplitPane;
 	
@@ -299,7 +302,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 		if (champioshipDetailsPanel == null){
 			champioshipDetailsPanel = new KASPanel();
 			FormLayout fl = new FormLayout(
-					"right:90dlu,4dlu, pref, 20dlu, pref, 4dlu, pref",
+					"right:90dlu,4dlu, pref, 4dlu, pref, 4dlu, pref, 20dlu, pref, 4dlu, pref",
 					"pref, 10dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref");
 
 			CellConstraints cc = new CellConstraints();
@@ -311,11 +314,15 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			builder.addLabel(uic.TITLE()+": ", cc.xy(1, 3));
 			builder.add(getTxtName(), cc.xy(3, 3));
 			
-			builder.add(getBtnGroupPlaceReport(), cc.xy(5, 3));
-			builder.add(getBtnEachFighterReport(), cc.xy(5, 5));
-			
 			builder.addLabel(uic.BEGINNING_DATE()+": ", cc.xy(1, 5));
 			builder.add(getDateChooser(), cc.xy(3, 5));
+			
+			builder.addLabel(uic.RULES()+": ", cc.xy(5, 3));
+			builder.add(getCmbRules(), cc.xy(7, 3));
+			
+			builder.add(getBtnGroupPlaceReport(), cc.xy(9, 3));
+			builder.add(getBtnEachFighterReport(), cc.xy(9, 5));
+			
 		}
 		
 		return champioshipDetailsPanel;
@@ -493,6 +500,13 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			btnExportEachGroupToExcel.addActionListener((e) -> getModelUI().exportAllGroupsToExcel());
 		}
 		return btnExportEachGroupToExcel;
+	}
+
+	public KASComboBox getCmbRules() {
+		if (cmbRules == null) {
+			cmbRules = new KASComboBox();
+		}
+		return cmbRules;
 	}
 
 }

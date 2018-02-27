@@ -197,6 +197,10 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 	}
 
 	private void reloadChampionship() throws PersistenceException {
+		
+		ComboUIHelper.fillUpCaptionableWithCMItems(getViewUI().getCmbRules(), new SC.RULES(), false, uic);
+		
+		
 		if (getChampionship() == null || getChampionship().getId() == null) {
 			setChampionship(new Championship());
 		}
@@ -223,14 +227,20 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 		getViewUI().getTxtName().setText(getChampionship().getName());
 		getViewUI().getDateChooser().setDate(getChampionship().getBeginningDate());
 		
+		getViewUI().getCmbRules().tryToSelectIfInEntrySet((getChampionship() == null || getChampionship().getRules() == null) ? SC.RULES.JOSUI_STYLE : getChampionship().getRules());
+		
 		boolean visibleFlag = !(getChampionship() == null || getChampionship().getId() == null);
 		getViewUI().getChampionshipFighterTablePanel().setEnabled(visibleFlag);
 		getViewUI().getGroupTablePanel().setEnabled(visibleFlag);
+		getViewUI().getCmbRules().setEnabled(!visibleFlag);
 	}
 	
 	private void copyFromUIChampiohshipOnly() {
 		getChampionship().setName(getViewUI().getTxtName().getText());
 		getChampionship().setBeginningDate(getViewUI().getDateChooser().getDate());
+		if (getViewUI().getCmbRules().getSelectedItem() instanceof ComboBoxItem) {
+			getChampionship().setRules(((ComboBoxItem<String>)getViewUI().getCmbRules().getSelectedItem()).getId());
+		}
 	}
 
 	private void validateChampionshipData() throws AKValidationException {

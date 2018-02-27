@@ -12,6 +12,7 @@ import com.ashihara.datamanagement.pojo.Championship;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
+import com.ashihara.ui.app.championship.data.RulesManagerFactory;
 import com.ashihara.ui.app.championship.view.ChampionshipGroupPlaceReportViewUI;
 import com.ashihara.ui.app.group.GroupDetailsFrame;
 import com.ashihara.ui.app.utils.ComboUIHelper;
@@ -27,7 +28,10 @@ public class ChampionshipGroupPlaceReportModelUI extends AKAbstractModelUI<Champ
 	
 	public ChampionshipGroupPlaceReportModelUI(Championship championship) {
 		this.championship = championship;
-		viewUI = new ChampionshipGroupPlaceReportViewUI(AKUIEventSender.newInstance(this));
+		viewUI = new ChampionshipGroupPlaceReportViewUI(
+				AKUIEventSender.newInstance(this),
+				RulesManagerFactory.getRulesManager(championship.getRules(), uic)
+		);
 		
 		clear();
 		viewUI.getModelUI().filter();
