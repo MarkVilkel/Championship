@@ -30,4 +30,14 @@ public class AllStyleRulesManager implements RulesManager {
 		return uic.PENALTY();
 	}
 
+	@Override
+	public boolean redFighterFromTheLeft() {
+		return false;
+	}
+
+	@Override
+	public long getMaxRoundsCount() {
+		return 3;
+	}
+
 }

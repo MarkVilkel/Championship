@@ -6,21 +6,28 @@
 package com.ashihara.ui.app.championship.view;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import com.ashihara.datamanagement.pojo.Championship;
 import com.ashihara.enums.CM;
+import com.ashihara.enums.SC;
+import com.ashihara.enums.UIC;
 import com.ashihara.ui.app.championship.model.IChampionshipSearchResultModelUI;
 import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.AddDeleteButtonsTablePanel;
 import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.core.panel.SearchClearButtonPanel;
 import com.ashihara.ui.core.renderer.DateCellRenderer;
+import com.ashihara.ui.core.renderer.KASDefaultRenderer;
 import com.ashihara.ui.core.table.KASColumn;
 import com.ashihara.ui.core.table.LinkClickingListener;
+import com.ashihara.ui.tools.ApplicationManager;
 import com.ashihara.ui.tools.UIFactory;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -74,12 +81,32 @@ public class ChampionshipSearchResultPanelViewUI extends KASPanel implements Lin
 			
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createLinkColumn(uic.NAME(), cmChampionship.getName()));
 			championshipTable.getTable().getKASModel().addColumn(new KASColumn(uic.BEGINNING_DATE(), cmChampionship.getBeginningDate(), new DateCellRenderer()));
+			championshipTable.getTable().getKASModel().addColumn(new KASColumn(uic.RULES(), cmChampionship.getRules(), new RulesCellRenderer()));
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createFakeLinkColumn(uic.GROUP_PLACE_REPORT(), uic.SHOW_REPORT()));
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createFakeLinkColumn(uic.EACH_FIGHT_REPORT(), uic.SHOW_REPORT()));
 			
 			championshipTable.showRowCount(uic.CHAMPIONSHIPS_COUNT());
 		}
 		return championshipTable;
+	}
+	
+	private class RulesCellRenderer extends KASDefaultRenderer{
+		private static final long serialVersionUID = 1L;
+		private UIC uic = ApplicationManager.getInstance().getUic();
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
+			if (value == null) {
+				value = SC.RULES.JOSUI_STYLE;
+			}
+			if (value instanceof String) {
+				String rules = (String)value;
+				value = SC.RULES.getCaption(rules, uic);
+			}
+			
+			Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			
+			return comp;
+		}
 	}
 
 	public void linkClicked(Championship value, String columnId) {

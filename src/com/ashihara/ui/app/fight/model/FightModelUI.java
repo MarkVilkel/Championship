@@ -7,6 +7,9 @@ package com.ashihara.ui.app.fight.model;
 
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
+import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.ui.app.championship.data.RulesManager;
+import com.ashihara.ui.app.championship.data.RulesManagerFactory;
 import com.ashihara.ui.app.fight.view.FightPanel;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.core.mvc.model.AKAbstractModelUI;
@@ -26,6 +29,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 	
 	private boolean nextRoundWasClicked = false;
 	
+	private final RulesManager rulesManager;
 	
 	public FightModelUI(
 			FightResult fightResult,
@@ -52,11 +56,15 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 			}
 		}
 		
+		GroupChampionshipFighter gcf = fightResult.getFirstFighter() != null ? fightResult.getFirstFighter() : fightResult.getSecondFighter();
+		this.rulesManager = RulesManagerFactory.getRulesManager(gcf.getFightingGroup().getChampionship().getRules(), uic);
+		
 		this.viewUI = new FightPanel(
 				this.fightResult,
 				NextFightManager.getInstance().getNextFightResult(),
 				fightSettings,
-				AKUIEventSender.newInstance(this)
+				AKUIEventSender.newInstance(this),
+				rulesManager
 		);
 		
 		reset();

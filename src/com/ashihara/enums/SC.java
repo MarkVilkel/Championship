@@ -142,9 +142,9 @@ public class SC {
 
 		public static String getCaption(String param, UIC uic) {
 			if (JOSUI_STYLE.equals(param)) {
-				return uic.JOSUI_STYLE_RULES();
+				return uic.JOSUI_STYLE();
 			} else if (ALL_STYLE.equals(param)) {
-				return uic.ALL_STYLE_RULES();
+				return uic.ALL_STYLE();
 			} else {
 				throw new IllegalArgumentException("Unsupported rules");
 			}

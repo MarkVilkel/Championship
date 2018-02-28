@@ -8,9 +8,10 @@ package com.ashihara.ui.app.championship.data;
 public interface RulesManager {
 
 	boolean hasSecondPenaltyCategory();
-
 	String getFirstPenaltyCategoryCaption();
-
 	String getSecondPenaltyCategoryCaption();
+
+	boolean redFighterFromTheLeft();
+	long getMaxRoundsCount();
 
 }

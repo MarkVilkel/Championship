@@ -17,6 +17,8 @@ import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
+import com.ashihara.ui.app.championship.data.RulesManagerFactory;
 import com.ashihara.ui.app.group.view.GroupEditPanelView;
 import com.ashihara.ui.app.utils.ComboUIHelper;
 import com.ashihara.ui.core.component.combo.ComboBoxItem;
@@ -38,7 +40,7 @@ public class GroupEditModel extends AKAbstractModelUI<GroupEditPanelView> implem
 	public GroupEditModel(FightingGroup fightingGroup, UIStatePerformer<FightingGroup> groupsManager) {
 		this.fightingGroup = fightingGroup;
 		this.groupsManager = groupsManager;
-		this.viewUI = new GroupEditPanelView(AKUIEventSender.newInstance(this));
+		this.viewUI = new GroupEditPanelView(AKUIEventSender.newInstance(this), RulesManagerFactory.getRulesManager(fightingGroup.getChampionship().getRules(), uic));
 		
 		this.viewUI.getModelUI().reset();
 	}

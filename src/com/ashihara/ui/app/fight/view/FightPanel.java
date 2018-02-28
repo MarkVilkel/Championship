@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.model.IFightModelUI;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 import com.ashihara.ui.app.fight.view.listener.PointsCountListener;
@@ -52,16 +53,20 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	private GradientPanel nextBluePanel, nextRedPanel;
 	private JLabel lblNextRedFighter, lblNextBlueFighter, lblNext, lblVs;
 	
+	private final RulesManager rulesManager;
+	
 	public FightPanel(
 			FightResult fightResult,
 			FightResult nextFightResult,
 			FightSettings fightSettings,
-			IFightModelUI<?> modelUI
+			IFightModelUI<?> modelUI,
+			RulesManager rulesManager
 	) {
 		this.fightResult = fightResult;
 		this.nextFightResult = nextFightResult;
 		this.modelUI = modelUI;
 		this.fightSettings = fightSettings;
+		this.rulesManager = rulesManager;
 		
 		init();
 	}
@@ -87,7 +92,8 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (firstFighterBattleInfoPanel == null) {
 			firstFighterBattleInfoPanel = new FighterBattleInfoPanel(
 					fightResult.getRedFighter().getChampionshipFighter(),
-					UIUtils.RED
+					UIUtils.RED,
+					rulesManager
 			);
 			firstFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
 			firstFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
@@ -110,7 +116,8 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (secondFighterBattleInfoPanel == null) {
 			secondFighterBattleInfoPanel = new FighterBattleInfoPanel(
 					fightResult.getBlueFighter().getChampionshipFighter(),
-					UIUtils.BLUE
+					UIUtils.BLUE,
+					rulesManager
 			);
 			secondFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
 			secondFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
@@ -143,6 +150,10 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					roundNumberForUI,
 					fightSettings.getTimeForRound(roundNumberForUI)
 			);
+			
+			if (roundNumberForUI >= rulesManager.getMaxRoundsCount()) {
+				getBtnNextRound().setVisible(false);
+			}
 		}
 		return timePanel;
 	}
@@ -195,9 +206,13 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (fightersPanel == null) {
 			fightersPanel = new KASPanel(new GridLayout(1, 2));
 			
-			fightersPanel.add(getFirstFighterBattleInfoPanel());
-			fightersPanel.add(getSecondFighterBattleInfoPanel());
-			
+			if (rulesManager.redFighterFromTheLeft()) {
+				fightersPanel.add(getFirstFighterBattleInfoPanel());
+				fightersPanel.add(getSecondFighterBattleInfoPanel());
+			} else {
+				fightersPanel.add(getSecondFighterBattleInfoPanel());
+				fightersPanel.add(getFirstFighterBattleInfoPanel());
+			}
 		}
 		return fightersPanel;
 	}

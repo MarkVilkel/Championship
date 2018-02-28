@@ -572,6 +572,9 @@ public static class Championship implements Attribute<com.ashihara.datamanagemen
 	public Attribute<String> getName() {return new Attribute<String>() {@Override
 	public String getAttributePath(){return Championship.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "name";}}; }
+	public Attribute<String> getRules() {return new Attribute<String>() {@Override
+	public String getAttributePath(){return Championship.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "rules";}}; }
 	public Attribute<Date> getBeginningDate() {return new Attribute<Date>() {@Override
 	public String getAttributePath(){return Championship.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "beginningDate";}}; }

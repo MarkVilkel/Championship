@@ -30,4 +30,14 @@ public class JosuiStyleRulesManager implements RulesManager {
 		return uic.SECOND_CATEGORY();
 	}
 
+	@Override
+	public boolean redFighterFromTheLeft() {
+		return true;
+	}
+
+	@Override
+	public long getMaxRoundsCount() {
+		return Long.MAX_VALUE;
+	}
+
 }

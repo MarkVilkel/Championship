@@ -26,6 +26,7 @@ import com.ashihara.datamanagement.interfaces.FighterPhotoService;
 import com.ashihara.datamanagement.pojo.AbstractBlob;
 import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FighterPhoto;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 import com.ashihara.ui.core.component.KASLabel;
 import com.ashihara.ui.core.panel.ImageIconPanel;
@@ -57,14 +58,18 @@ public class FighterBattleInfoPanel extends KASPanel {
 	private CountPanel firstCategoryPanel;
 	private CountPanel secondCategoryPanel;
 	
+	private final RulesManager rulesManager;
+	
 	public FighterBattleInfoPanel(
 			ChampionshipFighter championshipFighter,
-			Color color
+			Color color,
+			RulesManager rulesManager
 	){
 		super();
 		
 		this.championshipFighter = championshipFighter;
 		this.color = color;
+		this.rulesManager = rulesManager;
 		
 		init();
 	}
@@ -214,11 +219,12 @@ public class FighterBattleInfoPanel extends KASPanel {
 	    	fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(uic.POINTS()+":", LARGE_SIZE, false), getPointsPanel()), c);
 
 	    	c.gridy ++;
-	    	fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(uic.FIRST_CATEGORY()+":", BIG_SIZE, false), getFirstCategoryPanel()), c);
+	    	fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(rulesManager.getFirstPenaltyCategoryCaption()+":", BIG_SIZE, false), getFirstCategoryPanel()), c);
 
-	    	c.gridy ++;
-	    	fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(uic.SECOND_CATEGORY()+":", BIG_SIZE, false), getSecondCategoryPanel()), c);
-
+	    	if (rulesManager.hasSecondPenaltyCategory()) {
+	    		c.gridy ++;
+	    		fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(rulesManager.getSecondPenaltyCategoryCaption()+":", BIG_SIZE, false), getSecondCategoryPanel()), c);
+	    	}
 		}
 		
 		return fighterDetailsPanel;

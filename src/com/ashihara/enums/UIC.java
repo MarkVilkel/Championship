@@ -264,8 +264,8 @@ public interface UIC extends Serializable {
 	String OLYMPIC_TREE_FIGH_RESULTS();
 	String EXPORT_OLYMPIC_TREE_TO_FILE();
 	String EXPORT_CONTENT_TO_FILE();
-	String JOSUI_STYLE_RULES();
-	String ALL_STYLE_RULES();
+	String JOSUI_STYLE();
+	String ALL_STYLE();
 	String RULES();
 	String PENALTY();
 }

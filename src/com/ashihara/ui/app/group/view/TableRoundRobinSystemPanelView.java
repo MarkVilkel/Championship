@@ -150,48 +150,6 @@ public class TableRoundRobinSystemPanelView extends KASPanel implements UIView<I
 		}		
 	}
 	
-	private class PreviousRoundsCellRenderer extends KASDefaultRenderer {
-		private static final long serialVersionUID = 1L;
-		private final boolean first;
-		
-		public PreviousRoundsCellRenderer(boolean first) {
-			this.first = first;
-		}
-		
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-			String str = "";
-			if (value instanceof FightResult) {
-				FightResult fr = (FightResult)value;
-				
-				while (fr.getPreviousRoundFightResult() != null) {
-					fr = fr.getPreviousRoundFightResult();
-				}
-				
-				int round = 0;
-				while (fr.getNextRoundFightResult() != null) {
-					round ++;
-					
-					str += "Round = " + round;
-					
-					if (first) {
-						str += ", 1 cat = " + fr.getFirstFighterFirstCategoryWarnings();
-						str += ", 2 cat = " + fr.getFirstFighterSecondCategoryWarnings();
-						str += ", pts = " + fr.getFirstFighterPoints() + ";";
-					}
-					else {
-						str += ", 1 cat = " + fr.getSecondFighterFirstCategoryWarnings();
-						str += ", 2 cat = " + fr.getSecondFighterSecondCategoryWarnings();
-						str += ", pts = " + fr.getSecondFighterPoints() + "; ";
-					}
-					
-					fr = fr.getNextRoundFightResult();
-				}
-			}
-			return super.getTableCellRendererComponent(table, str, isSelected, hasFocus, row, column);
-		}
-	}
-
 	@Override
 	public void linkClicked(FightResult value, String columnId) {
 		getModelUI().linkClicked(value, columnId);

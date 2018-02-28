@@ -1286,13 +1286,13 @@ public class UICEnglish implements UIC {
 	}
 
 	@Override
-	public String JOSUI_STYLE_RULES() {
-		return "Josui style rules";
+	public String JOSUI_STYLE() {
+		return "Josui style";
 	}
 
 	@Override
-	public String ALL_STYLE_RULES() {
-		return "All style rules";
+	public String ALL_STYLE() {
+		return "All style";
 	}
 
 	@Override

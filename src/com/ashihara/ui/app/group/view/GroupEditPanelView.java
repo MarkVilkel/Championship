@@ -18,6 +18,7 @@ import javax.swing.event.ChangeListener;
 
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.CM;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.group.model.IGroupEditModel;
 import com.ashihara.ui.core.component.combo.AutoCompleteComboBox;
 import com.ashihara.ui.core.component.textField.KASTextField;
@@ -59,8 +60,10 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 	
 	private JTabbedPane mainTabbedPane;
 	private SimpleTablePanel<FighterPlace> fightResultsTable;
+	private final RulesManager rulesManager;
 	
-	public GroupEditPanelView(IGroupEditModel modelUI) {
+	public GroupEditPanelView(IGroupEditModel modelUI, RulesManager rulesManager) {
+		this.rulesManager = rulesManager;
 		setModelUI(modelUI);
 		
 		init();
@@ -245,8 +248,10 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 			
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.FIGHTER(), cmFighterPlace.getGCFighter().getChampionshipFighter()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.COUNTRY(), cmFighterPlace.getGCFighter().getChampionshipFighter().getFighter().getCountry()));
-			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.FIRST_CATEGORY(), cmFighterPlace.getFirstCategoryWarnings()));
-			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.SECOND_CATEGORY(), cmFighterPlace.getSecondCategoryWarnings()));
+			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFighterPlace.getFirstCategoryWarnings()));
+			if (rulesManager.hasSecondPenaltyCategory()) {
+				fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFighterPlace.getSecondCategoryWarnings()));
+			}
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFighterPlace.getPoints()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFighterPlace.getPointsForWin()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.PLACE(), cmFighterPlace.getPlace()));
