@@ -664,6 +664,10 @@ public static class FighterPlace implements Attribute<com.ashihara.datamanagemen
 	public Attribute<Integer> getPlace() {return new Attribute<Integer>() {@Override
 	public String getAttributePath(){return FighterPlace.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "place";}}; }
+	public Attribute<Integer> getWonByJudgeDecisionCount() {return new Attribute<Integer>() {@Override
+	public String getAttributePath(){return FighterPlace.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "wonByJudgeDecisionCount";}}; }
+	
 } 
 
 public static class FightResultReport implements Attribute<com.ashihara.datamanagement.pojo.wraper.FightResultReport> { 

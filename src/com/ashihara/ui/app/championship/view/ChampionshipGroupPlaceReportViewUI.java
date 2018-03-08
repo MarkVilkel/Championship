@@ -83,6 +83,9 @@ public class ChampionshipGroupPlaceReportViewUI extends KASPanel implements UIVi
 			if (rulesManager.hasSecondPenaltyCategory()) {
 				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFighterPlace.getSecondCategoryWarnings()));
 			}
+			if (rulesManager.canWinByJudgeDecision()) {
+			    fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFighterPlace.getWonByJudgeDecisionCount()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFighterPlace.getPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFighterPlace.getPointsForWin()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.PLACE(), cmFighterPlace.getPlace()));

@@ -241,7 +241,7 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 
 	public SimpleTablePanel<FighterPlace> getFightResultsTable() {
 		if (fightResultsTable == null) {
-			fightResultsTable = new SimpleTablePanel<FighterPlace>(FighterPlace.class);
+			fightResultsTable = new SimpleTablePanel<>(FighterPlace.class);
 			
 			
 			CM.FighterPlace cmFighterPlace = new CM.FighterPlace(); 
@@ -251,6 +251,9 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFighterPlace.getFirstCategoryWarnings()));
 			if (rulesManager.hasSecondPenaltyCategory()) {
 				fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFighterPlace.getSecondCategoryWarnings()));
+			}
+			if (rulesManager.canWinByJudgeDecision()) {
+			    fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFighterPlace.getWonByJudgeDecisionCount()));
 			}
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFighterPlace.getPoints()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFighterPlace.getPointsForWin()));

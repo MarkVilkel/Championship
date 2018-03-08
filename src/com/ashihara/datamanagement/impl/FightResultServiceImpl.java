@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.mapping.PersistentClassVisitor;
-
 import com.ashihara.datamanagement.impl.util.FightsScheduler;
 import com.ashihara.datamanagement.interfaces.FightResultService;
 import com.ashihara.datamanagement.pojo.Championship;
@@ -26,6 +24,7 @@ import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.utils.MathUtils;
 import com.rtu.exception.PersistenceException;
 import com.rtu.hql.HqlQuery;
@@ -59,7 +58,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			List<FightResult> from,
 			List<FightResult> existed
 	) {
-		List<FightResult> toRemove = new ArrayList<FightResult>();
+		List<FightResult> toRemove = new ArrayList<>();
 		
 		for (FightResult frFrom : from) {
 			for (FightResult frExisted : existed) {
@@ -104,7 +103,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	 * Not including the passed fight result
 	 */
 	private List<FightResult> getAllPreviousFightResults(FightResult fr) {
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		while (fr.getPreviousRoundFightResult() != null) {
 			fr = fr.getPreviousRoundFightResult();
 			result.add(fr);
@@ -114,7 +113,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	
 	private List<FightResult> getFRs(List<GroupChampionshipFighter> fighters) {
 		if (fighters == null || fighters.isEmpty()) {
-			return new ArrayList<FightResult>();
+			return new ArrayList<>();
 		}
 		FightsScheduler fs = new FightsScheduler(fighters);
 		return fs.getResult();
@@ -142,7 +141,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	
 	private List<FightResult> loadLastFightResults(List<GroupChampionshipFighter> fighters) throws PersistenceException {
 		if (fighters == null || fighters.isEmpty()) {
-			return new ArrayList<FightResult>();
+			return new ArrayList<>();
 		}
 		HqlQuery<FightResult> hql = getHelper().createHqlQuery(FightResult.class, getCmFightResult());
 		hql.addExpression(ExpressionHelper.or(
@@ -209,8 +208,12 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	}
 
 	@Override
-	public Long getFirstFighterPointsForWin(FightSettings fightSettings, FightResult fightResult) {
-		final int CRITICAL_WARNINGS_COUNT = 4;
+	public Long getFirstFighterPointsForWin(
+	        FightSettings fightSettings,
+	        FightResult fightResult,
+	        RulesManager rulesManager
+	) {
+		final long CRITICAL_WARNINGS_COUNT = rulesManager.getMaxPenaltyCount();
 		
 		if (
 				fightResult.getFirstFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
@@ -218,54 +221,63 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		) {
 			//lost
 			return fightSettings.getForLoosing();
-		}
-		else if (
+		} else if (
 				fightResult.getSecondFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
 				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
 		) {
 			// won
 			return fightSettings.getForWinning();
-		}
-		else if (fightResult.getFirstFighterPoints() > fightResult.getSecondFighterPoints()) {
+		} else if (fightResult.getFirstFighterPoints() > fightResult.getSecondFighterPoints()) {
 			// won
 			return fightSettings.getForWinning();
-		}
-		else if (fightResult.getFirstFighterPoints() < fightResult.getSecondFighterPoints()) {
+		} else if (fightResult.getFirstFighterPoints() < fightResult.getSecondFighterPoints()) {
 			//lost
 			return fightSettings.getForLoosing();
-		}
-		else {
+		} else if (Boolean.TRUE.equals(fightResult.getFirstFighterWinByJudgeDecision())) {
+            // won
+            return fightSettings.getForWinning();
+        } else if (Boolean.TRUE.equals(fightResult.getSecondFighterWinByJudgeDecision())) {
+            // lost
+            return fightSettings.getForLoosing();
+		} else {
 			// draw
 			return fightSettings.getForDraw();
 		}
 	}
 	
 	@Override
-	public Long getSecondFighterPointsForWin(FightSettings fightSettings, FightResult fightResult) {
-		final int CRITICAL_WARNINGS_COUNT = 4;
+	public Long getSecondFighterPointsForWin(
+	        FightSettings fightSettings,
+	        FightResult fightResult,
+	        RulesManager rulesManager
+	) {
+	    final long CRITICAL_WARNINGS_COUNT = rulesManager.getMaxPenaltyCount();
+	    
 		if (
 				fightResult.getSecondFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
 				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
 		) {
 			//lost
 			return fightSettings.getForLoosing();
-		}
-		else if (
+		} else if (
 				fightResult.getFirstFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
 				fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
 		) {
 			// won
 			return fightSettings.getForWinning();
-		}
-		else if (fightResult.getSecondFighterPoints() < fightResult.getFirstFighterPoints()) {
+		} else if (fightResult.getSecondFighterPoints() < fightResult.getFirstFighterPoints()) {
 			//lost
 			return fightSettings.getForLoosing();
-		}
-		else if (fightResult.getSecondFighterPoints() > fightResult.getFirstFighterPoints()) {
+		} else if (fightResult.getSecondFighterPoints() > fightResult.getFirstFighterPoints()) {
 			// won
 			return fightSettings.getForWinning();
-		}
-		else {
+		} else if (Boolean.TRUE.equals(fightResult.getSecondFighterWinByJudgeDecision())) {
+		    // won
+		    return fightSettings.getForWinning();
+		} else if (Boolean.TRUE.equals(fightResult.getFirstFighterWinByJudgeDecision())) {
+		    // lost
+		    return fightSettings.getForLoosing();
+		} else {
 			// draw
 			return fightSettings.getForDraw();
 		}
@@ -343,7 +355,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			}
 		}
 		
-		List<FighterPlace> fighterPlaces = new ArrayList<FighterPlace>();
+		List<FighterPlace> fighterPlaces = new ArrayList<>();
 		fighterPlaces.addAll(result.values());
 		fighterPlaces = setupPlaces(fighterPlaces);
 		
@@ -356,7 +368,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		
 		Map<Long, FighterPlace> result = createFighterPlaces(fightResults, groupChampionshipFighters);
 		
-		List<FighterPlace> fighterPlaces = new ArrayList<FighterPlace>();
+		List<FighterPlace> fighterPlaces = new ArrayList<>();
 		fighterPlaces.addAll(result.values());
 		
 		fighterPlaces = setupPlaces(fighterPlaces);
@@ -368,7 +380,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			List<FightResult> fightResults,
 			List<GroupChampionshipFighter> groupChampionshipFighters
 	) {
-		Map<Long, FighterPlace> result = new HashMap<Long, FighterPlace>();
+		Map<Long, FighterPlace> result = new HashMap<>();
 		
 		for (GroupChampionshipFighter gcFighter : groupChampionshipFighters) {
 			Fighter fighter = gcFighter.getChampionshipFighter().getFighter();
@@ -419,13 +431,13 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			} else if (pts1 < pts2) {
 				return 1;
 			} else {
-				if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
-					return 1;
-				} else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
-					return -1;
-				} else {
-					return 0;
-				}
+			    if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() > o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+			        return 1;
+			    } else if (o1.getGCFighter().getChampionshipFighter().getFighter().getWeight() < o2.getGCFighter().getChampionshipFighter().getFighter().getWeight()) {
+			        return -1;
+			    } else {
+			        return 0;
+			    }
 			}
 		}
 	}
@@ -478,18 +490,21 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		Long points;
 		Long firstCategoryWarnings;
 		Long secondCategoryWarnings;
+		Long wonByJudgeDecisionCount;
 		
 		if (fightResult.getFirstFighter().getChampionshipFighter().getFighter().getId().equals(fighter.getId())) {
 			points = fightResult.getFirstFighterPoints();
 			firstCategoryWarnings = fightResult.getFirstFighterFirstCategoryWarnings();
 			secondCategoryWarnings = fightResult.getFirstFighterSecondCategoryWarnings();
 			pointsForWin = fightResult.getFirstFighterPointsForWin();
+			wonByJudgeDecisionCount = Boolean.TRUE.equals(fightResult.getFirstFighterWinByJudgeDecision()) ? 1L : null;
 		}
 		else if (fightResult.getSecondFighter().getChampionshipFighter().getFighter().getId().equals(fighter.getId())) {
 			points = fightResult.getSecondFighterPoints();
 			firstCategoryWarnings = fightResult.getSecondFighterFirstCategoryWarnings();
 			secondCategoryWarnings = fightResult.getSecondFighterSecondCategoryWarnings();
 			pointsForWin = fightResult.getSecondFighterPointsForWin();
+			wonByJudgeDecisionCount = Boolean.TRUE.equals(fightResult.getSecondFighterWinByJudgeDecision()) ? 1L : null;
 		}
 		else {
 			return fighterPlace;
@@ -511,13 +526,17 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			fighterPlace.setSecondCategoryWarnings(fighterPlace.getSecondCategoryWarnings() + secondCategoryWarnings);
 		}
 		
+		if (wonByJudgeDecisionCount != null) {
+		    fighterPlace.setWonByJudgeDecisionCount(fighterPlace.getWonByJudgeDecisionCount() + wonByJudgeDecisionCount);
+		}
+		
 		return fighterPlace;
 	}
 
 	@Override
 	public List<FighterPlace> loadChampionshipResults(Championship championship) throws PersistenceException {
 		List<FightingGroup> groups = getFightingGroupService().loadGroups(championship);
-		List<FighterPlace> result = new ArrayList<FighterPlace>();
+		List<FighterPlace> result = new ArrayList<>();
 		if (groups != null) {
 			for (FightingGroup group : groups) {
 				List<FighterPlace> groupResults = loadGroupTournamentResults(group);
@@ -558,7 +577,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		List<FightResult> fightResults = getHelper().loadByHqlQuery(hql);
 		fightResults = sortByGroup(fightResults);
 		
-		List<FightResultReport> reportResult = new ArrayList<FightResultReport>();
+		List<FightResultReport> reportResult = new ArrayList<>();
 		
 		for (FightResult fr : fightResults) {
 			List<FightResult> previousFightResults = loadPreviousFightResults(fr);
@@ -586,14 +605,14 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	@Override
 	public List<FightResult> loadOrCreateOlympicFightResults(FightingGroup group) throws PersistenceException {
 		if (!SC.GROUP_STATUS.STARTED.equals(group.getStatus())) {
-			return new ArrayList<FightResult>();
+			return new ArrayList<>();
 		}
 		
 		if (!SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
 			throw new PersistenceException("Group must be " + SC.GROUP_TYPE.OLYMPIC);
 		}
 		
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		List<GroupChampionshipFighter> fighters = getFightingGroupService().loadGroupChampionshipFighters(group);
 		
@@ -672,7 +691,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	}
 	
 	private List<FightResult> findParents(FightResult child, List<FightResult> allFightResults) {
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		for (FightResult fr : allFightResults) {
 			if (fr.getOlympicLevel().longValue() + 1 == child.getOlympicLevel().longValue()) {
@@ -704,7 +723,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			return null;
 		}
 		
-		List<FightResult> suitableCandidates = new ArrayList<FightResult>();
+		List<FightResult> suitableCandidates = new ArrayList<>();
 		
 		for (FightResult fr : allFightResults) {
 			if (fr.getOlympicLevel().longValue() == levelsCount - 3) {
@@ -763,7 +782,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		int levelsNumberCount = MathUtils.calculateOlympicFightLevelsNumber(actualFightersNumber);
 		
 		List<FightResult> allFightResults = loadLastFightResults(fighters);
-		List<FightResult> notBasicFightResults = new ArrayList<FightResult>();
+		List<FightResult> notBasicFightResults = new ArrayList<>();
 		
 		notBasicFightResults.addAll(allFightResults);
 		notBasicFightResults.removeAll(basicFightResults);
@@ -856,7 +875,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			List<FightResult> basicFightResults,
 			List<FightResult> notBasicFightResults
 	) {
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		for (FightResult basicFR : basicFightResults) {
 			boolean contains = false;
@@ -908,7 +927,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			GroupChampionshipFighter firstFighterForTheNextLevel,
 			List<GroupChampionshipFighter> fighters
 	) {
-		List<FightResult> suitableCandidates = new ArrayList<FightResult>();
+		List<FightResult> suitableCandidates = new ArrayList<>();
 		for (FightResult fr : basicFightResults) {
 			if (
 					!fr.equals(fightResult) &&
@@ -980,7 +999,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			GroupChampionshipFighter firstFighterForTheNextLevel,
 			List<GroupChampionshipFighter> fighters
 	) {
-		List<FightResult> suitableCandidates = new ArrayList<FightResult>();
+		List<FightResult> suitableCandidates = new ArrayList<>();
 		for (FightResult fr : allFightResults) {
 			if (!fr.equals(fightResult) && fr.getOlympicLevel().equals(fightResult.getOlympicLevel())) {
 				suitableCandidates.add(fr);
@@ -1029,7 +1048,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	}
 
 	private List<FightResult> loadORCreateBasicOlympicFightResultsFromFighters(List<GroupChampionshipFighter> fighters) throws PersistenceException {
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		GroupChampionshipFighter firstFighter = null;
 		
@@ -1180,7 +1199,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	}
 
 	private List<FightResult> getFightResultStack(FightResult fightResult) {
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		while (fightResult.getNextRoundFightResult() != null) {
 			fightResult = fightResult.getNextRoundFightResult();
@@ -1199,7 +1218,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	 */
 	private List<FightResult> loadOlympicChildrenFightResults(FightResult parent) throws PersistenceException {
 		List<FightResult> all = loadOrCreateOlympicFightResults(parent.getFirstFighter().getFightingGroup());
-		List<FightResult> result = new ArrayList<FightResult>();
+		List<FightResult> result = new ArrayList<>();
 		
 		for (FightResult fr : all) {
 			if (parent.getId().equals(fr.getId())) {
@@ -1238,10 +1257,15 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		Boolean won = null;
 		
 		if (fr.getFirstFighterPoints() != null && fr.getSecondFighterPoints() != null) {
-			if (fr.getFirstFighterPoints().longValue() > fr.getSecondFighterPoints().longValue()) {
+			if (
+			        Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) ||
+			        fr.getFirstFighterPoints().longValue() > fr.getSecondFighterPoints().longValue()
+			) {
 				won = Boolean.TRUE;
-			}
-			else if (fr.getFirstFighterPoints().longValue() < fr.getSecondFighterPoints().longValue()) {
+			} else if (
+			        Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision()) ||
+			        fr.getFirstFighterPoints().longValue() < fr.getSecondFighterPoints().longValue()
+			) {
 				won = Boolean.FALSE;
 			}
 		}

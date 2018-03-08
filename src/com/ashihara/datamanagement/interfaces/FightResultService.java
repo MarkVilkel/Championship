@@ -11,10 +11,11 @@ import com.ashihara.datamanagement.core.service.AKService;
 import com.ashihara.datamanagement.pojo.Championship;
 import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightResult;
-import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.FightSettings;
+import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.rtu.exception.PersistenceException;
 
 public interface FightResultService extends AKService {
@@ -34,8 +35,8 @@ public interface FightResultService extends AKService {
 	List<FighterPlace> loadChampionshipResults(Championship championship) throws PersistenceException;
 	
 	
-	Long getFirstFighterPointsForWin(FightSettings fightSettings, FightResult fightResult);
-	Long getSecondFighterPointsForWin(FightSettings fightSettings, FightResult fightResult);
+	Long getFirstFighterPointsForWin(FightSettings fightSettings, FightResult fightResult, RulesManager rulesManager);
+	Long getSecondFighterPointsForWin(FightSettings fightSettings, FightResult fightResult, RulesManager rulesManager);
 	
 	List<FightResultReport> generateEachFightReport(
 			Championship championship,

@@ -198,8 +198,8 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		}
 		
 		
-		fightResult.setFirstFighterPointsForWin(getFightResultService().getFirstFighterPointsForWin(fightSettings, fightResult));
-		fightResult.setSecondFighterPointsForWin(getFightResultService().getSecondFighterPointsForWin(fightSettings, fightResult));
+		fightResult.setFirstFighterPointsForWin(getFightResultService().getFirstFighterPointsForWin(fightSettings, fightResult, rulesManager));
+		fightResult.setSecondFighterPointsForWin(getFightResultService().getSecondFighterPointsForWin(fightSettings, fightResult, rulesManager));
 		
 	}
 
