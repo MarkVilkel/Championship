@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.mapping.PersistentClassVisitor;
+
 import com.ashihara.datamanagement.impl.util.FightsScheduler;
 import com.ashihara.datamanagement.interfaces.FightResultService;
 import com.ashihara.datamanagement.pojo.Championship;
@@ -165,7 +167,10 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	}
 
 	@Override
-	public FightResult createNextFightResult(FightResult previousRoundFightResult) throws PersistenceException {
+	public FightResult createNextFightResult(
+			FightResult previousRoundFightResult,
+			boolean copyPointsAndWarnings
+	) throws PersistenceException {
 		FightResult fr = createFightResult(
 				previousRoundFightResult.getFirstFighter(),
 				previousRoundFightResult.getSecondFighter(),
@@ -175,6 +180,15 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		fr.setOlympicLevel(previousRoundFightResult.getOlympicLevel());
 		fr.setOlympicPositionOnLevel(previousRoundFightResult.getOlympicPositionOnLevel());
 		
+		if (copyPointsAndWarnings) {
+			fr.setFirstFighterPoints(previousRoundFightResult.getFirstFighterPoints());
+			fr.setFirstFighterFirstCategoryWarnings(previousRoundFightResult.getFirstFighterFirstCategoryWarnings());
+			fr.setFirstFighterSecondCategoryWarnings(previousRoundFightResult.getFirstFighterSecondCategoryWarnings());
+			
+			fr.setSecondFighterPoints(previousRoundFightResult.getSecondFighterPoints());
+			fr.setSecondFighterFirstCategoryWarnings(previousRoundFightResult.getSecondFighterFirstCategoryWarnings());
+			fr.setSecondFighterSecondCategoryWarnings(previousRoundFightResult.getSecondFighterSecondCategoryWarnings());
+		}
 		
 		fr = saveFightResult(fr);
 		

@@ -17,6 +17,7 @@ import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.FightJFrame;
 import com.ashihara.ui.app.group.view.TableRoundRobinSystemPanelView;
 import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
@@ -38,10 +39,15 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 	private FightingGroup group;
 	private FightSettings fightSettings;
 	private final ChampionshipFighterProvider championshipFighterProvider = new ChampionshipFighterProvider();
+	private final RulesManager rulesManager;
 	
-	public TableRoundRobinSystemModel(FightingGroup group) {
+	public TableRoundRobinSystemModel(
+			FightingGroup group,
+			RulesManager rulesManager
+	) {
 		this.viewUI = new TableRoundRobinSystemPanelView(AKUIEventSender.newInstance(this), championshipFighterProvider);
 		this.group = group;
+		this.rulesManager = rulesManager;
 		
 		this.viewUI.getModelUI().reset();
 	}
@@ -204,7 +210,10 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 	}
 	
 	public FightResult createNextRoundFightResult(FightResult previousRoundFightResult) throws PersistenceException {
-		FightResult nextFightResult = getFightResultService().createNextFightResult(previousRoundFightResult);
+		FightResult nextFightResult = getFightResultService().createNextFightResult(
+				previousRoundFightResult,
+				rulesManager.copyPointsAndWarningsToTheNextRound()
+		);
 		previousRoundFightResult.setNextRoundFightResult(nextFightResult);
 		getFightResultService().saveFightResult(previousRoundFightResult);
 		return nextFightResult;

@@ -23,6 +23,7 @@ import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.FightJFrame;
 import com.ashihara.ui.app.group.view.OlympicSystemPanelView;
 import com.ashihara.ui.app.group.view.stuff.ChampionshipFighterProvider;
@@ -50,14 +51,19 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	
 	private final int ROW_HEIGHT = 20;
 	private final int ROWS_GAP = 10;
+	private RulesManager rulesManager;
 	
 	private ChampionshipFighterProvider championshipFighterProvider = new ChampionshipFighterProvider();
 	
 	
-	public OlympicSystemModel(FightingGroup group) {
+	public OlympicSystemModel(
+			FightingGroup group,
+			RulesManager rulesManager
+	) {
 		viewUI = new OlympicSystemPanelView(AKUIEventSender.newInstance(this), championshipFighterProvider, 7, 64, ROW_HEIGHT, ROWS_GAP);
 		viewUI.setRowHeight(ROW_HEIGHT);
 		viewUI.setRowsGap(ROWS_GAP);
+		this.rulesManager = rulesManager;
 	}
 
 	@Override
@@ -309,7 +315,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	}
 
 	public FightResult createNextRoundFightResult(FightResult previousRoundFightResult) throws PersistenceException {
-		FightResult nextFightResult = getFightResultService().createNextFightResult(previousRoundFightResult);
+		FightResult nextFightResult = getFightResultService().createNextFightResult(previousRoundFightResult, rulesManager.copyPointsAndWarningsToTheNextRound());
 		previousRoundFightResult.setNextRoundFightResult(nextFightResult);
 		getFightResultService().saveFightResult(previousRoundFightResult);
 		

@@ -13,5 +13,16 @@ public interface RulesManager {
 
 	boolean redFighterFromTheLeft();
 	long getMaxRoundsCount();
+	
+	
+	Long getWarningIncreaseCount(long warningCount);
+	Long getWarningDecreaseCount(long warningCount);
+	long getMaxPenaltyCount();
+	
+	long getMaxPointsCount();
+	Long getPointsDifferenceForWin();
+	
+	boolean copyPointsAndWarningsToTheNextRound();
+	boolean canWinByJudgeDecision();
 
 }

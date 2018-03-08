@@ -28,7 +28,7 @@ public interface FightResultService extends AKService {
 	
 	List<FightResult> saveFightResults(List<FightResult> list) throws PersistenceException;
 	FightResult saveFightResult(FightResult fr) throws PersistenceException;
-	FightResult createNextFightResult(FightResult previoudRounsFightResult) throws PersistenceException;
+	FightResult createNextFightResult(FightResult previoudRounsFightResult, boolean copyPointsAndWarnings) throws PersistenceException;
 	
 	List<FighterPlace> loadGroupTournamentResults(FightingGroup fightingGroup) throws PersistenceException;
 	List<FighterPlace> loadChampionshipResults(Championship championship) throws PersistenceException;

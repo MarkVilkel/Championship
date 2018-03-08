@@ -114,31 +114,50 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		Long firstFighterPoints = extractValue(fightResult.getFirstFighterPoints());
 		Long firstFighterFirstCategory = extractValue(fightResult.getFirstFighterFirstCategoryWarnings());
 		Long firstFighterSecondCategory = extractValue(fightResult.getFirstFighterSecondCategoryWarnings());
+		boolean firstFighterWinByJudgeDecision = extractValue(fightResult.getFirstFighterWinByJudgeDecision());
 
 		Long secondFighterPoints = extractValue(fightResult.getSecondFighterPoints());
 		Long secondFighterFirstCategory = extractValue(fightResult.getSecondFighterFirstCategoryWarnings());
 		Long secondFighterSecondCategory = extractValue(fightResult.getSecondFighterSecondCategoryWarnings());
+		boolean secondFighterWinByJudgeDecision = extractValue(fightResult.getSecondFighterWinByJudgeDecision());
 		
 		if (fightResult.getRedFighter().getId().equals(fightResult.getFirstFighter().getId())) {
-			getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().increaseCount(firstFighterPoints);
-			getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().increaseCount(firstFighterFirstCategory);
-			getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().increaseCount(firstFighterSecondCategory);
+			getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().setCount(firstFighterPoints);
+			getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().setCount(firstFighterFirstCategory);
+			getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().setCount(firstFighterSecondCategory);
+			getViewUI().getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(firstFighterWinByJudgeDecision);
 			
-			getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().increaseCount(secondFighterPoints);
-			getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().increaseCount(secondFighterFirstCategory);
-			getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().increaseCount(secondFighterSecondCategory);
-		}
-		else {
-			getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().increaseCount(secondFighterPoints);
-			getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().increaseCount(secondFighterFirstCategory);
-			getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().increaseCount(secondFighterSecondCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().setCount(secondFighterPoints);
+			getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().setCount(secondFighterFirstCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().setCount(secondFighterSecondCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(secondFighterWinByJudgeDecision);
+		} else {
+			getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().setCount(secondFighterPoints);
+			getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().setCount(secondFighterFirstCategory);
+			getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().setCount(secondFighterSecondCategory);
+			getViewUI().getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(secondFighterWinByJudgeDecision);
 			
-			getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().increaseCount(firstFighterPoints);
-			getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().increaseCount(firstFighterFirstCategory);
-			getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().increaseCount(firstFighterSecondCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().setCount(firstFighterPoints);
+			getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().setCount(firstFighterFirstCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().setCount(firstFighterSecondCategory);
+			getViewUI().getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(firstFighterWinByJudgeDecision);
 		}
+		
+		getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().showCount();
+		getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().showCount();
+		getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().showCount();
+		
+		getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().showCount();
+		getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().showCount();
+		getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().showCount();
+		
+		getViewUI().performButtonNextRoundEnability();
 	}
 	
+	private boolean extractValue(Boolean val) {
+		return val == null ? false : val.booleanValue();
+	}
+
 	private long extractValue(Long value) {
 		long result = value == null ? 0 : value.longValue();
 		return result;
@@ -148,28 +167,34 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		long firstFighterPoints = getViewUI().getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
 		long firstFighterFirstCategory = getViewUI().getFirstFighterBattleInfoPanel().getFirstCategoryPanel().getCount();
 		long firstFighterSecondCategory = getViewUI().getFirstFighterBattleInfoPanel().getSecondCategoryPanel().getCount();
+		boolean firstFighterWinByJudgeDecision = getViewUI().getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected();
 		
 		long secondFighterPoints = getViewUI().getSecondFighterBattleInfoPanel().getPointsPanel().getCount();
 		long secondFighterFirstCategory = getViewUI().getSecondFighterBattleInfoPanel().getFirstCategoryPanel().getCount();
 		long secondFighterSecondCategory = getViewUI().getSecondFighterBattleInfoPanel().getSecondCategoryPanel().getCount();
+		boolean secondFighterWinByJudgeDecision = getViewUI().getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected();
 
 		if (fightResult.getRedFighter().getId().equals(fightResult.getFirstFighter().getId())) {
 			fightResult.setFirstFighterPoints(firstFighterPoints);
 			fightResult.setFirstFighterFirstCategoryWarnings(firstFighterFirstCategory);
 			fightResult.setFirstFighterSecondCategoryWarnings(firstFighterSecondCategory);
+			fightResult.setFirstFighterWinByJudgeDecision(firstFighterWinByJudgeDecision);
 			
 			fightResult.setSecondFighterPoints(secondFighterPoints);
 			fightResult.setSecondFighterFirstCategoryWarnings(secondFighterFirstCategory);
 			fightResult.setSecondFighterSecondCategoryWarnings(secondFighterSecondCategory);
+			fightResult.setSecondFighterWinByJudgeDecision(secondFighterWinByJudgeDecision);
 		}
 		else {
 			fightResult.setFirstFighterPoints(secondFighterPoints);
 			fightResult.setFirstFighterFirstCategoryWarnings(secondFighterFirstCategory);
 			fightResult.setFirstFighterSecondCategoryWarnings(secondFighterSecondCategory);
+			fightResult.setFirstFighterWinByJudgeDecision(secondFighterWinByJudgeDecision);
 			
 			fightResult.setSecondFighterPoints(firstFighterPoints);
 			fightResult.setSecondFighterFirstCategoryWarnings(firstFighterFirstCategory);
 			fightResult.setSecondFighterSecondCategoryWarnings(firstFighterSecondCategory);
+			fightResult.setSecondFighterWinByJudgeDecision(firstFighterWinByJudgeDecision);
 		}
 		
 		

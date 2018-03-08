@@ -36,7 +36,8 @@ public class FightResult extends BaseDo {
 	private Long olympicLevel; // x coordinate
 	private Long olympicPositionOnLevel; // y coordinate
 
-	
+	private Boolean firstFighterWinByJudgeDecision;
+	private Boolean secondFighterWinByJudgeDecision;
 	
 	private GroupChampionshipFighter redFighter; // calculated
 	private GroupChampionshipFighter blueFighter; // calculated
@@ -366,6 +367,18 @@ public class FightResult extends BaseDo {
 	}
 	public void setChildren(List<FightResult> children) {
 		this.children = children;
+	}
+	public Boolean getFirstFighterWinByJudgeDecision() {
+		return firstFighterWinByJudgeDecision;
+	}
+	public void setFirstFighterWinByJudgeDecision(Boolean firstFighterWinByJudgeDecision) {
+		this.firstFighterWinByJudgeDecision = firstFighterWinByJudgeDecision;
+	}
+	public Boolean getSecondFighterWinByJudgeDecision() {
+		return secondFighterWinByJudgeDecision;
+	}
+	public void setSecondFighterWinByJudgeDecision(Boolean secondFighterWinByJudgeDecision) {
+		this.secondFighterWinByJudgeDecision = secondFighterWinByJudgeDecision;
 	}
 	
 }

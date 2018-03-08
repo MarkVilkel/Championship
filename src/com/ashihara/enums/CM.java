@@ -522,6 +522,12 @@ public static class FightResult implements Attribute<com.ashihara.datamanagement
 	public Attribute<String> getLastModifiedUserId() {return new Attribute<String>() {@Override
 	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "lastModifiedUserId";}}; }
+	public Attribute<String> getFirstFighterWinByJudgeDecision() {return new Attribute<String>() {@Override
+	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "firstFighterWinByJudgeDecision";}}; }
+	public Attribute<String> getSecondFighterWinByJudgeDecision() {return new Attribute<String>() {@Override
+	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "secondFighterWinByJudgeDecision";}}; }
 } 
 
 public static class ExceptionStackTraceDo implements Attribute<com.ashihara.datamanagement.pojo.ExceptionStackTraceDo> { 

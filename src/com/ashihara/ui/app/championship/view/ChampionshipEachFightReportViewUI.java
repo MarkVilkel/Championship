@@ -25,6 +25,8 @@ import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.core.panel.SearchClearButtonPanel;
 import com.ashihara.ui.core.panel.SimpleTablePanel;
+import com.ashihara.ui.core.renderer.CheckBoxCellRendererForIntegerValue;
+import com.ashihara.ui.core.renderer.CheckBoxTableRenderer;
 import com.ashihara.ui.core.renderer.KASDefaultRenderer;
 import com.ashihara.ui.core.table.KASColumn;
 import com.ashihara.ui.core.table.LinkClickingListener;
@@ -96,6 +98,9 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 			if (rulesManager.hasSecondPenaltyCategory()) {
 				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFightResult.getLastRound().getFirstFighterSecondCategoryWarnings()));
 			}
+			if (rulesManager.canWinByJudgeDecision()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFightResult.getLastRound().getFirstFighterWinByJudgeDecision(), new CheckBoxTableRenderer()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getFirstFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getFirstFighterPointsForWin()));
 			
@@ -105,6 +110,9 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getFirstPenaltyCategoryCaption(), cmFightResult.getLastRound().getSecondFighterFirstCategoryWarnings()));
 			if (rulesManager.hasSecondPenaltyCategory()) {
 				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(rulesManager.getSecondPenaltyCategoryCaption(), cmFightResult.getLastRound().getSecondFighterSecondCategoryWarnings()));
+			}
+			if (rulesManager.canWinByJudgeDecision()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFightResult.getLastRound().getSecondFighterWinByJudgeDecision(), new CheckBoxTableRenderer()));
 			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getSecondFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getSecondFighterPointsForWin()));

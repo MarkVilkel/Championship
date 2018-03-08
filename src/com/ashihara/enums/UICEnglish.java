@@ -1305,5 +1305,14 @@ public class UICEnglish implements UIC {
 		return "Penalty";
 	}
 
+	@Override
+	public String WIN_BY_JUDGE_DECISION() {
+		return "Win by judge decision";
+	}
+
+	@Override
+	public String BY_JUDGE_DECISION() {
+		return "By judge decision";
+	}
 
 }

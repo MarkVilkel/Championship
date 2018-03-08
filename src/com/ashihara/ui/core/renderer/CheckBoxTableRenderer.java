@@ -17,6 +17,8 @@ public class CheckBoxTableRenderer extends KASDefaultRenderer{
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
 		if (value instanceof Boolean){
 			getCheckBox().setSelected((Boolean)value);
+		} else if (value == null) {
+			getCheckBox().setSelected(false);
 		}
 		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		getCheckBox().setBackground(c.getBackground());

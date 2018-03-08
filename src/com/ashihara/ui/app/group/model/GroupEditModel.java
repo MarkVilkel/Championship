@@ -36,11 +36,13 @@ public class GroupEditModel extends AKAbstractModelUI<GroupEditPanelView> implem
 	private AbstractFightSystemModel fightSystemModel;
 	private FightSettings fightSettings;
 	private final UIStatePerformer<FightingGroup> groupsManager;
+	private final RulesManager rulesManager;
 	
 	public GroupEditModel(FightingGroup fightingGroup, UIStatePerformer<FightingGroup> groupsManager) {
 		this.fightingGroup = fightingGroup;
 		this.groupsManager = groupsManager;
-		this.viewUI = new GroupEditPanelView(AKUIEventSender.newInstance(this), RulesManagerFactory.getRulesManager(fightingGroup.getChampionship().getRules(), uic));
+		this.rulesManager = RulesManagerFactory.getRulesManager(fightingGroup.getChampionship().getRules(), uic);
+		this.viewUI = new GroupEditPanelView(AKUIEventSender.newInstance(this), rulesManager);
 		
 		this.viewUI.getModelUI().reset();
 	}
@@ -84,10 +86,10 @@ public class GroupEditModel extends AKAbstractModelUI<GroupEditPanelView> implem
 		
 		if (fightSystemModel == null) {
 			if (SC.GROUP_TYPE.OLYMPIC.equals(getFightingGroup().getType())) {
-				fightSystemModel = new OlympicSystemModel(getFightingGroup());
+				fightSystemModel = new OlympicSystemModel(getFightingGroup(), rulesManager);
 			}
 			else if (SC.GROUP_TYPE.ROUND_ROBIN.equals(getFightingGroup().getType())) {
-				fightSystemModel = new TableRoundRobinSystemModel(getFightingGroup());
+				fightSystemModel = new TableRoundRobinSystemModel(getFightingGroup(), rulesManager);
 			}
 			else {
 				fightSystemModel = null;

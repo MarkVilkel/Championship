@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,6 +27,7 @@ import com.ashihara.ui.app.fight.model.IFightModelUI;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 import com.ashihara.ui.app.fight.view.listener.PointsCountListener;
 import com.ashihara.ui.app.fight.view.listener.WarningsCountListener;
+import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
 import com.ashihara.ui.app.utils.UIUtils;
 import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.KASPanel;
@@ -95,8 +97,18 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					UIUtils.RED,
 					rulesManager
 			);
-			firstFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
-			firstFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getSecondFighterBattleInfoPanel().getPointsPanel()));
+			firstFighterBattleInfoPanel.setWarningsChangeListener(
+					new WarningsCountListener(
+							getSecondFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager
+					)
+			);
+			firstFighterBattleInfoPanel.addPointsChangeListener(
+					new PointsCountListener(
+							getSecondFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager
+					)
+			);
 			
 			firstFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
 				@Override
@@ -106,6 +118,16 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 				@Override
 				public void countDecreased(CountPanel countPanel) {
 					performButtonNextRoundEnability();
+				}
+			});
+			
+			firstFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinByJudgeDecisionCheckListener() {
+				@Override
+				public void checked(boolean checked) {
+					if (checked) {
+						getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+					}
+					getFirstFighterBattleInfoPanel().getPointsPanel().setHighlighted(checked);
 				}
 			});
 		}
@@ -119,8 +141,18 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					UIUtils.BLUE,
 					rulesManager
 			);
-			secondFighterBattleInfoPanel.setWarningsChangeListener(new WarningsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
-			secondFighterBattleInfoPanel.addPointsChangeListener(new PointsCountListener(getFirstFighterBattleInfoPanel().getPointsPanel()));
+			secondFighterBattleInfoPanel.setWarningsChangeListener(
+					new WarningsCountListener(
+							getFirstFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager
+					)
+			);
+			secondFighterBattleInfoPanel.addPointsChangeListener(
+					new PointsCountListener(
+							getFirstFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager
+					)
+			);
 			
 			secondFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
 				@Override
@@ -132,6 +164,17 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					performButtonNextRoundEnability();
 				}
 			});
+			
+			secondFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinByJudgeDecisionCheckListener() {
+				@Override
+				public void checked(boolean checked) {
+					if (checked) {
+						getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+					}
+					getSecondFighterBattleInfoPanel().getPointsPanel().setHighlighted(checked);
+				}
+			});
+
 		}
 		return secondFighterBattleInfoPanel;
 	}
@@ -209,6 +252,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			if (rulesManager.redFighterFromTheLeft()) {
 				fightersPanel.add(getFirstFighterBattleInfoPanel());
 				fightersPanel.add(getSecondFighterBattleInfoPanel());
+				
 			} else {
 				fightersPanel.add(getSecondFighterBattleInfoPanel());
 				fightersPanel.add(getFirstFighterBattleInfoPanel());
@@ -217,9 +261,25 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		return fightersPanel;
 	}
 
-	protected void performButtonNextRoundEnability() {
+	public void performButtonNextRoundEnability() {
 		boolean enabled = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
 		getBtnNextRound().setEnabled(enabled);
+		
+		if (!enabled) {
+			getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+			getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+		}
+		
+		getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(enabled);
+		getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(enabled);
+		
+		if (getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected()) {
+			getSecondFighterBattleInfoPanel().getPointsPanel().setHighlighted(true);
+		}
+		
+		if (getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected()) {
+			getFirstFighterBattleInfoPanel().getPointsPanel().setHighlighted(true);
+		}
 	}
 
 	private JButton getBtnNextRound() {

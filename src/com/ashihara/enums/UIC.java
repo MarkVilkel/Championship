@@ -268,4 +268,6 @@ public interface UIC extends Serializable {
 	String ALL_STYLE();
 	String RULES();
 	String PENALTY();
+	String WIN_BY_JUDGE_DECISION();
+	String BY_JUDGE_DECISION();
 }

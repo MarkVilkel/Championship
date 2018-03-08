@@ -16,8 +16,12 @@ import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.ashihara.datamanagement.core.persistence.exception.AKBusinessException;
 import com.ashihara.datamanagement.core.session.AKClientSession;
@@ -28,6 +32,7 @@ import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FighterPhoto;
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
+import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
 import com.ashihara.ui.core.component.KASLabel;
 import com.ashihara.ui.core.panel.ImageIconPanel;
 import com.ashihara.ui.core.panel.KASPanel;
@@ -57,8 +62,10 @@ public class FighterBattleInfoPanel extends KASPanel {
 	private CountPanel pointsPanel;
 	private CountPanel firstCategoryPanel;
 	private CountPanel secondCategoryPanel;
+	private JCheckBox checkWinByJudgeDecision;
 	
 	private final RulesManager rulesManager;
+	private WinByJudgeDecisionCheckListener winByJudgeDecisionCheckListener;
 	
 	public FighterBattleInfoPanel(
 			ChampionshipFighter championshipFighter,
@@ -225,6 +232,12 @@ public class FighterBattleInfoPanel extends KASPanel {
 	    		c.gridy ++;
 	    		fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(rulesManager.getSecondPenaltyCategoryCaption()+":", BIG_SIZE, false), getSecondCategoryPanel()), c);
 	    	}
+	    	
+	    	if (rulesManager.canWinByJudgeDecision()) {
+	    		c.gridy ++;
+	    		fighterDetailsPanel.add(getCheckWinByJudgeDecision(), c);
+	    	}
+
 		}
 		
 		return fighterDetailsPanel;
@@ -338,21 +351,21 @@ public class FighterBattleInfoPanel extends KASPanel {
 
 	public CountPanel getPointsPanel() {
 		if (pointsPanel == null) {
-			pointsPanel = new CountPanel(LARGE_SIZE, 0, 100);
+			pointsPanel = new CountPanel(LARGE_SIZE, 0, rulesManager.getMaxPointsCount());
 		}
 		return pointsPanel;
 	}
 
 	public CountPanel getFirstCategoryPanel() {
 		if (firstCategoryPanel == null) {
-			firstCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, 4);
+			firstCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, rulesManager.getMaxPenaltyCount());
 		}
 		return firstCategoryPanel;
 	}
 
 	public CountPanel getSecondCategoryPanel() {
 		if (secondCategoryPanel == null) {
-			secondCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, 4);
+			secondCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, rulesManager.getMaxPenaltyCount());
 		}
 		return secondCategoryPanel;
 	}
@@ -363,8 +376,28 @@ public class FighterBattleInfoPanel extends KASPanel {
 		
 	}
 	
+	public void setWinByJudgeDecisionCheckListener(WinByJudgeDecisionCheckListener listener) {
+		this.winByJudgeDecisionCheckListener = listener;
+	}
+	
 	public void addPointsChangeListener(CountListener pointsChangeListener) {
 		getPointsPanel().addCountListener(pointsChangeListener);
+	}
+
+	public JCheckBox getCheckWinByJudgeDecision() {
+		if (checkWinByJudgeDecision == null) {
+			checkWinByJudgeDecision = new JCheckBox(uic.WIN_BY_JUDGE_DECISION());
+			checkWinByJudgeDecision.setOpaque(false);
+			checkWinByJudgeDecision.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					if (winByJudgeDecisionCheckListener != null) {
+						winByJudgeDecisionCheckListener.checked(checkWinByJudgeDecision.isSelected());
+					}
+				}
+			});
+		}
+		return checkWinByJudgeDecision;
 	}
 
 }

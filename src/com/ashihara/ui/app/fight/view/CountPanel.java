@@ -109,22 +109,27 @@ public class CountPanel extends KASPanel {
 		
 		if (count > maxCount) {
 			count = maxCount;
-		}
-		else {
+		} else {
 			fireCountIncreased();
 		}
 
 		showCount();
 	}
-	
+
+	public void setCount(long c) {
+		count = c;
+		
+		if (count > maxCount) {
+			count = maxCount;
+		}
+	}
 	
 	public void decreaseCount(long c) {
 		count -= c;
 		
 		if (count < minCount) {
 			count = minCount;
-		}
-		else {
+		} else {
 			fireCountDecreased();
 		}
 		

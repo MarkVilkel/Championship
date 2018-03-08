@@ -51,6 +51,9 @@
         <property column="OLYMPIC_LEVEL" name="olympicLevel" not-null="false" insert="true" update="true" type="java.lang.Long"/>
         <property column="OLYMPIC_POSITION_ON_LEVEL" name="olympicPositionOnLevel" not-null="false" insert="true" update="true" type="java.lang.Long"/>
         
+        <property column="FIRST_FIGHTER_WIN_BY_JUDGE_DECISION" name="firstFighterWinByJudgeDecision" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
+        <property column="SECOND_FIGHTER_WIN_BY_JUDGE_DECISION" name="secondFighterWinByJudgeDecision" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
+        
             	
     </class>
 </hibernate-mapping>

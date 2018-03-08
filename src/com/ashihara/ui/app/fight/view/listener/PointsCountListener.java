@@ -5,15 +5,21 @@
  */
 package com.ashihara.ui.app.fight.view.listener;
 
+import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 
 public class PointsCountListener implements CountListener {
 
 	private final CountPanel pointsCountPanel;
+	private final RulesManager rulesManager;
 	
-	public PointsCountListener(CountPanel countPanel) {
+	public PointsCountListener(
+			CountPanel countPanel,
+			RulesManager rulesManager
+	) {
 		this.pointsCountPanel = countPanel;
+		this.rulesManager = rulesManager;
 	}
 	
 	@Override
@@ -27,15 +33,17 @@ public class PointsCountListener implements CountListener {
 	}
 	
 	private void perfrorm(CountPanel countPanel) {
-		if (countPanel.getCount() - pointsCountPanel.getCount() >= 8) {
-			countPanel.setMaxCount(countPanel.getCount());
-		}
-		else if (pointsCountPanel.getCount() - countPanel.getCount() >= 8) {
-			pointsCountPanel.setMaxCount(pointsCountPanel.getCount());
-		}
-		else {
-			countPanel.setMaxCount(100);
-			pointsCountPanel.setMaxCount(100);
+		Long pointsDifferenceForWin = rulesManager.getPointsDifferenceForWin();
+		
+		if (pointsDifferenceForWin != null) {
+			if (countPanel.getCount() - pointsCountPanel.getCount() >= pointsDifferenceForWin) {
+				countPanel.setMaxCount(countPanel.getCount());
+			} else if (pointsCountPanel.getCount() - countPanel.getCount() >= pointsDifferenceForWin) {
+				pointsCountPanel.setMaxCount(pointsCountPanel.getCount());
+			} else {
+				countPanel.setMaxCount(rulesManager.getMaxPointsCount());
+				pointsCountPanel.setMaxCount(rulesManager.getMaxPointsCount());
+			}
 		}
 		
 		countPanel.showCount();

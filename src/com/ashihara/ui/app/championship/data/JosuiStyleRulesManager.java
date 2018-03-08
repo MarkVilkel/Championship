@@ -40,4 +40,51 @@ public class JosuiStyleRulesManager implements RulesManager {
 		return Long.MAX_VALUE;
 	}
 
+	@Override
+	public Long getWarningIncreaseCount(long warningCount) {
+		if (warningCount == 2) {
+			return 1L;
+		} else if (warningCount == 3) {
+			return 2L;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Long getWarningDecreaseCount(long warningCount) {
+		if (warningCount == 2) {
+			return 2L;
+		} else if (warningCount == 1) {
+			return 1L;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public long getMaxPenaltyCount() {
+		return 4;
+	}
+
+	@Override
+	public long getMaxPointsCount() {
+		return 100;
+	}
+
+	@Override
+	public Long getPointsDifferenceForWin() {
+		return 8L;
+	}
+
+	@Override
+	public boolean copyPointsAndWarningsToTheNextRound() {
+		return false;
+	}
+
+	@Override
+	public boolean canWinByJudgeDecision() {
+		return false;
+	}
+
 }

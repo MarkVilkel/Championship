@@ -40,4 +40,55 @@ public class AllStyleRulesManager implements RulesManager {
 		return 3;
 	}
 
+	@Override
+	public Long getWarningIncreaseCount(long warningCount) {
+		if (warningCount == 3) {
+			return 1L;
+		} else if (warningCount == 4) {
+			return 2L;
+		} else if (warningCount == 5) {
+			return 3L;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Long getWarningDecreaseCount(long warningCount) {
+		if (warningCount == 4) {
+			return 3L;
+		} else if (warningCount == 3) {
+			return 2L;
+		} else if (warningCount == 2) {
+			return 1L;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public long getMaxPenaltyCount() {
+		return 5;
+	}
+
+	@Override
+	public long getMaxPointsCount() {
+		return 6;
+	}
+
+	@Override
+	public Long getPointsDifferenceForWin() {
+		return null;
+	}
+
+	@Override
+	public boolean copyPointsAndWarningsToTheNextRound() {
+		return true;
+	}
+
+	@Override
+	public boolean canWinByJudgeDecision() {
+		return true;
+	}
+
 }
