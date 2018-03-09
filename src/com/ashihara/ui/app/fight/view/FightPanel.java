@@ -262,16 +262,17 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	}
 
 	public void performButtonNextRoundEnability() {
-		boolean enabled = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
+		boolean theSamePointsCount = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
+		boolean enabled = Math.abs(getSecondFighterBattleInfoPanel().getPointsPanel().getCount() - getFirstFighterBattleInfoPanel().getPointsPanel().getCount()) <= rulesManager.getMaxPointsDifferenceForTheNextRound();
 		getBtnNextRound().setEnabled(enabled);
 		
-		if (!enabled) {
+		if (!theSamePointsCount) {
 			getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
 			getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
 		}
 		
-		getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(enabled);
-		getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(enabled);
+		getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(theSamePointsCount);
+		getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(theSamePointsCount);
 		
 		if (getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected()) {
 			getSecondFighterBattleInfoPanel().getPointsPanel().setHighlighted(true);
@@ -306,10 +307,15 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		if (nextFightPanel == null) {
 			nextFightPanel = new KASPanel(new GridLayout(1, 3));
 			
-			nextFightPanel.add(getNextRedPanel());
-			nextFightPanel.add(getLblNext());
-//			nextFightPanel.add(getLblVs());
-			nextFightPanel.add(getNextBluePanel());
+			if (rulesManager.redFighterFromTheLeft()) {
+				nextFightPanel.add(getNextRedPanel());
+				nextFightPanel.add(getLblNext());
+				nextFightPanel.add(getNextBluePanel());
+			} else {
+				nextFightPanel.add(getNextBluePanel());
+				nextFightPanel.add(getLblNext());
+				nextFightPanel.add(getNextRedPanel());
+			}
 			
 		}
 		return nextFightPanel;

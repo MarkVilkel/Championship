@@ -13,6 +13,7 @@ public interface RulesManager {
 
 	boolean redFighterFromTheLeft();
 	long getMaxRoundsCount();
+	long getMaxPointsDifferenceForTheNextRound();
 	
 	
 	Long getWarningIncreaseCount(long warningCount);

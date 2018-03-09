@@ -306,14 +306,21 @@ public class TableToExcelExporter {
         int row = 3;
         for (FightResult fr : fightResults) {
         	HSSFCellUtil.createCell(sheet.createRow(row), 0, fr.getFirstFighter().getChampionshipFighter().toString(), redStyleLeft);
-        	HSSFCellUtil.createCell(sheet.createRow(row), 1, fr.getFirstFighterPoints().toString(), redStyle);
-        	HSSFCellUtil.createCell(sheet.createRow(row), 2, fr.getFirstFighterPointsForWin().toString(), redStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 1, toString(fr.getFirstFighterPoints()), redStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 2, toString(fr.getFirstFighterPointsForWin()), redStyle);
         	
         	HSSFCellUtil.createCell(sheet.createRow(row), 3, fr.getSecondFighter().getChampionshipFighter().toString(), whiteStyleLeft);
-        	HSSFCellUtil.createCell(sheet.createRow(row), 4, fr.getSecondFighterPoints().toString(), whiteStyle);
-        	HSSFCellUtil.createCell(sheet.createRow(row), 5, fr.getSecondFighterPointsForWin().toString(), whiteStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 4, toString(fr.getSecondFighterPoints()), whiteStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 5, toString(fr.getSecondFighterPointsForWin()), whiteStyle);
         	row ++;
         }
+	}
+
+	private static String toString(Object obj) {
+		if (obj == null) {
+			return "";
+		}
+		return obj.toString();
 	}
 
 	public static void drawWholeTreeToExcel(

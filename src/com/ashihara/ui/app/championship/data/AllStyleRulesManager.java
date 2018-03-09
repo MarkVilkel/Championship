@@ -91,4 +91,9 @@ public class AllStyleRulesManager implements RulesManager {
 		return true;
 	}
 
+	@Override
+	public long getMaxPointsDifferenceForTheNextRound() {
+		return 2;
+	}
+
 }

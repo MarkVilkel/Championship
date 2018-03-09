@@ -87,4 +87,9 @@ public class JosuiStyleRulesManager implements RulesManager {
 		return false;
 	}
 
+	@Override
+	public long getMaxPointsDifferenceForTheNextRound() {
+		return 0;
+	}
+
 }
