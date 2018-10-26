@@ -62,7 +62,7 @@ public class ImageIconPanel extends JPanel {
 		int height = getSize ().height;
 		
 		if (image != null && width > 0 && height > 0) { 
-			scaledImage = image.getScaledInstance(-1, height, Image.SCALE_SMOOTH);
+			scaledImage = image.getScaledInstance(width, -1, Image.SCALE_SMOOTH);
 		}
 		else { 
 			scaledImage = null;

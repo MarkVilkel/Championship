@@ -179,16 +179,16 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 			setFighter(getFighterService().saveFighter(getFighter()));
 			
 			getPhotoService().deletePhoto(getFighterPhoto());
-//			setFighterPhoto(getPhotoService().createNewPhoto(getFighter(), getCurrentSelectedPhoto()));
-//			setFighterPhoto(getPhotoService().savePhoto(getFighterPhoto()));
+			setFighterPhoto(getPhotoService().createNewPhoto(getFighter(), getCurrentSelectedPhoto()));
+			setFighterPhoto(getPhotoService().savePhoto(getFighterPhoto()));
 			
 			cancel();
 		} catch (PersistenceException e) {
 			MessageHelper.handleException(getViewUI(), e);
 		} catch (AKValidationException e) {
 			MessageHelper.handleException(getViewUI(), e);
-//		} catch (AKBusinessException e) {
-//			MessageHelper.handleException(getViewUI(), e);
+		} catch (AKBusinessException e) {
+			MessageHelper.handleException(getViewUI(), e);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 	public void loadPhoto() {
 		File file = FileUtils.getOpenPath(new AllFileFilter());
 		if (file != null) {
-			final long MAX_FILE_SIZE = 200;
+			final long MAX_FILE_SIZE = 1024;
 			long sizeInKb = file.length() / 1024; 
 			if (sizeInKb > MAX_FILE_SIZE) {
 				MessageHelper.showErrorMessage(getViewUI(), 

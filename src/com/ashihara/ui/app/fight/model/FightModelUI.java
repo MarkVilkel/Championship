@@ -5,6 +5,8 @@
  */
 package com.ashihara.ui.app.fight.model;
 
+import javax.swing.ImageIcon;
+
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;

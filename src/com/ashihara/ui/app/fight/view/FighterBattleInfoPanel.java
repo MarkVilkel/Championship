@@ -66,14 +66,14 @@ public class FighterBattleInfoPanel extends KASPanel {
 	
 	private final RulesManager rulesManager;
 	private WinByJudgeDecisionCheckListener winByJudgeDecisionCheckListener;
+	private FighterPhoto photo;
+	private ImageIcon photoImageIcon;
 	
 	public FighterBattleInfoPanel(
 			ChampionshipFighter championshipFighter,
 			Color color,
 			RulesManager rulesManager
 	){
-		super();
-		
 		this.championshipFighter = championshipFighter;
 		this.color = color;
 		this.rulesManager = rulesManager;
@@ -82,12 +82,27 @@ public class FighterBattleInfoPanel extends KASPanel {
 	}
 
 	private void init() {
+		initPhoto();
+		
 		copyOnUI();
 		
 		add(getDetailsUIPanel(), BorderLayout.CENTER);
-		
+
 		setBorder(BorderFactory.createEtchedBorder());
 		
+	}
+
+	private void initPhoto() {
+		try {
+			photo = getPhotoService().loadByFighter(championshipFighter.getFighter());
+			if (photo != null) {
+				photoImageIcon = getImage(photo);
+			}
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+		} catch (AKBusinessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void copyOnUI() {
@@ -133,56 +148,7 @@ public class FighterBattleInfoPanel extends KASPanel {
 
 	public KASPanel getDetailsUIPanel() {
 		if (fighterDetailsPanel == null){
-//			fighterDetailsPanel = new GradientPanel(color);
-//			FormLayout fl = new FormLayout(
-//					"right:75dlu, pref, pref, 20dlu, pref",
-//					"pref, 7dlu, pref, 7dlu, pref, 7dlu, " +
-//					"pref, 7dlu, pref, 7dlu, pref, 7dlu, " +
-//					"pref, 7dlu, pref, 20dlu, pref, 7dlu, " +
-//					"pref, 7dlu, pref, 7dlu, pref, 7dlu, pref"
-//			);
-//
-//			CellConstraints cc = new CellConstraints();
-//
-//			PanelBuilder builder = new PanelBuilder(fl, fighterDetailsPanel);
-//			
-//			builder.add(createCaptionLbl(uic.NUMBER()+"  ", BIG_SIZE), cc.xy(3, 3));
-//			builder.add(getTxtNumber(), cc.xy(5, 3));
-//			
-//			builder.add(createCaptionLbl(uic.NAME()+"  "), cc.xy(3, 5));
-//			builder.add(getTxtName(), cc.xy(5, 5));
-//			
-//			builder.add(createCaptionLbl(uic.SURNAME()+"  "), cc.xy(3, 7));
-//			builder.add(getTxtSurname(), cc.xy(5, 7));
-//
-//			builder.add(createCaptionLbl(uic.COUNTRY()+"  "), cc.xy(3, 9));
-//			builder.add(getTxtCountry(), cc.xy(5, 9));
-//			
-//			builder.add(createCaptionLbl(uic.FULL_YEARS()+"  "), cc.xy(3, 11));
-//			builder.add(getTxtFullYears(), cc.xy(5, 11));
-//			
-//			builder.add(createCaptionLbl(uic.WEIGHT()+"  "), cc.xy(3, 13));
-//			builder.add(getTxtWeight(), cc.xy(5, 13));
-//			
-//			if (fighter.getKyu() != null) {
-//				builder.add(createCaptionLbl(uic.KYU()+"  "), cc.xy(3, 15));
-//				builder.add(getTxtKyu(), cc.xy(5, 15));
-//			}
-//			else {
-//				builder.add(createCaptionLbl(uic.DAN()+"  "), cc.xy(3, 15));
-//				builder.add(getTxtDan(), cc.xy(5, 15));
-//			}
-//			
-//			builder.add(createCaptionLbl(uic.POINTS()+":  ", BIG_SIZE, false), cc.xy(3, 17));
-//			builder.add(getPointsPanel(), cc.xy(5, 17));
-//			
-//			builder.add(createCaptionLbl(uic.FIRST_CATEGORY()+":  ", BIG_SIZE, false), cc.xy(3, 19));
-//			builder.add(getFirstCategoryPanel(), cc.xy(5, 19));
-//
-//			builder.add(createCaptionLbl(uic.SECOND_CATEGORY()+":  ", BIG_SIZE, false), cc.xy(3, 21));
-//			builder.add(getSecondCategoryPanel(), cc.xy(5, 21));
-			
-			fighterDetailsPanel = new GradientPanel(color);
+			fighterDetailsPanel = new GradientPanel(color, photoImageIcon);
 			fighterDetailsPanel.setLayout(new GridBagLayout());
 			
 	    	GridBagConstraints c = new GridBagConstraints();
@@ -191,8 +157,6 @@ public class FighterBattleInfoPanel extends KASPanel {
 	    	c.weightx = 0.5;
 	    	c.gridx = 0;
 	    	c.gridy = 0;
-	    	
-//	    	c.fill = GridBagConstraints.VERTICAL;
 	    	
 	    	fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(uic.NUMBER(), BIG_SIZE), getTxtNumber()), c);
 	    	
@@ -291,18 +255,14 @@ public class FighterBattleInfoPanel extends KASPanel {
 
 	public ImageIconPanel getImagePanel() {
 		if (imagePanel == null) {
-			FighterPhoto photo;
 			try {
-				photo = getPhotoService().loadByFighter(championshipFighter.getFighter());
-				imagePanel = new ImageIconPanel(getImage(photo));
-			} catch (PersistenceException e) {
-				e.printStackTrace();
-				imagePanel = new ImageIconPanel(null);
+				imagePanel = new ImageIconPanel(photo != null ? getImage(photo) : null);
 			} catch (AKBusinessException e) {
 				e.printStackTrace();
 				imagePanel = new ImageIconPanel(null);
 			}
 			imagePanel.setPreferredSize(new Dimension(150, 300));
+			imagePanel.setMinimumSize(new Dimension(150, 300));
 		}
 		return imagePanel;
 	}
