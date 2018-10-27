@@ -13,7 +13,11 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -98,9 +102,7 @@ public class FighterBattleInfoPanel extends KASPanel {
 			if (photo != null) {
 				photoImageIcon = getImage(photo);
 			}
-		} catch (PersistenceException e) {
-			e.printStackTrace();
-		} catch (AKBusinessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -257,7 +259,7 @@ public class FighterBattleInfoPanel extends KASPanel {
 		if (imagePanel == null) {
 			try {
 				imagePanel = new ImageIconPanel(photo != null ? getImage(photo) : null);
-			} catch (AKBusinessException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				imagePanel = new ImageIconPanel(null);
 			}
@@ -267,8 +269,10 @@ public class FighterBattleInfoPanel extends KASPanel {
 		return imagePanel;
 	}
 	
-	private ImageIcon getImage(AbstractBlob photo) throws AKBusinessException {
-		ImageIcon ii = (ImageIcon)DataManagementUtils.toObject(photo.getBlob());
+	private ImageIcon getImage(AbstractBlob photo) throws IOException {
+		ByteArrayInputStream bais = new ByteArrayInputStream(photo.getBlob());
+		Image img = ImageIO.read(bais);
+		ImageIcon ii = new ImageIcon(img);
 		return ii;
 	}
 	

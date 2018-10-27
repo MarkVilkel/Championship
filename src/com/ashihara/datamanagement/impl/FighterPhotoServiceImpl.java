@@ -5,6 +5,11 @@
  */
 package com.ashihara.datamanagement.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import com.ashihara.datamanagement.core.persistence.exception.AKBusinessException;
@@ -19,14 +24,19 @@ import com.rtu.hql.expression.ExpressionHelper;
 public class FighterPhotoServiceImpl extends AbstractAKServiceImpl implements FighterPhotoService {
 
 	@Override
-	public FighterPhoto createNewPhoto(Fighter fighter, ImageIcon imageIcon) throws AKBusinessException {
+	public FighterPhoto createNewPhoto(Fighter fighter, ImageIcon imageIcon) throws AKBusinessException, IOException {
 		if (fighter == null || fighter.getId() == null || imageIcon == null) {
 			return null;
 		}
 		
 		FighterPhoto photo = new FighterPhoto();
 		photo.setFighter(fighter);
-		photo.setBlob(DataManagementUtils.toByteArray(imageIcon));
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write((BufferedImage)imageIcon.getImage(), "jpg", baos);
+		byte[] b2 = baos.toByteArray();
+		
+		photo.setBlob(b2);
 		
 		return photo;
 	}

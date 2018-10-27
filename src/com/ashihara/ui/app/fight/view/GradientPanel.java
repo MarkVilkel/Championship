@@ -80,17 +80,17 @@ public class GradientPanel extends KASPanel {
          
         double canvasAspect = (double) canvasHeight / canvasWidth;
  
-        int x1 = 5; // top left X position
-        int y1 = (int) (80 * canvasAspect); // top left Y position
-        int x2 = 0; // bottom right X position
-        int y2 = 0; // bottom right Y position
+        int x1 = 0; // top left X position
+        int y1 = 0; // top left Y position
+        int x2 = canvas.getWidth() - 3; // bottom right X position
+        int y2 = canvas.getHeight() - 3; // bottom right Y position
          
         if (imgWidth < canvasWidth && imgHeight < canvasHeight) {
             // the image is smaller than the canvas
 //            x1 = (canvasWidth - imgWidth)  / 2;
 //            y1 = (canvasHeight - imgHeight) / 2;
-            x2 = imgWidth + x1;
-            y2 = imgHeight + y1;
+            x1 = x2 - imgWidth;
+            y1 = y2 - imgHeight;
              
         } else {
             if (canvasAspect > imgAspect) {
@@ -104,8 +104,8 @@ public class GradientPanel extends KASPanel {
                 canvasWidth = (int) (canvasHeight / imgAspect);
 //                x1 = (x1 - canvasWidth) / 2;
             }
-            x2 = canvasWidth + x1;
-            y2 = canvasHeight + y1;
+            x1 = x2 - canvasWidth;
+            y1 = y2 - canvasHeight;
         }
  
         g.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);

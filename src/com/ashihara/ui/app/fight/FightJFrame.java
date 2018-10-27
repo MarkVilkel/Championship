@@ -18,7 +18,6 @@ import com.ashihara.enums.UIC;
 import com.ashihara.ui.app.fight.model.FightModelUI;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.tools.ApplicationManager;
-import com.ashihara.ui.tools.UIFactory;
 
 public class FightJFrame extends JFrame {
 	
@@ -33,6 +32,8 @@ public class FightJFrame extends JFrame {
 	
 	private boolean shown = false;
 	private final boolean isNextRound;
+	
+	private final WindowAdapter windowAdapter;
 	
 	public FightJFrame(
 			FightResult fightResult,
@@ -57,12 +58,12 @@ public class FightJFrame extends JFrame {
 		setContentPane(getFightModelUI().getViewUI());
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
-		addWindowListener(new WindowAdapter() {
+		this.windowAdapter = new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				onClose();
+				dispose();
 			}
-			
-		});
+		};
+		addWindowListener(windowAdapter);
 		
 		ApplicationManager.getInstance().registerComponent(this);
 		
@@ -79,6 +80,7 @@ public class FightJFrame extends JFrame {
 			getFightModelUI().dispose();
 		}
 		
+		removeWindowListener(windowAdapter);
 	}
 	
 	public void dispose(){

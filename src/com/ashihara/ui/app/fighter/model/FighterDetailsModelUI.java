@@ -6,6 +6,8 @@
 package com.ashihara.ui.app.fighter.model;
 
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -39,6 +41,8 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 	private FighterPhoto fighterPhoto;
 	private ImageIcon currentSelectedPhoto, noPhoto;
 	private FighterDetailsPanelViewUI viewUI;
+	private boolean photoLoaded = false;
+	private boolean photoDeleted = false;
 	
 	public FighterDetailsModelUI(Fighter fighter) {
 		super();
@@ -77,28 +81,34 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 		}
 	}
 
-	protected void copyDataOnUI() throws AKBusinessException {
+	protected void copyDataOnUI() throws IOException {
 		getViewUI().getTxtName().setText(getFighter().getName());
 		getViewUI().getTxtSurname().setText(getFighter().getSurname());
 		getViewUI().getTxtWeight().setText(getFighter().getWeight() == null ? "" : getFighter().getWeight().toString());
 		getViewUI().getCmbCountry().tryToSelectIfInEntrySet(getFighter().getCountry());
 		getViewUI().getDateBirthday().setDate(getFighter().getBirthday());
 		getViewUI().getTxtFullYears().setText(getFighter().getFullYearsOld() == null ? "" : getFighter().getFullYearsOld().toString());
-		getViewUI().getImagePanel().setImageIcon(getImage(getFighterPhoto()));
+		getViewUI().getImagePanel().setImageIcon(getCurrentSelectedPhoto());
 		getViewUI().getTxtKyu().setText(getFighter().getKyu() == null ? "" : getFighter().getKyu().toString());
 		getViewUI().getTxtDan().setText(getFighter().getDan() == null ? "" : getFighter().getDan().toString());
 		getViewUI().getCmbGender().tryToSelectIfInEntrySet(getFighter().getGender());
 	}
 
-	private ImageIcon getImage(AbstractBlob photo) throws AKBusinessException {
+	private ImageIcon getImage(AbstractBlob photo) throws IOException {
 		if (photo == null) {
 			return getNoPhoto();
 		}
-		ImageIcon ii = (ImageIcon)DataManagementUtils.toObject(photo.getBlob());
-		return ii;
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(photo.getBlob());
+			ImageIcon ii = new ImageIcon(ImageIO.read(bais));
+			return ii;
+		} catch (Exception e) {
+			MessageHelper.handleException(getViewUI(), e);
+			return getNoPhoto();
+		}
 	}
 
-	protected void  validateData() throws AKValidationException {
+	protected void validateData() throws AKValidationException {
 		Validator.validateMandatoryComponent(getViewUI().getTxtName(), uic.NAME());
 		Validator.validate255LengthComponent(getViewUI().getTxtName(), uic.NAME());
 		
@@ -148,6 +158,9 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 	@Override
 	public void reset() {
 		try {
+			photoLoaded = false;
+			photoDeleted = false;
+			
 			ComboUIHelper.reloadCountryCombo(getViewUI().getCmbCountry(), true);
 			ComboUIHelper.fillUpCaptionableWithCMItems(getViewUI().getCmbGender(), new SC.GENDER(), true, uic);
 			
@@ -164,9 +177,7 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 			
 			copyDataOnUI();
 			
-		} catch (PersistenceException e) {
-			MessageHelper.handleException(getViewUI(), e);
-		} catch (AKBusinessException e) {
+		} catch (Exception e) {
 			MessageHelper.handleException(getViewUI(), e);
 		}
 	}
@@ -178,16 +189,17 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 			copyDataFromUI();
 			setFighter(getFighterService().saveFighter(getFighter()));
 			
-			getPhotoService().deletePhoto(getFighterPhoto());
-			setFighterPhoto(getPhotoService().createNewPhoto(getFighter(), getCurrentSelectedPhoto()));
-			setFighterPhoto(getPhotoService().savePhoto(getFighterPhoto()));
+			if (photoDeleted) {
+				getPhotoService().deletePhoto(getFighterPhoto());
+			}
+			if (photoLoaded) {
+				getPhotoService().deletePhoto(getFighterPhoto());
+				setFighterPhoto(getPhotoService().createNewPhoto(getFighter(), getCurrentSelectedPhoto()));
+				setFighterPhoto(getPhotoService().savePhoto(getFighterPhoto()));
+			}
 			
 			cancel();
-		} catch (PersistenceException e) {
-			MessageHelper.handleException(getViewUI(), e);
-		} catch (AKValidationException e) {
-			MessageHelper.handleException(getViewUI(), e);
-		} catch (AKBusinessException e) {
+		} catch (Exception e) {
 			MessageHelper.handleException(getViewUI(), e);
 		}
 	}
@@ -196,7 +208,7 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 	public void loadPhoto() {
 		File file = FileUtils.getOpenPath(new AllFileFilter());
 		if (file != null) {
-			final long MAX_FILE_SIZE = 1024;
+			final long MAX_FILE_SIZE = 5 * 1024;
 			long sizeInKb = file.length() / 1024; 
 			if (sizeInKb > MAX_FILE_SIZE) {
 				MessageHelper.showErrorMessage(getViewUI(), 
@@ -209,6 +221,8 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 					if (image != null) {
 						ImageIcon ii = new ImageIcon(image);
 						getViewUI().getImagePanel().setImageIcon(ii);
+						photoLoaded = true;
+						photoDeleted = false;
 						setCurrentSelectedPhoto(ii);
 					}
 					else {
@@ -223,6 +237,8 @@ public class FighterDetailsModelUI extends AKAbstractModelUI<FighterDetailsPanel
 
 	@Override
 	public void deletePhoto() {
+		photoDeleted = true;
+		photoLoaded = false;
 		getViewUI().getImagePanel().setImageIcon(getNoPhoto());
 		setCurrentSelectedPhoto(getNoPhoto());
 	}
