@@ -25,7 +25,7 @@ public class UICEnglish implements UIC {
 
 	@Override
 	public String ASHIHARA_KARATE_CHAMPIONSHIP() {
-		return "Josui Karate Championship";
+		return "Ashihara Karate Championship";
 	}
 
 	@Override
@@ -1290,6 +1290,11 @@ public class UICEnglish implements UIC {
 		return "Josui style";
 	}
 
+	@Override
+	public String NIKO_STYLE() {
+		return "Niko style";
+	}
+	
 	@Override
 	public String ALL_STYLE() {
 		return "All style";

@@ -126,12 +126,14 @@ public class SC {
 	public static class RULES implements Captionable<String> {
 		public static final String JOSUI_STYLE = "JOSUI_STYLE";
 		public static final String ALL_STYLE = "ALL_STYLE";
+		public static final String NIKO_STYLE = "NIKO_STYLE";
 
 		@Override
 		public List<String> getAllValues() {
 			List<String> all = new ArrayList<String>();
 			all.add(JOSUI_STYLE);
 			all.add(ALL_STYLE);
+			all.add(NIKO_STYLE);
 			return all;
 		}
 
@@ -145,6 +147,8 @@ public class SC {
 				return uic.JOSUI_STYLE();
 			} else if (ALL_STYLE.equals(param)) {
 				return uic.ALL_STYLE();
+			} else if (NIKO_STYLE.equals(param)) {
+				return uic.NIKO_STYLE();
 			} else {
 				throw new IllegalArgumentException("Unsupported rules");
 			}

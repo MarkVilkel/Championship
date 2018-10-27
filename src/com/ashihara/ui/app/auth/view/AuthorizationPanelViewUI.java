@@ -7,6 +7,7 @@ package com.ashihara.ui.app.auth.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -140,7 +141,7 @@ public class AuthorizationPanelViewUI extends KASPanel implements UIView<IAuthor
 	public JPanel getLogoPanel() {
 		if (logoPanel == null){
 			logoPanel = UIFactory.createJPanelBL();
-			logoPanel.add(new JLabel(ResourceHelper.getImageIcon(ResourceHelper.LV_COAT)), BorderLayout.CENTER);
+			logoPanel.add(new JLabel(ResourceHelper.getImageIcon(ResourceHelper.RUSSIA)), BorderLayout.CENTER);
 		}
 		return logoPanel;
 	}

@@ -88,8 +88,28 @@ public class JosuiStyleRulesManager implements RulesManager {
 	}
 
 	@Override
-	public long getMaxPointsDifferenceForTheNextRound() {
-		return 0;
+	public Long getMaxPointsDifferenceForTheNextRound() {
+		return 0L;
+	}
+
+	@Override
+	public boolean sumFirstAndSecondPenaltyCategory() {
+		return false;
+	}
+
+	@Override
+	public Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+		return null;
+	}
+
+	@Override
+	public Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+		return null;
+	}
+
+	@Override
+	public Long getMaxSumPenaltyCount() {
+		return null;
 	}
 
 }

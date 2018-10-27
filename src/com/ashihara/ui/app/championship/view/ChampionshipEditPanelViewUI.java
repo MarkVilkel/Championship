@@ -317,8 +317,8 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			builder.addLabel(uic.BEGINNING_DATE()+": ", cc.xy(1, 5));
 			builder.add(getDateChooser(), cc.xy(3, 5));
 			
-			builder.addLabel(uic.RULES()+": ", cc.xy(5, 3));
-			builder.add(getCmbRules(), cc.xy(7, 3));
+//			builder.addLabel(uic.RULES()+": ", cc.xy(5, 3));
+//			builder.add(getCmbRules(), cc.xy(7, 3));
 			
 			builder.add(getBtnGroupPlaceReport(), cc.xy(9, 3));
 			builder.add(getBtnEachFighterReport(), cc.xy(9, 5));

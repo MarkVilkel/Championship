@@ -227,7 +227,7 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 		getViewUI().getTxtName().setText(getChampionship().getName());
 		getViewUI().getDateChooser().setDate(getChampionship().getBeginningDate());
 		
-		getViewUI().getCmbRules().tryToSelectIfInEntrySet((getChampionship() == null || getChampionship().getRules() == null) ? SC.RULES.JOSUI_STYLE : getChampionship().getRules());
+		getViewUI().getCmbRules().tryToSelectIfInEntrySet((getChampionship() == null || getChampionship().getRules() == null) ? SC.RULES.NIKO_STYLE : getChampionship().getRules());
 		
 		boolean visibleFlag = !(getChampionship() == null || getChampionship().getId() == null);
 		getViewUI().getChampionshipFighterTablePanel().setEnabled(visibleFlag);

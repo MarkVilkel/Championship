@@ -81,7 +81,7 @@ public class ChampionshipSearchResultPanelViewUI extends KASPanel implements Lin
 			
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createLinkColumn(uic.NAME(), cmChampionship.getName()));
 			championshipTable.getTable().getKASModel().addColumn(new KASColumn(uic.BEGINNING_DATE(), cmChampionship.getBeginningDate(), new DateCellRenderer()));
-			championshipTable.getTable().getKASModel().addColumn(new KASColumn(uic.RULES(), cmChampionship.getRules(), new RulesCellRenderer()));
+//			championshipTable.getTable().getKASModel().addColumn(new KASColumn(uic.RULES(), cmChampionship.getRules(), new RulesCellRenderer()));
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createFakeLinkColumn(uic.GROUP_PLACE_REPORT(), uic.SHOW_REPORT()));
 			championshipTable.getTable().getKASModel().addColumn(KASColumn.createFakeLinkColumn(uic.EACH_FIGHT_REPORT(), uic.SHOW_REPORT()));
 			
@@ -96,7 +96,7 @@ public class ChampionshipSearchResultPanelViewUI extends KASPanel implements Lin
 
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
 			if (value == null) {
-				value = SC.RULES.JOSUI_STYLE;
+				value = SC.RULES.NIKO_STYLE;
 			}
 			if (value instanceof String) {
 				String rules = (String)value;

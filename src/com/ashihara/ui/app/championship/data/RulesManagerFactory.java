@@ -17,13 +17,15 @@ public class RulesManagerFactory {
 
 	public static RulesManager getRulesManager(String rules, UIC uic) {
 		if (rules == null) {
-			rules = SC.RULES.JOSUI_STYLE;
+			rules = SC.RULES.NIKO_STYLE;
 		}
 		return map.computeIfAbsent(rules, (r) -> {
 			if (SC.RULES.ALL_STYLE.equals(r)) {	
 				return new AllStyleRulesManager(uic);
 			} else if (SC.RULES.JOSUI_STYLE.equals(r)) {	
 				return new JosuiStyleRulesManager(uic);
+			} else if (SC.RULES.NIKO_STYLE.equals(r)) {	
+				return new NikoStyleRulesManager(uic);
 			} else {
 				throw new IllegalArgumentException("Unsupported rules " + r);
 			}

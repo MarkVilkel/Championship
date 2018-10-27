@@ -92,8 +92,28 @@ public class AllStyleRulesManager implements RulesManager {
 	}
 
 	@Override
-	public long getMaxPointsDifferenceForTheNextRound() {
-		return 2;
+	public Long getMaxPointsDifferenceForTheNextRound() {
+		return 2L;
+	}
+
+	@Override
+	public boolean sumFirstAndSecondPenaltyCategory() {
+		return false;
+	}
+
+	@Override
+	public Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+		return null;
+	}
+
+	@Override
+	public Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+		return null;
+	}
+
+	@Override
+	public Long getMaxSumPenaltyCount() {
+		return null;
 	}
 
 }
