@@ -214,16 +214,25 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	        RulesManager rulesManager
 	) {
 		final long CRITICAL_WARNINGS_COUNT = rulesManager.getMaxPenaltyCount();
+		final Long CRITICAL_WARNINGS_COUNT_SUM = rulesManager.getMaxSumPenaltyCount();
 		
 		if (
 				fightResult.getFirstFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
-				fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
+				fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
+				(
+						CRITICAL_WARNINGS_COUNT_SUM != null &&
+						fightResult.getFirstFighterFirstCategoryWarnings() + fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT_SUM
+				)
 		) {
 			//lost
 			return fightSettings.getForLoosing();
 		} else if (
 				fightResult.getSecondFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
-				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
+				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
+				(
+						CRITICAL_WARNINGS_COUNT_SUM != null &&
+						fightResult.getSecondFighterFirstCategoryWarnings() + fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT_SUM
+				)
 		) {
 			// won
 			return fightSettings.getForWinning();
@@ -252,16 +261,25 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 	        RulesManager rulesManager
 	) {
 	    final long CRITICAL_WARNINGS_COUNT = rulesManager.getMaxPenaltyCount();
+	    final Long CRITICAL_WARNINGS_COUNT_SUM = rulesManager.getMaxSumPenaltyCount();
 	    
 		if (
 				fightResult.getSecondFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
-				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
+				fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
+				(
+						CRITICAL_WARNINGS_COUNT_SUM != null &&
+						fightResult.getSecondFighterFirstCategoryWarnings() + fightResult.getSecondFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT_SUM
+				)
 		) {
 			//lost
 			return fightSettings.getForLoosing();
 		} else if (
 				fightResult.getFirstFighterFirstCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
-				fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT
+				fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT ||
+				(
+						CRITICAL_WARNINGS_COUNT_SUM != null &&
+						fightResult.getFirstFighterFirstCategoryWarnings() + fightResult.getFirstFighterSecondCategoryWarnings() >= CRITICAL_WARNINGS_COUNT_SUM
+				)
 		) {
 			// won
 			return fightSettings.getForWinning();

@@ -7,36 +7,59 @@ package com.ashihara.ui.app.fight.view.listener;
 
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel;
-import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 
 public class WarningsCountListener implements CountListener {
 
 	private final CountPanel pointsCountPanel;
 	private final RulesManager rulesManager;
+	private final WarningCountProvider warningCountProvider;
+	private final boolean isFirstCategoryListener;
 	
 	public WarningsCountListener(
 			CountPanel countPanel,
-			RulesManager rulesManager
+			RulesManager rulesManager,
+			WarningCountProvider warningCountProvider,
+			boolean isFirstCategoryListener
 	) {
 		this.pointsCountPanel = countPanel;
 		this.rulesManager = rulesManager;
+		this.warningCountProvider = warningCountProvider;
+		this.isFirstCategoryListener = isFirstCategoryListener;
 	}
 	
 	@Override
 	public void countIncreased(CountPanel countPanel) {
-		long warningCount = countPanel.getCount();
-		Long increase = rulesManager.getWarningIncreaseCount(warningCount);
-		if (increase != null) {
-			pointsCountPanel.increaseCount(increase);
+		if (rulesManager.sumFirstAndSecondPenaltyCategory()) {
+			long firstCategoryWarningCount = warningCountProvider.getFirstCategoryWarningCount();
+			long secondCategoryWarningCount = warningCountProvider.getSecondCategoryWarningCount();
+			Long increase = rulesManager.getWarningIncreaseCount(firstCategoryWarningCount, secondCategoryWarningCount, isFirstCategoryListener);
+			if (increase != null) {
+				pointsCountPanel.increaseCount(increase);
+			}
+		} else {
+			long warningCount = countPanel.getCount();
+			Long increase = rulesManager.getWarningIncreaseCount(warningCount);
+			if (increase != null) {
+				pointsCountPanel.increaseCount(increase);
+			}
 		}
 	}
 	
 	@Override
 	public void countDecreased(CountPanel countPanel) {
-		long warningCount = countPanel.getCount();
-		Long increase = rulesManager.getWarningDecreaseCount(warningCount);
-		if (increase != null) {
-			pointsCountPanel.decreaseCount(increase);
+		if (rulesManager.sumFirstAndSecondPenaltyCategory()) {
+			long firstCategoryWarningCount = warningCountProvider.getFirstCategoryWarningCount();
+			long secondCategoryWarningCount = warningCountProvider.getSecondCategoryWarningCount();
+			Long decrease = rulesManager.getWarningDecreaseCount(firstCategoryWarningCount, secondCategoryWarningCount, isFirstCategoryListener);
+			if (decrease != null) {
+				pointsCountPanel.decreaseCount(decrease);
+			}
+		} else {
+			long warningCount = countPanel.getCount();
+			Long decrease = rulesManager.getWarningDecreaseCount(warningCount);
+			if (decrease != null) {
+				pointsCountPanel.decreaseCount(decrease);
+			}
 		}
 	}
 	

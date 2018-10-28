@@ -7,6 +7,8 @@ package com.ashihara.ui.app.fight.view;
 
 import javax.swing.Box;
 
+import com.ashihara.ui.app.fight.view.listener.CountProvider;
+
 public class StarCountPanel extends CountPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -17,16 +19,18 @@ public class StarCountPanel extends CountPanel {
 			int verticalStrutSize,
 			int textSize,
 			long minCount,
-			long maxCount
+			long maxCount,
+			Long maxSumCount,
+			CountProvider oponentCountProvider
 	) {
-		super(textSize, minCount, maxCount);
+		super(textSize, minCount, maxCount, maxSumCount, oponentCountProvider);
 		
 		this.verticalStrutSize = verticalStrutSize;
 		add(Box.createVerticalStrut(verticalStrutSize), 0);
 	}
 
 	
-	protected void init() {
+	public void init() {
 		super.init();
 	}
 	

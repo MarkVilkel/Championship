@@ -21,8 +21,8 @@ public interface RulesManager {
 	long getMaxPenaltyCount();
 	
 	boolean sumFirstAndSecondPenaltyCategory();
-	Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount);
-	Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount);
+	Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount, boolean isFirstCategoryCountIncreased);
+	Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount, boolean isFirstCategoryCountDecreased);
 	Long getMaxSumPenaltyCount();
 	
 	long getMaxPointsCount();

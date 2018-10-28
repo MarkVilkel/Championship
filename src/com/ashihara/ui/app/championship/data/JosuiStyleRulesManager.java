@@ -98,12 +98,12 @@ public class JosuiStyleRulesManager implements RulesManager {
 	}
 
 	@Override
-	public Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+	public Long getWarningIncreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount, boolean isFirstCategoryCountIncreased) {
 		return null;
 	}
 
 	@Override
-	public Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount) {
+	public Long getWarningDecreaseCount(long firstCategoryWarningCount, long secondCategoryWarningCount, boolean isFirstCategoryCountIncreased) {
 		return null;
 	}
 

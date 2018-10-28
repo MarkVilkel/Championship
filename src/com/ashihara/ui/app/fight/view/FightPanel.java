@@ -23,7 +23,7 @@ import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.model.IFightModelUI;
-import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
+import com.ashihara.ui.app.fight.view.listener.CountListener;
 import com.ashihara.ui.app.fight.view.listener.PointsCountListener;
 import com.ashihara.ui.app.fight.view.listener.WarningsCountListener;
 import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
@@ -96,17 +96,38 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					UIUtils.RED,
 					rulesManager
 			);
-			firstFighterBattleInfoPanel.setWarningsChangeListener(
+			firstFighterBattleInfoPanel.getFirstCategoryPanel().addCountListener(
 					new WarningsCountListener(
 							getSecondFighterBattleInfoPanel().getPointsPanel(),
-							rulesManager
+							rulesManager,
+							firstFighterBattleInfoPanel,
+							true
+					)
+			);
+			firstFighterBattleInfoPanel.getSecondCategoryPanel().addCountListener(
+					new WarningsCountListener(
+							getSecondFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager,
+							firstFighterBattleInfoPanel,
+							false
 					)
 			);
 			firstFighterBattleInfoPanel.addPointsChangeListener(
 					new PointsCountListener(
 							getSecondFighterBattleInfoPanel().getPointsPanel(),
 							rulesManager
-					)
+					) {
+						@Override
+						public void countIncreased(CountPanel countPanel) {
+							super.countIncreased(countPanel);
+							performButtonNextRoundEnability();
+						}
+						@Override
+						public void countDecreased(CountPanel countPanel) {
+							super.countIncreased(countPanel);
+							performButtonNextRoundEnability();
+						}
+					}
 			);
 			
 			firstFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
@@ -140,17 +161,38 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 					UIUtils.BLUE,
 					rulesManager
 			);
-			secondFighterBattleInfoPanel.setWarningsChangeListener(
+			secondFighterBattleInfoPanel.getFirstCategoryPanel().addCountListener(
 					new WarningsCountListener(
 							getFirstFighterBattleInfoPanel().getPointsPanel(),
-							rulesManager
+							rulesManager,
+							secondFighterBattleInfoPanel,
+							true
+					)
+			);
+			secondFighterBattleInfoPanel.getSecondCategoryPanel().addCountListener(
+					new WarningsCountListener(
+							getFirstFighterBattleInfoPanel().getPointsPanel(),
+							rulesManager,
+							secondFighterBattleInfoPanel,
+							false
 					)
 			);
 			secondFighterBattleInfoPanel.addPointsChangeListener(
 					new PointsCountListener(
 							getFirstFighterBattleInfoPanel().getPointsPanel(),
 							rulesManager
-					)
+					) {
+						@Override
+						public void countIncreased(CountPanel countPanel) {
+							super.countIncreased(countPanel);
+							performButtonNextRoundEnability();
+						}
+						@Override
+						public void countDecreased(CountPanel countPanel) {
+							super.countIncreased(countPanel);
+							performButtonNextRoundEnability();
+						}
+					}
 			);
 			
 			secondFighterBattleInfoPanel.addPointsChangeListener(new CountListener() {
@@ -262,7 +304,15 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 
 	public void performButtonNextRoundEnability() {
 		boolean theSamePointsCount = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
-		boolean enabled = Math.abs(getSecondFighterBattleInfoPanel().getPointsPanel().getCount() - getFirstFighterBattleInfoPanel().getPointsPanel().getCount()) <= rulesManager.getMaxPointsDifferenceForTheNextRound();
+		final boolean enabled;
+		
+		if (rulesManager.getMaxPointsDifferenceForTheNextRound() != null) {
+			enabled = Math.abs(getSecondFighterBattleInfoPanel().getPointsPanel().getCount() - getFirstFighterBattleInfoPanel().getPointsPanel().getCount()) <= rulesManager.getMaxPointsDifferenceForTheNextRound();
+		} else {
+			enabled = 
+					getSecondFighterBattleInfoPanel().getPointsPanel().getCount() < rulesManager.getMaxPointsCount() &&
+					getFirstFighterBattleInfoPanel().getPointsPanel().getCount() < rulesManager.getMaxPointsCount();
+		}
 		getBtnNextRound().setEnabled(enabled);
 		
 		if (!theSamePointsCount) {

@@ -23,11 +23,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.ashihara.datamanagement.core.persistence.exception.AKBusinessException;
 import com.ashihara.datamanagement.core.session.AKClientSession;
 import com.ashihara.datamanagement.core.session.AKServerSessionManagerImpl;
 import com.ashihara.datamanagement.interfaces.FighterPhotoService;
@@ -35,19 +33,18 @@ import com.ashihara.datamanagement.pojo.AbstractBlob;
 import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FighterPhoto;
 import com.ashihara.ui.app.championship.data.RulesManager;
-import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
+import com.ashihara.ui.app.fight.view.listener.CountListener;
+import com.ashihara.ui.app.fight.view.listener.WarningCountProvider;
 import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
 import com.ashihara.ui.core.component.KASLabel;
 import com.ashihara.ui.core.panel.ImageIconPanel;
 import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.tools.ApplicationManager;
-import com.ashihara.utils.DataManagementUtils;
-import com.rtu.exception.PersistenceException;
 import com.rtu.persistence.TransactionType;
 import com.rtu.service.core.DMIdentifiedService;
 import com.rtu.service.core.ServerSideServiceFactory;
 
-public class FighterBattleInfoPanel extends KASPanel {
+public class FighterBattleInfoPanel extends KASPanel implements WarningCountProvider {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -315,31 +312,68 @@ public class FighterBattleInfoPanel extends KASPanel {
 
 	public CountPanel getPointsPanel() {
 		if (pointsPanel == null) {
-			pointsPanel = new CountPanel(LARGE_SIZE, 0, rulesManager.getMaxPointsCount());
+			pointsPanel = new CountPanel(LARGE_SIZE, 0, rulesManager.getMaxPointsCount(), null, null);
+			pointsPanel.init();
 		}
 		return pointsPanel;
 	}
 
 	public CountPanel getFirstCategoryPanel() {
 		if (firstCategoryPanel == null) {
-			firstCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, rulesManager.getMaxPenaltyCount());
+			firstCategoryPanel = new StarCountPanel(
+					LARGE_SIZE,
+					BIG_SIZE,
+					0,
+					rulesManager.getMaxPenaltyCount(),
+					rulesManager.getMaxSumPenaltyCount(),
+					() -> getSecondCategoryPanel().getCount()
+			);
+			firstCategoryPanel.init();
+			if (rulesManager.getMaxSumPenaltyCount() != null) {
+				secondCategoryPanel.addCountListener(new CountListener() {
+					@Override
+					public void countIncreased(CountPanel countPanel) {
+						firstCategoryPanel.showCount();
+					}
+					
+					@Override
+					public void countDecreased(CountPanel countPanel) {
+						firstCategoryPanel.showCount();
+					}
+				});
+			}
 		}
 		return firstCategoryPanel;
 	}
 
 	public CountPanel getSecondCategoryPanel() {
 		if (secondCategoryPanel == null) {
-			secondCategoryPanel = new StarCountPanel(LARGE_SIZE, BIG_SIZE, 0, rulesManager.getMaxPenaltyCount());
+			secondCategoryPanel = new StarCountPanel(
+					LARGE_SIZE,
+					BIG_SIZE,
+					0,
+					rulesManager.getMaxPenaltyCount(),
+					rulesManager.getMaxSumPenaltyCount(),
+					() -> getFirstCategoryPanel().getCount()
+			);
+			secondCategoryPanel.init();
+			if (rulesManager.getMaxSumPenaltyCount() != null) {
+				firstCategoryPanel.addCountListener(new CountListener() {
+					@Override
+					public void countIncreased(CountPanel countPanel) {
+						secondCategoryPanel.showCount();
+					}
+					
+					@Override
+					public void countDecreased(CountPanel countPanel) {
+						secondCategoryPanel.showCount();
+					}
+				});
+			}
 		}
 		return secondCategoryPanel;
 	}
 
-	public void setWarningsChangeListener(CountListener warningsChangeListener) {
-		getSecondCategoryPanel().addCountListener(warningsChangeListener);
-		getFirstCategoryPanel().addCountListener(warningsChangeListener);
-		
-	}
-	
 	public void setWinByJudgeDecisionCheckListener(WinByJudgeDecisionCheckListener listener) {
 		this.winByJudgeDecisionCheckListener = listener;
 	}
@@ -362,6 +396,16 @@ public class FighterBattleInfoPanel extends KASPanel {
 			});
 		}
 		return checkWinByJudgeDecision;
+	}
+
+	@Override
+	public long getFirstCategoryWarningCount() {
+		return getFirstCategoryPanel().getCount();
+	}
+
+	@Override
+	public long getSecondCategoryWarningCount() {
+		return getSecondCategoryPanel().getCount();
 	}
 
 }

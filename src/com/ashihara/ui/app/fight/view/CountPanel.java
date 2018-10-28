@@ -18,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import com.ashihara.ui.app.fight.view.listener.CountListener;
+import com.ashihara.ui.app.fight.view.listener.CountProvider;
 import com.ashihara.ui.core.panel.KASPanel;
 
 public class CountPanel extends KASPanel {
@@ -33,6 +35,8 @@ public class CountPanel extends KASPanel {
 	
 	private final long minCount;
 	private long maxCount;
+	private Long maxSumCount;
+	private final CountProvider oponentCountProvider;
 	protected final int textSize;
 	
 	private final List<CountListener> countListeners = new ArrayList<CountListener>();
@@ -41,16 +45,20 @@ public class CountPanel extends KASPanel {
 	public CountPanel(
 			int textSize,
 			long minCount,
-			long maxCount
+			long maxCount,
+			Long maxSumCount,
+			CountProvider oponentCountProvider
 	) {
 		this.textSize = textSize;
 		this.minCount = minCount;
 		this.maxCount = maxCount;
+		this.maxSumCount = maxSumCount;
+		this.oponentCountProvider = oponentCountProvider;
 		
-		init();
+//		init();
 	}
 
-	protected void init() {
+	public void init() {
 		setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
 		
 		add(getBtnMinus());
@@ -109,6 +117,10 @@ public class CountPanel extends KASPanel {
 		
 		if (count > maxCount) {
 			count = maxCount;
+		} else if (maxSumCount != null && oponentCountProvider.getCount() >= maxCount) {
+			count -= c;
+		} else if (maxSumCount != null && count + oponentCountProvider.getCount() > maxSumCount) {
+			count = maxSumCount - oponentCountProvider.getCount();
 		} else {
 			fireCountIncreased();
 		}
@@ -121,6 +133,8 @@ public class CountPanel extends KASPanel {
 		
 		if (count > maxCount) {
 			count = maxCount;
+		} else if (maxSumCount != null && count + oponentCountProvider.getCount() > maxSumCount) {
+			count = maxSumCount - oponentCountProvider.getCount();
 		}
 	}
 	
@@ -138,7 +152,7 @@ public class CountPanel extends KASPanel {
 	
 	public void showCount() {
 		getLblCount().setText(String.valueOf(count));
-		setHighlighted(count >= maxCount);
+		setHighlighted(count >= maxCount || maxSumCount != null && count + oponentCountProvider.getCount() >= maxSumCount);
 	}
 
 	protected JLabel getLblCount() {
@@ -182,11 +196,6 @@ public class CountPanel extends KASPanel {
 		}
 	}
 	
-	public interface CountListener {
-		void countIncreased(CountPanel countPanel);
-		void countDecreased(CountPanel countPanel);
-	}
-
 	public long getMinCount() {
 		return minCount;
 	}

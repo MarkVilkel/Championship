@@ -7,7 +7,6 @@ package com.ashihara.ui.app.fight.view.listener;
 
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel;
-import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 
 public class PointsCountListener implements CountListener {
 

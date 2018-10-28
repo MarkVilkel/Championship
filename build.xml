@@ -41,7 +41,7 @@
 	  </pathconvert>
   	
 		<!-- Create main programm jar -->
-		<jar destfile="${BUILD_PATH}/Josui.jar"
+		<jar destfile="${BUILD_PATH}/Niko.jar"
 			basedir="${CODE_PATH}/bin">
 			<manifest>
         		<attribute name="Main-Class" value="com.ashihara.Main"/>
