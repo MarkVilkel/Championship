@@ -11,7 +11,7 @@ public class ResourceHelper {
 	public static final String LV_COAT = "LV-Coat.png";
 	public static final String LV_FLAG = "LV-Flag.png";
 	public static final String LATVIA_ASHIHARA_KARATE_LOGO = "NIKO.jpg";
-	public static final String RUSSIA = "Russia.jpg";
+	public static final String LATVIA_ASHIHARA_KARATE_LOGO_SMALL = "NIKO_small.jpg";
 	public final static String PLUS = "plus.gif";
 	public final static String PLUS2 = "plus2.gif";
 	public final static String PLUS3 = "plus3.gif";

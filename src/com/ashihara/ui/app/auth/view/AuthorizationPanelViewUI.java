@@ -141,7 +141,7 @@ public class AuthorizationPanelViewUI extends KASPanel implements UIView<IAuthor
 	public JPanel getLogoPanel() {
 		if (logoPanel == null){
 			logoPanel = UIFactory.createJPanelBL();
-			logoPanel.add(new JLabel(ResourceHelper.getImageIcon(ResourceHelper.RUSSIA)), BorderLayout.CENTER);
+			logoPanel.add(new JLabel(ResourceHelper.getImageIcon(ResourceHelper.LATVIA_ASHIHARA_KARATE_LOGO_SMALL)), BorderLayout.CENTER);
 		}
 		return logoPanel;
 	}
