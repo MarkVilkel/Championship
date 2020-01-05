@@ -336,7 +336,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 				if (
 						fr.getFirstFighterPoints() != null &&
 						fr.getSecondFighterPointsForWin() != null &&
-						(fr.getFirstFighterPoints().longValue() > 0 || fr.getSecondFighterPointsForWin().longValue() > 0) &&
+						(fr.getFirstFighterPoints().longValue() > 0 || fr.getSecondFighterPointsForWin().longValue() > 0 || Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) || Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision())) &&
 						fr.getOlympicPositionOnLevel() == 0
 				) {
 					if (fr.getFirstFighter() != null) {
