@@ -92,4 +92,14 @@ public class JosuiStyleRulesManager implements RulesManager {
 		return 0;
 	}
 
+	@Override
+	public boolean canWinByTKO() {
+		return false;
+	}
+
+	@Override
+	public Long getExatraPointsForTKO() {
+		return null;
+	}
+
 }

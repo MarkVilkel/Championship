@@ -54,6 +54,8 @@
         <property column="FIRST_FIGHTER_WIN_BY_JUDGE_DECISION" name="firstFighterWinByJudgeDecision" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
         <property column="SECOND_FIGHTER_WIN_BY_JUDGE_DECISION" name="secondFighterWinByJudgeDecision" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
         
-            	
+        <property column="FIRST_FIGHTER_WIN_BY_TKO" name="firstFighterWinByTKO" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
+        <property column="SECOND_FIGHTER_WIN_BY_TKO" name="secondFighterWinByTKO" not-null="false" insert="true" update="true" type="java.lang.Boolean"/>
+        	
     </class>
 </hibernate-mapping>

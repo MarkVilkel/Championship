@@ -101,6 +101,9 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 			if (rulesManager.canWinByJudgeDecision()) {
 				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFightResult.getLastRound().getFirstFighterWinByJudgeDecision(), new CheckBoxTableRenderer()));
 			}
+			if (rulesManager.canWinByTKO()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_TKO(), cmFightResult.getLastRound().getFirstFighterWinByTKO(), new CheckBoxTableRenderer()));
+			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getFirstFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getFirstFighterPointsForWin()));
 			
@@ -113,6 +116,9 @@ public class ChampionshipEachFightReportViewUI extends KASPanel implements UIVie
 			}
 			if (rulesManager.canWinByJudgeDecision()) {
 				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFightResult.getLastRound().getSecondFighterWinByJudgeDecision(), new CheckBoxTableRenderer()));
+			}
+			if (rulesManager.canWinByJudgeDecision()) {
+				fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.BY_TKO(), cmFightResult.getLastRound().getSecondFighterWinByTKO(), new CheckBoxTableRenderer()));
 			}
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFightResult.getLastRound().getSecondFighterPoints()));
 			fightResultPanel.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFightResult.getLastRound().getSecondFighterPointsForWin()));

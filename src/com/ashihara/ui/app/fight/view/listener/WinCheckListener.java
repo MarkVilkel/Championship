@@ -5,7 +5,7 @@
  */
 package com.ashihara.ui.app.fight.view.listener;
 
-public interface WinByJudgeDecisionCheckListener {
+public interface WinCheckListener {
 	
 	void checked(boolean checked);
 	

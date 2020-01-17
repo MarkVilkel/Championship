@@ -26,7 +26,7 @@ import com.ashihara.ui.app.fight.model.IFightModelUI;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
 import com.ashihara.ui.app.fight.view.listener.PointsCountListener;
 import com.ashihara.ui.app.fight.view.listener.WarningsCountListener;
-import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
+import com.ashihara.ui.app.fight.view.listener.WinCheckListener;
 import com.ashihara.ui.app.utils.UIUtils;
 import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.KASPanel;
@@ -52,7 +52,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	
 	private KASPanel nextFightPanel;
 	private GradientPanel nextBluePanel, nextRedPanel;
-	private JLabel lblNextRedFighter, lblNextBlueFighter, lblNext, lblVs;
+	private JLabel lblNextRedFighter, lblNextBlueFighter, lblNext;
 	
 	private final RulesManager rulesManager;
 	
@@ -120,15 +120,38 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 				}
 			});
 			
-			firstFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinByJudgeDecisionCheckListener() {
+			firstFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinCheckListener() {
 				@Override
 				public void checked(boolean checked) {
 					if (checked) {
 						getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+						getSecondFighterBattleInfoPanel().getCheckWinByTKO().setSelected(false);
 					}
+					getFirstFighterBattleInfoPanel().getCheckWinByTKO().setEnabled(!checked);
 					getFirstFighterBattleInfoPanel().getPointsPanel().setHighlighted(checked);
 				}
 			});
+			
+			
+			firstFighterBattleInfoPanel.setWinByTKOCheckListener(new WinCheckListener() {
+				@Override
+				public void checked(boolean checked) {
+					if (checked) {
+						getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+						getSecondFighterBattleInfoPanel().getCheckWinByTKO().setSelected(false);
+					}
+					
+					getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(!checked);
+					
+					
+					Long extraPointsForTKO = rulesManager.getExatraPointsForTKO();
+					CountPanel pointsPanel = getFirstFighterBattleInfoPanel().getPointsPanel();
+					
+					pointsPanel.checkAndChangeCount(checked, extraPointsForTKO);
+					pointsPanel.setHighlighted(checked);
+				}
+			});
+
 		}
 		return firstFighterBattleInfoPanel;
 	}
@@ -164,13 +187,32 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 				}
 			});
 			
-			secondFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinByJudgeDecisionCheckListener() {
+			secondFighterBattleInfoPanel.setWinByJudgeDecisionCheckListener(new WinCheckListener() {
 				@Override
 				public void checked(boolean checked) {
 					if (checked) {
 						getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+						getFirstFighterBattleInfoPanel().getCheckWinByTKO().setSelected(false);
 					}
+					getSecondFighterBattleInfoPanel().getCheckWinByTKO().setEnabled(!checked);
 					getSecondFighterBattleInfoPanel().getPointsPanel().setHighlighted(checked);
+				}
+			});
+
+			secondFighterBattleInfoPanel.setWinByTKOCheckListener(new WinCheckListener() {
+				@Override
+				public void checked(boolean checked) {
+					if (checked) {
+						getFirstFighterBattleInfoPanel().getCheckWinByTKO().setSelected(false);
+						getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
+					}
+					getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(!checked);
+					
+					Long extraPointsForTKO = rulesManager.getExatraPointsForTKO();
+					CountPanel pointsPanel = getSecondFighterBattleInfoPanel().getPointsPanel();
+					
+					pointsPanel.checkAndChangeCount(checked, extraPointsForTKO);
+					pointsPanel.setHighlighted(checked);
 				}
 			});
 
@@ -262,8 +304,6 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 
 	public void performButtonNextRoundEnability() {
 		boolean theSamePointsCount = getSecondFighterBattleInfoPanel().getPointsPanel().getCount() == getFirstFighterBattleInfoPanel().getPointsPanel().getCount();
-		boolean enabled = Math.abs(getSecondFighterBattleInfoPanel().getPointsPanel().getCount() - getFirstFighterBattleInfoPanel().getPointsPanel().getCount()) <= rulesManager.getMaxPointsDifferenceForTheNextRound();
-		getBtnNextRound().setEnabled(enabled);
 		
 		if (!theSamePointsCount) {
 			getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setSelected(false);
@@ -273,13 +313,32 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(theSamePointsCount);
 		getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().setEnabled(theSamePointsCount);
 		
+		boolean isWinByJudgeDecisionOrTKO = false;
 		if (getSecondFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected()) {
 			getSecondFighterBattleInfoPanel().getPointsPanel().setHighlighted(true);
+			isWinByJudgeDecisionOrTKO = true;
 		}
 		
 		if (getFirstFighterBattleInfoPanel().getCheckWinByJudgeDecision().isSelected()) {
 			getFirstFighterBattleInfoPanel().getPointsPanel().setHighlighted(true);
+			isWinByJudgeDecisionOrTKO = true;
 		}
+		
+		if (getSecondFighterBattleInfoPanel().getCheckWinByTKO().isSelected()) {
+			isWinByJudgeDecisionOrTKO = true;
+		}
+		
+		if (getFirstFighterBattleInfoPanel().getCheckWinByTKO().isSelected()) {
+			isWinByJudgeDecisionOrTKO = true;
+		}
+		
+		if (isWinByJudgeDecisionOrTKO) {
+			getBtnNextRound().setEnabled(false);
+		} else {
+			boolean enabled = Math.abs(getSecondFighterBattleInfoPanel().getPointsPanel().getCount() - getFirstFighterBattleInfoPanel().getPointsPanel().getCount()) <= rulesManager.getMaxPointsDifferenceForTheNextRound();
+			getBtnNextRound().setEnabled(enabled);
+		}
+
 	}
 
 	private JButton getBtnNextRound() {
@@ -379,15 +438,6 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			lblNext.setHorizontalAlignment(SwingUtilities.CENTER);
 		}
 		return lblNext;
-	}
-
-	private JLabel getLblVs() {
-		if (lblVs == null) {
-			lblVs = createLabel(20);
-			
-			lblVs.setText(uic.VS());
-		}
-		return lblVs;
 	}
 
 }

@@ -239,6 +239,12 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
         } else if (Boolean.TRUE.equals(fightResult.getSecondFighterWinByJudgeDecision())) {
             // lost
             return fightSettings.getForLoosing();
+		} else if (Boolean.TRUE.equals(fightResult.getFirstFighterWinByTKO())) {
+            // won
+            return fightSettings.getForWinning();
+        } else if (Boolean.TRUE.equals(fightResult.getSecondFighterWinByTKO())) {
+            // lost
+            return fightSettings.getForLoosing();
 		} else {
 			// draw
 			return fightSettings.getForDraw();
@@ -275,6 +281,12 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		    // won
 		    return fightSettings.getForWinning();
 		} else if (Boolean.TRUE.equals(fightResult.getFirstFighterWinByJudgeDecision())) {
+		    // lost
+		    return fightSettings.getForLoosing();
+		} else if (Boolean.TRUE.equals(fightResult.getSecondFighterWinByTKO())) {
+		    // won
+		    return fightSettings.getForWinning();
+		} else if (Boolean.TRUE.equals(fightResult.getFirstFighterWinByTKO())) {
 		    // lost
 		    return fightSettings.getForLoosing();
 		} else {
@@ -336,7 +348,14 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 				if (
 						fr.getFirstFighterPoints() != null &&
 						fr.getSecondFighterPointsForWin() != null &&
-						(fr.getFirstFighterPoints().longValue() > 0 || fr.getSecondFighterPointsForWin().longValue() > 0 || Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) || Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision())) &&
+						(
+								fr.getFirstFighterPoints().longValue() > 0 ||
+								fr.getSecondFighterPointsForWin().longValue() > 0 ||
+								Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) ||
+								Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision()) ||
+								Boolean.TRUE.equals(fr.getFirstFighterWinByTKO()) ||
+								Boolean.TRUE.equals(fr.getSecondFighterWinByTKO())
+						) &&
 						fr.getOlympicPositionOnLevel() == 0
 				) {
 					if (fr.getFirstFighter() != null) {
@@ -491,6 +510,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		Long firstCategoryWarnings;
 		Long secondCategoryWarnings;
 		Long wonByJudgeDecisionCount;
+		Long wonByTKOCount;
 		
 		if (fightResult.getFirstFighter().getChampionshipFighter().getFighter().getId().equals(fighter.getId())) {
 			points = fightResult.getFirstFighterPoints();
@@ -498,6 +518,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			secondCategoryWarnings = fightResult.getFirstFighterSecondCategoryWarnings();
 			pointsForWin = fightResult.getFirstFighterPointsForWin();
 			wonByJudgeDecisionCount = Boolean.TRUE.equals(fightResult.getFirstFighterWinByJudgeDecision()) ? 1L : null;
+			wonByTKOCount = Boolean.TRUE.equals(fightResult.getFirstFighterWinByTKO()) ? 1L : null;
 		}
 		else if (fightResult.getSecondFighter().getChampionshipFighter().getFighter().getId().equals(fighter.getId())) {
 			points = fightResult.getSecondFighterPoints();
@@ -505,6 +526,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			secondCategoryWarnings = fightResult.getSecondFighterSecondCategoryWarnings();
 			pointsForWin = fightResult.getSecondFighterPointsForWin();
 			wonByJudgeDecisionCount = Boolean.TRUE.equals(fightResult.getSecondFighterWinByJudgeDecision()) ? 1L : null;
+			wonByTKOCount = Boolean.TRUE.equals(fightResult.getSecondFighterWinByTKO()) ? 1L : null;
 		}
 		else {
 			return fighterPlace;
@@ -529,7 +551,11 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		if (wonByJudgeDecisionCount != null) {
 		    fighterPlace.setWonByJudgeDecisionCount(fighterPlace.getWonByJudgeDecisionCount() + wonByJudgeDecisionCount);
 		}
-		
+
+		if (wonByTKOCount != null) {
+		    fighterPlace.setWonByTKOCount(fighterPlace.getWonByTKOCount() + wonByTKOCount);
+		}
+
 		return fighterPlace;
 	}
 
@@ -1258,11 +1284,13 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		
 		if (fr.getFirstFighterPoints() != null && fr.getSecondFighterPoints() != null) {
 			if (
+					Boolean.TRUE.equals(fr.getFirstFighterWinByTKO()) ||
 			        Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) ||
 			        fr.getFirstFighterPoints().longValue() > fr.getSecondFighterPoints().longValue()
 			) {
 				won = Boolean.TRUE;
 			} else if (
+					Boolean.TRUE.equals(fr.getSecondFighterWinByTKO()) ||
 			        Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision()) ||
 			        fr.getFirstFighterPoints().longValue() < fr.getSecondFighterPoints().longValue()
 			) {

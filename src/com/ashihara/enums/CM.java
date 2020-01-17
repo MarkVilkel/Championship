@@ -528,6 +528,12 @@ public static class FightResult implements Attribute<com.ashihara.datamanagement
 	public Attribute<String> getSecondFighterWinByJudgeDecision() {return new Attribute<String>() {@Override
 	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "secondFighterWinByJudgeDecision";}}; }
+	public Attribute<String> getFirstFighterWinByTKO() {return new Attribute<String>() {@Override
+	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "firstFighterWinByTKO";}}; }
+	public Attribute<String> getSecondFighterWinByTKO() {return new Attribute<String>() {@Override
+	public String getAttributePath(){return FightResult.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "secondFighterWinByTKO";}}; }
 } 
 
 public static class ExceptionStackTraceDo implements Attribute<com.ashihara.datamanagement.pojo.ExceptionStackTraceDo> { 
@@ -667,6 +673,9 @@ public static class FighterPlace implements Attribute<com.ashihara.datamanagemen
 	public Attribute<Integer> getWonByJudgeDecisionCount() {return new Attribute<Integer>() {@Override
 	public String getAttributePath(){return FighterPlace.this.getAttributePath()+"."+getAttributeName();}@Override
 	public String getAttributeName(){return "wonByJudgeDecisionCount";}}; }
+	public Attribute<Integer> getWonByTKOCount() {return new Attribute<Integer>() {@Override
+	public String getAttributePath(){return FighterPlace.this.getAttributePath()+"."+getAttributeName();}@Override
+	public String getAttributeName(){return "wonByTKOCount";}}; }
 	
 } 
 

@@ -1,5 +1,5 @@
 /**
- * The file RulesManagerFactory.java was created on 27 февр. 2018 г. at 23:39:51
+ * The file RulesManagerFactory.java was created on 27 пїЅпїЅпїЅпїЅ. 2018 пїЅ. at 23:39:51
  * by
  * @author Marks Vilkelis.
  */
@@ -24,6 +24,8 @@ public class RulesManagerFactory {
 				return new AllStyleRulesManager(uic);
 			} else if (SC.RULES.JOSUI_STYLE.equals(r)) {	
 				return new JosuiStyleRulesManager(uic);
+			} else if (SC.RULES.ASHIHARA.equals(r)) {	
+				return new AshiharaStyleRulesManager(uic);
 			} else {
 				throw new IllegalArgumentException("Unsupported rules " + r);
 			}

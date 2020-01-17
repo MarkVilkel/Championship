@@ -25,5 +25,8 @@ public interface RulesManager {
 	
 	boolean copyPointsAndWarningsToTheNextRound();
 	boolean canWinByJudgeDecision();
+	boolean canWinByTKO();
+	
+	Long getExatraPointsForTKO();
 
 }

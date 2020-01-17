@@ -18,6 +18,7 @@ public class FighterPlace {
 	private Long firstCategoryWarnings;
 	private Long secondCategoryWarnings;
 	private Long wonByJudgeDecisionCount;
+	private Long wonByTKOCount;
 
 	public FighterPlace() {
 	}
@@ -30,6 +31,7 @@ public class FighterPlace {
 		this.secondCategoryWarnings = 0l;
 		this.firstCategoryWarnings = 0l;
 		this.wonByJudgeDecisionCount = 0l;
+		this.wonByTKOCount = 0l;
 	}
 	
 	public GroupChampionshipFighter getGCFighter() {
@@ -89,5 +91,13 @@ public class FighterPlace {
     public void setWonByJudgeDecisionCount(Long wonByJudgeDecisionCount) {
         this.wonByJudgeDecisionCount = wonByJudgeDecisionCount;
     }
+
+	public Long getWonByTKOCount() {
+		return wonByTKOCount;
+	}
+
+	public void setWonByTKOCount(Long wonByTKOCount) {
+		this.wonByTKOCount = wonByTKOCount;
+	}
 
 }

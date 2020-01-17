@@ -104,6 +104,17 @@ public class CountPanel extends KASPanel {
 	}
 
 	
+	public void checkAndChangeCount(boolean increase, Long c) {
+		if (c == null) {
+			return;
+		}
+		if (increase) {
+			increaseCount(c);
+		} else {
+			decreaseCount(c);
+		}
+	}
+	
 	public void increaseCount(long c) {
 		count += c;
 		

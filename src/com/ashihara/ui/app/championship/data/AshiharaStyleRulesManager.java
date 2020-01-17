@@ -7,11 +7,11 @@ package com.ashihara.ui.app.championship.data;
 
 import com.ashihara.enums.UIC;
 
-public class AllStyleRulesManager implements RulesManager {
+public class AshiharaStyleRulesManager implements RulesManager {
 
 	private final UIC uic;
 
-	public AllStyleRulesManager(UIC uic) {
+	public AshiharaStyleRulesManager(UIC uic) {
 		this.uic = uic;
 	}
 
@@ -32,7 +32,7 @@ public class AllStyleRulesManager implements RulesManager {
 
 	@Override
 	public boolean redFighterFromTheLeft() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -98,12 +98,12 @@ public class AllStyleRulesManager implements RulesManager {
 
 	@Override
 	public boolean canWinByTKO() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public Long getExatraPointsForTKO() {
-		return null;
+		return 6L;
 	}
 
 }

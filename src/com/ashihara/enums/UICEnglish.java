@@ -1315,4 +1315,19 @@ public class UICEnglish implements UIC {
 		return "By judge decision";
 	}
 
+	@Override
+	public String ASHIHARA() {
+		return "Ashihara";
+	}
+
+	@Override
+	public String WIN_BY_TKO() {
+		return "Win by TKO";
+	}
+
+	@Override
+	public String BY_TKO() {
+		return "By TKO";
+	}
+
 }

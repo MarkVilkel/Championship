@@ -255,6 +255,9 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 			if (rulesManager.canWinByJudgeDecision()) {
 			    fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.BY_JUDGE_DECISION(), cmFighterPlace.getWonByJudgeDecisionCount()));
 			}
+			if (rulesManager.canWinByTKO()) {
+			    fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.BY_TKO(), cmFighterPlace.getWonByTKOCount()));
+			}
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.POINTS(), cmFighterPlace.getPoints()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.RESULT_SCORE(), cmFighterPlace.getPointsForWin()));
 			fightResultsTable.getTable().getKASModel().addColumn(new KASColumn(uic.PLACE(), cmFighterPlace.getPlace()));

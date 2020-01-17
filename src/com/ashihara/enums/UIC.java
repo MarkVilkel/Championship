@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.swing.Icon;
+
 public interface UIC extends Serializable {
 	String ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_ROUND();
 	String VALUE_MUST_BE_UNIQUE();
@@ -270,4 +272,7 @@ public interface UIC extends Serializable {
 	String PENALTY();
 	String WIN_BY_JUDGE_DECISION();
 	String BY_JUDGE_DECISION();
+	String ASHIHARA();
+	String WIN_BY_TKO();
+	String BY_TKO();
 }

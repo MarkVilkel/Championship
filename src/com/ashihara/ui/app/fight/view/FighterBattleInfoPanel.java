@@ -14,6 +14,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -36,7 +38,7 @@ import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FighterPhoto;
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.view.CountPanel.CountListener;
-import com.ashihara.ui.app.fight.view.listener.WinByJudgeDecisionCheckListener;
+import com.ashihara.ui.app.fight.view.listener.WinCheckListener;
 import com.ashihara.ui.core.component.KASLabel;
 import com.ashihara.ui.core.panel.ImageIconPanel;
 import com.ashihara.ui.core.panel.KASPanel;
@@ -67,9 +69,11 @@ public class FighterBattleInfoPanel extends KASPanel {
 	private CountPanel firstCategoryPanel;
 	private CountPanel secondCategoryPanel;
 	private JCheckBox checkWinByJudgeDecision;
+	private JCheckBox checkWinByTKO;
 	
 	private final RulesManager rulesManager;
-	private WinByJudgeDecisionCheckListener winByJudgeDecisionCheckListener;
+	private WinCheckListener winByJudgeDecisionCheckListener;
+	private WinCheckListener winByTKOCheckListener;
 	private FighterPhoto photo;
 	private ImageIcon photoImageIcon;
 	
@@ -199,10 +203,24 @@ public class FighterBattleInfoPanel extends KASPanel {
 	    		fighterDetailsPanel.add(createLabelValuePanel(createCaptionLbl(rulesManager.getSecondPenaltyCategoryCaption()+":", BIG_SIZE, false), getSecondCategoryPanel()), c);
 	    	}
 	    	
-	    	if (rulesManager.canWinByJudgeDecision()) {
-	    		c.gridy ++;
-	    		fighterDetailsPanel.add(getCheckWinByJudgeDecision(), c);
+	    	c.gridy ++;
+	    	
+	    	if (rulesManager.canWinByJudgeDecision() && rulesManager.canWinByTKO()) {
+	        	JPanel panel = new JPanel(new GridLayout(1, 1, 20, 0));
+	        	panel.setOpaque(false);
+	        	panel.add(getCheckWinByJudgeDecision());
+	        	panel.add(getCheckWinByTKO());
+	        	fighterDetailsPanel.add(panel, c);
+	    	} else {
+	    		if (rulesManager.canWinByJudgeDecision()) {
+	    			fighterDetailsPanel.add(getCheckWinByJudgeDecision(), c);
+	    		}
+	    		if (rulesManager.canWinByTKO()) {
+	    			c.gridx ++;
+	    			fighterDetailsPanel.add(getCheckWinByTKO(), c);
+	    		}
 	    	}
+	    	
 
 		}
 		
@@ -340,7 +358,7 @@ public class FighterBattleInfoPanel extends KASPanel {
 		
 	}
 	
-	public void setWinByJudgeDecisionCheckListener(WinByJudgeDecisionCheckListener listener) {
+	public void setWinByJudgeDecisionCheckListener(WinCheckListener listener) {
 		this.winByJudgeDecisionCheckListener = listener;
 	}
 	
@@ -352,9 +370,9 @@ public class FighterBattleInfoPanel extends KASPanel {
 		if (checkWinByJudgeDecision == null) {
 			checkWinByJudgeDecision = new JCheckBox(uic.WIN_BY_JUDGE_DECISION());
 			checkWinByJudgeDecision.setOpaque(false);
-			checkWinByJudgeDecision.addChangeListener(new ChangeListener() {
+			checkWinByJudgeDecision.addItemListener(new ItemListener() {
 				@Override
-				public void stateChanged(ChangeEvent arg0) {
+				public void itemStateChanged(ItemEvent e) {
 					if (winByJudgeDecisionCheckListener != null) {
 						winByJudgeDecisionCheckListener.checked(checkWinByJudgeDecision.isSelected());
 					}
@@ -362,6 +380,26 @@ public class FighterBattleInfoPanel extends KASPanel {
 			});
 		}
 		return checkWinByJudgeDecision;
+	}
+
+	public JCheckBox getCheckWinByTKO() {
+		if (checkWinByTKO == null) {
+			checkWinByTKO = new JCheckBox(uic.WIN_BY_TKO());
+			checkWinByTKO.setOpaque(false);
+			checkWinByTKO.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (winByTKOCheckListener != null) {
+						winByTKOCheckListener.checked(checkWinByTKO.isSelected());
+					}
+				}
+			});
+		}
+		return checkWinByTKO;
+	}
+
+	public void setWinByTKOCheckListener(WinCheckListener winByTKOCheckListener) {
+		this.winByTKOCheckListener = winByTKOCheckListener;
 	}
 
 }

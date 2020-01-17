@@ -38,7 +38,10 @@ public class FightResult extends BaseDo {
 
 	private Boolean firstFighterWinByJudgeDecision;
 	private Boolean secondFighterWinByJudgeDecision;
-	
+
+	private Boolean firstFighterWinByTKO;
+	private Boolean secondFighterWinByTKO;
+
 	private GroupChampionshipFighter redFighter; // calculated
 	private GroupChampionshipFighter blueFighter; // calculated
 	
@@ -179,74 +182,70 @@ public class FightResult extends BaseDo {
 	public void setSecondFighterParent(FightResult secondFighterParent) {
 		this.secondFighterParent = secondFighterParent;
 	}
+	public List<FightResult> getChildren() {
+		return children;
+	}
+	public void setChildren(List<FightResult> children) {
+		this.children = children;
+	}
+	public Boolean getFirstFighterWinByJudgeDecision() {
+		return firstFighterWinByJudgeDecision;
+	}
+	public void setFirstFighterWinByJudgeDecision(Boolean firstFighterWinByJudgeDecision) {
+		this.firstFighterWinByJudgeDecision = firstFighterWinByJudgeDecision;
+	}
+	public Boolean getSecondFighterWinByJudgeDecision() {
+		return secondFighterWinByJudgeDecision;
+	}
+	public void setSecondFighterWinByJudgeDecision(Boolean secondFighterWinByJudgeDecision) {
+		this.secondFighterWinByJudgeDecision = secondFighterWinByJudgeDecision;
+	}
+	public Boolean getFirstFighterWinByTKO() {
+		return firstFighterWinByTKO;
+	}
+	public void setFirstFighterWinByTKO(Boolean firstFighterWinByTKO) {
+		this.firstFighterWinByTKO = firstFighterWinByTKO;
+	}
+	public Boolean getSecondFighterWinByTKO() {
+		return secondFighterWinByTKO;
+	}
+	public void setSecondFighterWinByTKO(Boolean secondFighterWinByTKO) {
+		this.secondFighterWinByTKO = secondFighterWinByTKO;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
+		result = prime * result + ((blueFighter == null) ? 0 : blueFighter.hashCode());
+		result = prime * result + ((children == null) ? 0 : children.hashCode());
+		result = prime * result + ((firstFighter == null) ? 0 : firstFighter.hashCode());
 		result = prime * result
-				+ ((blueFighter == null) ? 0 : blueFighter.hashCode());
+				+ ((firstFighterFirstCategoryWarnings == null) ? 0 : firstFighterFirstCategoryWarnings.hashCode());
+		result = prime * result + ((firstFighterParent == null) ? 0 : firstFighterParent.hashCode());
+		result = prime * result + ((firstFighterPoints == null) ? 0 : firstFighterPoints.hashCode());
+		result = prime * result + ((firstFighterPointsForWin == null) ? 0 : firstFighterPointsForWin.hashCode());
 		result = prime * result
-				+ ((firstFighter == null) ? 0 : firstFighter.hashCode());
-		result = prime
-				* result
-				+ ((firstFighterFirstCategoryWarnings == null) ? 0
-						: firstFighterFirstCategoryWarnings.hashCode());
-		result = prime
-				* result
-				+ ((firstFighterParent == null) ? 0 : firstFighterParent
-						.hashCode());
-		result = prime
-				* result
-				+ ((firstFighterPoints == null) ? 0 : firstFighterPoints
-						.hashCode());
-		result = prime
-				* result
-				+ ((firstFighterPointsForWin == null) ? 0
-						: firstFighterPointsForWin.hashCode());
-		result = prime
-				* result
-				+ ((firstFighterSecondCategoryWarnings == null) ? 0
-						: firstFighterSecondCategoryWarnings.hashCode());
-		result = prime
-				* result
-				+ ((nextRoundFightResult == null) ? 0 : nextRoundFightResult
-						.hashCode());
+				+ ((firstFighterSecondCategoryWarnings == null) ? 0 : firstFighterSecondCategoryWarnings.hashCode());
 		result = prime * result
-				+ ((olympicLevel == null) ? 0 : olympicLevel.hashCode());
-		result = prime
-				* result
-				+ ((olympicPositionOnLevel == null) ? 0
-						: olympicPositionOnLevel.hashCode());
-		result = prime
-				* result
-				+ ((previousRoundFightResult == null) ? 0
-						: previousRoundFightResult.hashCode());
+				+ ((firstFighterWinByJudgeDecision == null) ? 0 : firstFighterWinByJudgeDecision.hashCode());
+		result = prime * result + ((firstFighterWinByTKO == null) ? 0 : firstFighterWinByTKO.hashCode());
+		result = prime * result + ((nextRoundFightResult == null) ? 0 : nextRoundFightResult.hashCode());
+		result = prime * result + ((olympicLevel == null) ? 0 : olympicLevel.hashCode());
+		result = prime * result + ((olympicPositionOnLevel == null) ? 0 : olympicPositionOnLevel.hashCode());
+		result = prime * result + ((previousRoundFightResult == null) ? 0 : previousRoundFightResult.hashCode());
+		result = prime * result + ((redFighter == null) ? 0 : redFighter.hashCode());
+		result = prime * result + ((roundNumber == null) ? 0 : roundNumber.hashCode());
+		result = prime * result + ((secondFighter == null) ? 0 : secondFighter.hashCode());
 		result = prime * result
-				+ ((redFighter == null) ? 0 : redFighter.hashCode());
+				+ ((secondFighterFirstCategoryWarnings == null) ? 0 : secondFighterFirstCategoryWarnings.hashCode());
+		result = prime * result + ((secondFighterParent == null) ? 0 : secondFighterParent.hashCode());
+		result = prime * result + ((secondFighterPoints == null) ? 0 : secondFighterPoints.hashCode());
+		result = prime * result + ((secondFighterPointsForWin == null) ? 0 : secondFighterPointsForWin.hashCode());
 		result = prime * result
-				+ ((roundNumber == null) ? 0 : roundNumber.hashCode());
+				+ ((secondFighterSecondCategoryWarnings == null) ? 0 : secondFighterSecondCategoryWarnings.hashCode());
 		result = prime * result
-				+ ((secondFighter == null) ? 0 : secondFighter.hashCode());
-		result = prime
-				* result
-				+ ((secondFighterFirstCategoryWarnings == null) ? 0
-						: secondFighterFirstCategoryWarnings.hashCode());
-		result = prime
-				* result
-				+ ((secondFighterParent == null) ? 0 : secondFighterParent
-						.hashCode());
-		result = prime
-				* result
-				+ ((secondFighterPoints == null) ? 0 : secondFighterPoints
-						.hashCode());
-		result = prime
-				* result
-				+ ((secondFighterPointsForWin == null) ? 0
-						: secondFighterPointsForWin.hashCode());
-		result = prime
-				* result
-				+ ((secondFighterSecondCategoryWarnings == null) ? 0
-						: secondFighterSecondCategoryWarnings.hashCode());
+				+ ((secondFighterWinByJudgeDecision == null) ? 0 : secondFighterWinByJudgeDecision.hashCode());
+		result = prime * result + ((secondFighterWinByTKO == null) ? 0 : secondFighterWinByTKO.hashCode());
 		return result;
 	}
 	@Override
@@ -263,6 +262,11 @@ public class FightResult extends BaseDo {
 				return false;
 		} else if (!blueFighter.equals(other.blueFighter))
 			return false;
+		if (children == null) {
+			if (other.children != null)
+				return false;
+		} else if (!children.equals(other.children))
+			return false;
 		if (firstFighter == null) {
 			if (other.firstFighter != null)
 				return false;
@@ -271,8 +275,7 @@ public class FightResult extends BaseDo {
 		if (firstFighterFirstCategoryWarnings == null) {
 			if (other.firstFighterFirstCategoryWarnings != null)
 				return false;
-		} else if (!firstFighterFirstCategoryWarnings
-				.equals(other.firstFighterFirstCategoryWarnings))
+		} else if (!firstFighterFirstCategoryWarnings.equals(other.firstFighterFirstCategoryWarnings))
 			return false;
 		if (firstFighterParent == null) {
 			if (other.firstFighterParent != null)
@@ -287,14 +290,22 @@ public class FightResult extends BaseDo {
 		if (firstFighterPointsForWin == null) {
 			if (other.firstFighterPointsForWin != null)
 				return false;
-		} else if (!firstFighterPointsForWin
-				.equals(other.firstFighterPointsForWin))
+		} else if (!firstFighterPointsForWin.equals(other.firstFighterPointsForWin))
 			return false;
 		if (firstFighterSecondCategoryWarnings == null) {
 			if (other.firstFighterSecondCategoryWarnings != null)
 				return false;
-		} else if (!firstFighterSecondCategoryWarnings
-				.equals(other.firstFighterSecondCategoryWarnings))
+		} else if (!firstFighterSecondCategoryWarnings.equals(other.firstFighterSecondCategoryWarnings))
+			return false;
+		if (firstFighterWinByJudgeDecision == null) {
+			if (other.firstFighterWinByJudgeDecision != null)
+				return false;
+		} else if (!firstFighterWinByJudgeDecision.equals(other.firstFighterWinByJudgeDecision))
+			return false;
+		if (firstFighterWinByTKO == null) {
+			if (other.firstFighterWinByTKO != null)
+				return false;
+		} else if (!firstFighterWinByTKO.equals(other.firstFighterWinByTKO))
 			return false;
 		if (nextRoundFightResult == null) {
 			if (other.nextRoundFightResult != null)
@@ -314,8 +325,7 @@ public class FightResult extends BaseDo {
 		if (previousRoundFightResult == null) {
 			if (other.previousRoundFightResult != null)
 				return false;
-		} else if (!previousRoundFightResult
-				.equals(other.previousRoundFightResult))
+		} else if (!previousRoundFightResult.equals(other.previousRoundFightResult))
 			return false;
 		if (redFighter == null) {
 			if (other.redFighter != null)
@@ -335,8 +345,7 @@ public class FightResult extends BaseDo {
 		if (secondFighterFirstCategoryWarnings == null) {
 			if (other.secondFighterFirstCategoryWarnings != null)
 				return false;
-		} else if (!secondFighterFirstCategoryWarnings
-				.equals(other.secondFighterFirstCategoryWarnings))
+		} else if (!secondFighterFirstCategoryWarnings.equals(other.secondFighterFirstCategoryWarnings))
 			return false;
 		if (secondFighterParent == null) {
 			if (other.secondFighterParent != null)
@@ -351,34 +360,24 @@ public class FightResult extends BaseDo {
 		if (secondFighterPointsForWin == null) {
 			if (other.secondFighterPointsForWin != null)
 				return false;
-		} else if (!secondFighterPointsForWin
-				.equals(other.secondFighterPointsForWin))
+		} else if (!secondFighterPointsForWin.equals(other.secondFighterPointsForWin))
 			return false;
 		if (secondFighterSecondCategoryWarnings == null) {
 			if (other.secondFighterSecondCategoryWarnings != null)
 				return false;
-		} else if (!secondFighterSecondCategoryWarnings
-				.equals(other.secondFighterSecondCategoryWarnings))
+		} else if (!secondFighterSecondCategoryWarnings.equals(other.secondFighterSecondCategoryWarnings))
+			return false;
+		if (secondFighterWinByJudgeDecision == null) {
+			if (other.secondFighterWinByJudgeDecision != null)
+				return false;
+		} else if (!secondFighterWinByJudgeDecision.equals(other.secondFighterWinByJudgeDecision))
+			return false;
+		if (secondFighterWinByTKO == null) {
+			if (other.secondFighterWinByTKO != null)
+				return false;
+		} else if (!secondFighterWinByTKO.equals(other.secondFighterWinByTKO))
 			return false;
 		return true;
-	}
-	public List<FightResult> getChildren() {
-		return children;
-	}
-	public void setChildren(List<FightResult> children) {
-		this.children = children;
-	}
-	public Boolean getFirstFighterWinByJudgeDecision() {
-		return firstFighterWinByJudgeDecision;
-	}
-	public void setFirstFighterWinByJudgeDecision(Boolean firstFighterWinByJudgeDecision) {
-		this.firstFighterWinByJudgeDecision = firstFighterWinByJudgeDecision;
-	}
-	public Boolean getSecondFighterWinByJudgeDecision() {
-		return secondFighterWinByJudgeDecision;
-	}
-	public void setSecondFighterWinByJudgeDecision(Boolean secondFighterWinByJudgeDecision) {
-		this.secondFighterWinByJudgeDecision = secondFighterWinByJudgeDecision;
 	}
 	
 }
