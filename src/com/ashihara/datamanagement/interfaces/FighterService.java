@@ -16,19 +16,21 @@ import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.rtu.exception.PersistenceException;
 
 public interface FighterService extends AKService {
-	public Fighter saveFighter(Fighter fighter) throws PersistenceException;
-	public Fighter reloadFighter(Fighter fighter) throws PersistenceException;
-	public void deleteFighter(Fighter fighter) throws PersistenceException;
+	Fighter saveFighter(Fighter fighter) throws PersistenceException;
+	Fighter reloadFighter(Fighter fighter) throws PersistenceException;
+	void deleteFighter(Fighter fighter) throws PersistenceException;
 	
-	public List<Fighter> saveFighters(List<Fighter> fighters) throws PersistenceException;
-	public void deleteFighters(List<Fighter> fighters) throws PersistenceException;
-	public List<Fighter> searchByPattern(Fighter fighter, List<Fighter> exceptFighters) throws PersistenceException;
-	public Fighter reload(Fighter fighter) throws PersistenceException;
-	public Long getNewFighterNumber() throws PersistenceException;
-	public List<ChampionshipFighter> loadFightersSuitableForGroup(FightingGroup group) throws PersistenceException;
+	List<Fighter> saveFighters(List<Fighter> fighters) throws PersistenceException;
+	void deleteFighters(List<Fighter> fighters) throws PersistenceException;
+	List<Fighter> searchByPattern(Fighter fighter, List<Fighter> exceptFighters) throws PersistenceException;
+	Fighter reload(Fighter fighter) throws PersistenceException;
+	Long getNewFighterNumber() throws PersistenceException;
+	List<ChampionshipFighter> loadFightersSuitableForGroup(FightingGroup group) throws PersistenceException;
 	
-	public void importFighters(File file) throws PersistenceException;
-	public List<ChampionshipFighter> loadFightersByGroup(FightingGroup group) throws PersistenceException;
-	public Fighter loadOrCreateFighter(Fighter fighter) throws PersistenceException, AKBusinessException;
+	void importFighters(File file) throws PersistenceException;
+	List<ChampionshipFighter> loadFightersByGroup(FightingGroup group) throws PersistenceException;
+	Fighter loadOrCreateFighter(Fighter fighter) throws PersistenceException, AKBusinessException;
+	
+	void fillParticipanceInChampionshipsCount(List<Fighter> fighters) throws PersistenceException;
 	
 }

@@ -28,5 +28,9 @@ public interface RulesManager {
 	boolean canWinByTKO();
 	
 	Long getExatraPointsForTKO();
-
+	boolean canExceedMaxPointsCount();
+	
+	default int getAdvancedNextFightsCount() {
+		return 2;
+	}
 }

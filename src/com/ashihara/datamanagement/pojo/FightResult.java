@@ -212,6 +212,25 @@ public class FightResult extends BaseDo {
 	public void setSecondFighterWinByTKO(Boolean secondFighterWinByTKO) {
 		this.secondFighterWinByTKO = secondFighterWinByTKO;
 	}
+
+	public boolean isFirstFighterWon() {
+		boolean result =
+						Boolean.TRUE.equals(getFirstFighterWinByTKO()) ||
+						Boolean.TRUE.equals(getFirstFighterWinByJudgeDecision()) ||
+						(getFirstFighterPoints() != null && getSecondFighterPoints() != null && getFirstFighterPoints().longValue() > getSecondFighterPoints().longValue())
+						;
+		return result;
+	}
+
+	public boolean isSecondFighterWon() {
+		boolean result =
+				Boolean.TRUE.equals(getSecondFighterWinByTKO()) ||
+			    Boolean.TRUE.equals(getSecondFighterWinByJudgeDecision()) ||
+			    (getFirstFighterPoints() != null && getSecondFighterPoints() != null && getFirstFighterPoints().longValue() < getSecondFighterPoints().longValue())
+			    ;
+		return result;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

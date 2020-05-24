@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.ashihara.datamanagement.core.session.AKServerSessionManager;
 import com.ashihara.datamanagement.core.session.AKServerSessionManagerImpl;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.rtu.persistence.core.Attribute;
@@ -61,6 +62,7 @@ public class KasEntityRegister {
 	private void initExtras() {
 		getExtras().add(new FighterPlace());
 		getExtras().add(new FightResultReport());
+		getExtras().add(new FightResultForPlan());
 	}
 
 	private void createRestrictedTypesRegister() {

@@ -133,7 +133,7 @@ public class TableRoundRobinSystemPanelView extends KASPanel implements UIView<I
 		return fightResultTable;
 	}
 	
-	private class ColoredCellRenderer extends KASDefaultRenderer {
+	public static class ColoredCellRenderer extends KASDefaultRenderer {
 		private static final long serialVersionUID = 1L;
 		
 		private final Color color;

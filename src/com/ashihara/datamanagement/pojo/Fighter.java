@@ -33,8 +33,12 @@ public class Fighter extends BaseDo {
 		}
 		long yearsOld = System.currentTimeMillis() - getBirthday().getTime();
 		return yearsOld / (1000l * 60l * 60l * 24l * 365l);
+	
 	}
+	
+	private Integer participanceInChampionshipsCount;
 //	----------------------------
+	
 
 	
 	public Date getBirthday() {
@@ -144,6 +148,12 @@ public class Fighter extends BaseDo {
 	}
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	public Integer getParticipanceInChampionshipsCount() {
+		return participanceInChampionshipsCount;
+	}
+	public void setParticipanceInChampionshipsCount(Integer participanceInChampionshipsCount) {
+		this.participanceInChampionshipsCount = participanceInChampionshipsCount;
 	}
 
 

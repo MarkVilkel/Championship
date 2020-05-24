@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -25,7 +26,7 @@ public class FightJFrame extends JFrame {
 	protected static UIC uic = ApplicationManager.getInstance().getUic();
 	
 	private final FightResult fightResult;
-	private final UIStatePerformer<FightResult> callbacker;
+	private final UIStatePerformer<FightResult> nextRoundCallbacker;
 	private final FightSettings fightSettings;
 	
 	private FightModelUI fightModelUI;
@@ -34,12 +35,28 @@ public class FightJFrame extends JFrame {
 	private final boolean isNextRound;
 	
 	private final WindowAdapter windowAdapter;
-	
+	private final boolean advancedNextFights;
+	private final List<FightResult> nextFights;
+	private final UIStatePerformer<FightResult> closeCallbacker;
+
+
 	public FightJFrame(
 			FightResult fightResult,
 			FightSettings fightSettings,
 			boolean isNextRound,
 			UIStatePerformer<FightResult> callbacker
+	) {
+		this(fightResult, fightSettings, isNextRound, callbacker, false, null, null);
+	}
+
+	public FightJFrame(
+			FightResult fightResult,
+			FightSettings fightSettings,
+			boolean isNextRound,
+			UIStatePerformer<FightResult> nextRoundCallbacker,
+			boolean advancedNextFights,
+			List<FightResult> nextFights,
+			UIStatePerformer<FightResult> closeCallbacker
 	) {
 		super(
 				fightResult.getRedFighter().getChampionshipFighter().getFighter().toString() +
@@ -49,9 +66,12 @@ public class FightJFrame extends JFrame {
 				uic.FIGHT());
 		
 		this.fightResult = fightResult;
-		this.callbacker = callbacker;
+		this.nextRoundCallbacker = nextRoundCallbacker;
 		this.isNextRound = isNextRound;
 		this.fightSettings = fightSettings;
+		this.advancedNextFights = advancedNextFights;
+		this.nextFights = nextFights;
+		this.closeCallbacker = closeCallbacker;
 		
 		setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width*2/3+5, Toolkit.getDefaultToolkit().getScreenSize().height*2/3 + 50));
 		
@@ -59,6 +79,7 @@ public class FightJFrame extends JFrame {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		this.windowAdapter = new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				dispose();
 			}
@@ -83,6 +104,7 @@ public class FightJFrame extends JFrame {
 		removeWindowListener(windowAdapter);
 	}
 	
+	@Override
 	public void dispose(){
 		super.dispose();
 		onClose();
@@ -90,7 +112,7 @@ public class FightJFrame extends JFrame {
 
 	private FightModelUI getFightModelUI() {
 		if (fightModelUI == null) {
-			fightModelUI = new FightModelUI(fightResult, fightSettings, isNextRound, callbacker);
+			fightModelUI = new FightModelUI(fightResult, fightSettings, isNextRound, nextRoundCallbacker, advancedNextFights, nextFights, closeCallbacker);
 		}
 		return fightModelUI;
 	}

@@ -106,4 +106,9 @@ public class AllStyleRulesManager implements RulesManager {
 		return null;
 	}
 
+	@Override
+	public boolean canExceedMaxPointsCount() {
+		return false;
+	}
+
 }

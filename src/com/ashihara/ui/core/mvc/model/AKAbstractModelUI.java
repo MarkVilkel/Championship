@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.ashihara.datamanagement.core.session.AKClientSession;
 import com.ashihara.datamanagement.core.session.AKServerSessionManagerImpl;
+import com.ashihara.datamanagement.interfaces.ChampionshipPlanService;
 import com.ashihara.datamanagement.interfaces.ChampionshipService;
 import com.ashihara.datamanagement.interfaces.CountryService;
 import com.ashihara.datamanagement.interfaces.FightResultService;
@@ -34,6 +35,7 @@ public abstract class AKAbstractModelUI<T extends UIView> implements UIModel<T> 
 	protected static ApplicationManager appManager = ApplicationManager.getInstance();
 	protected static UIC uic = appManager.getUic();
 	
+	@Override
 	public void finishAsynchronicCall(UIModel clazz, Method method, Object[] args, Object invocationResult){
 		
 	}
@@ -72,6 +74,10 @@ public abstract class AKAbstractModelUI<T extends UIView> implements UIModel<T> 
 		return getServerSideServiceFactory().getService(ChampionshipService.class, TransactionType.COMMIT_TRANSACTION);
 	}
 	
+	protected ChampionshipPlanService getChampionshipPlanService() {
+		return getServerSideServiceFactory().getService(ChampionshipPlanService.class, TransactionType.COMMIT_TRANSACTION);
+	}
+	
 	protected FightingGroupService getGroupService() {
 		return getServerSideServiceFactory().getService(FightingGroupService.class, TransactionType.COMMIT_TRANSACTION);
 	}
@@ -88,6 +94,7 @@ public abstract class AKAbstractModelUI<T extends UIView> implements UIModel<T> 
 		return getServerSideServiceFactory().getService(MigrationService.class, TransactionType.COMMIT_TRANSACTION);
 	}
 	
+	@Override
 	public void unlink() {
 		performUnlink(this);
 	}

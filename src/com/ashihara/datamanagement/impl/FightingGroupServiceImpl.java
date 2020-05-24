@@ -100,7 +100,7 @@ public class FightingGroupServiceImpl extends AbstractAKServiceImpl implements F
 		
 		return result;
 	}
-
+	
 	@Override
 	public FightingGroup saveGroup(FightingGroup group) throws PersistenceException {
 		return getHelper().save(group);
@@ -129,7 +129,8 @@ public class FightingGroupServiceImpl extends AbstractAKServiceImpl implements F
 		return result;
 	}
 	
-	private void sortFightingGroups(List<FightingGroup> groups) {
+	@Override
+	public void sortFightingGroups(List<FightingGroup> groups) {
 		Collections.sort(groups, new Comparator<FightingGroup>() {
 			@Override
 			public int compare(FightingGroup o1, FightingGroup o2) {
@@ -214,10 +215,6 @@ public class FightingGroupServiceImpl extends AbstractAKServiceImpl implements F
 				GroupChampionshipFighter gcf = fighters.get(i);
 				gcf.setOlympicLevel(Long.valueOf(0));
 			}
-			for (int i = 0; i < fighters.size() - fightersCountToGoToTheSecondLevel; i++) {
-				GroupChampionshipFighter gcf = fighters.get(i);
-				gcf.setOlympicLevel(Long.valueOf(0));
-			}
 			for (int i = fighters.size() - fightersCountToGoToTheSecondLevel; i < fighters.size(); i++) {
 				GroupChampionshipFighter gcf = fighters.get(i);
 				gcf.setOlympicLevel(Long.valueOf(1));
@@ -257,25 +254,40 @@ public class FightingGroupServiceImpl extends AbstractAKServiceImpl implements F
 			return list.get(0);
 		}
 	}
+	
+	@Override
+	public List<FightingGroup> loadStartedGroups(Championship championship) throws PersistenceException {
+		if (championship == null || championship.getId() == null) {
+			return new ArrayList<FightingGroup>();
+		}
+		
+		HqlQuery<FightingGroup> hql = getHelper().createHqlQuery(FightingGroup.class, getCmFightingGroup());
+		
+		hql.addExpression(ExpressionHelper.eq(getCmFightingGroup().getChampionship(), championship));
+		hql.addExpression(ExpressionHelper.eq(getCmFightingGroup().getStatus(), SC.GROUP_STATUS.STARTED));
+		
+		List<FightingGroup> result = getHelper().loadByHqlQuery(hql); 
+		sortFightingGroups(result);
+		
+		return result;
+	}
 
 	@Override
 	public List<FightingGroup> loadStartedWithRealFightResultsGroups(Championship championship) throws PersistenceException {
-		List<FightingGroup> allGroups = loadGroups(championship);
+		List<FightingGroup> allGroups = loadStartedGroups(championship);
 		List<FightingGroup> result = new ArrayList<FightingGroup>();
 		
 		for (FightingGroup group : allGroups) {
-			if (SC.GROUP_STATUS.STARTED.equals(group.getStatus())) {
-				List<FightResult> fightResults = null;
-				if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
-					fightResults = getFightResultService().loadOrCreateOlympicFightResults(group);
-				}
-				else if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
-					fightResults = getFightResultService().loadOrCreateRoundRobinLastFightResults(group);
-				}
-				boolean isAnyRealResult = isAnyRealResult(fightResults);
-				if (isAnyRealResult) {
-					result.add(group);
-				}
+			List<FightResult> fightResults = null;
+			if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
+				fightResults = getFightResultService().loadOrCreateOlympicFightResults(group);
+			}
+			else if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
+				fightResults = getFightResultService().loadOrCreateRoundRobinLastFightResults(group);
+			}
+			boolean isAnyRealResult = isAnyRealResult(fightResults);
+			if (isAnyRealResult) {
+				result.add(group);
 			}
 		}
 		

@@ -161,6 +161,7 @@ public class GroupEditModel extends AKAbstractModelUI<GroupEditPanelView> implem
 		
 		getViewUI().getTxtWeightCategory().setText(getFightingGroup().getYearWeightCategoryLink().getWeightCategory().toString());
 		getViewUI().getTxtYearCategory().setText(getFightingGroup().getYearWeightCategoryLink().getYearCategory().toString());
+		getViewUI().getCheckInPlan().setSelected(getFightingGroup().getPlan() != null);
 	}
 
 	@Override

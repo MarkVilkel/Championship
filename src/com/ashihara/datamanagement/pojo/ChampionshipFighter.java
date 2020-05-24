@@ -15,6 +15,7 @@ public class ChampionshipFighter extends BaseDo {
 	private Fighter fighter;
 	private Long number;
 	
+	
 	public Long getNumber() {
 		return number;
 	}

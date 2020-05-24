@@ -234,6 +234,16 @@ public class UICEnglish implements UIC {
 	}
 
 	@Override
+	public String CHAMPIONSHIP_PLAN() {
+		return "Championship plan";
+	}
+
+	@Override
+	public String PLAN() {
+		return "Plan";
+	}
+
+	@Override
 	public String FIGHTERS() {
 		return "Fighters";
 	}
@@ -1328,6 +1338,56 @@ public class UICEnglish implements UIC {
 	@Override
 	public String BY_TKO() {
 		return "By TKO";
+	}
+
+	@Override
+	public String SELECT_GROUPS() {
+		return "Select groups";
+	}
+
+	@Override
+	public String IN_PLAN() {
+		return "In plan";
+	}
+
+	@Override
+	public String PLAN_FOR() {
+		return "Plan for";
+	}
+
+	@Override
+	public String NR() {
+		return "Nr";
+	}
+
+	@Override
+	public String NO_NEXT() {
+		return "no next";
+	}
+
+	@Override
+	public String SHOW_NEXT_FIGHTS() {
+		return "Show next fights";
+	}
+
+	@Override
+	public String ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_FIGHT() {
+		return "Are sure you want to start the NEXT FIGHT?";
+	}
+
+	@Override
+	public String SKILL() {
+		return "Skill";
+	}
+
+	@Override
+	public String FINALS_AT_THE_END() {
+		return "Finals at the end";
+	}
+
+	@Override
+	public String FINALS() {
+		return "Finals:";
 	}
 
 }

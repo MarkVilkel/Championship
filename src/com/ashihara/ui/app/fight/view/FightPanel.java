@@ -8,11 +8,16 @@ package com.ashihara.ui.app.fight.view;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,6 +44,8 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	
 	private final FightResult fightResult;
 	private final FightResult nextFightResult;
+	private final List<FightResult> nextFightResults;
+	private final boolean useAdvancedNextFightResults;
 	
 	private final FightSettings fightSettings;
 	private FighterBattleInfoPanel secondFighterBattleInfoPanel;
@@ -50,21 +57,21 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	private JButton btnNextRound;
 	private IFightModelUI<?> modelUI;
 	
-	private KASPanel nextFightPanel;
-	private GradientPanel nextBluePanel, nextRedPanel;
-	private JLabel lblNextRedFighter, lblNextBlueFighter, lblNext;
-	
 	private final RulesManager rulesManager;
 	
 	public FightPanel(
 			FightResult fightResult,
+			boolean useAdvancedNextFightResults,
 			FightResult nextFightResult,
+			List<FightResult> nextFightResults,
 			FightSettings fightSettings,
 			IFightModelUI<?> modelUI,
 			RulesManager rulesManager
 	) {
 		this.fightResult = fightResult;
+		this.useAdvancedNextFightResults = useAdvancedNextFightResults;
 		this.nextFightResult = nextFightResult;
+		this.nextFightResults = nextFightResults;
 		this.modelUI = modelUI;
 		this.fightSettings = fightSettings;
 		this.rulesManager = rulesManager;
@@ -73,18 +80,34 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	}
 
 	private void init() {
-		
 		add(getTimePanel(), BorderLayout.NORTH);
 		add(getFightersPanel(), BorderLayout.CENTER);
 		
-
-		if (nextFightResult != null) {
+		
+		List<FightResult> frs = new ArrayList<>();
+		if (useAdvancedNextFightResults) {
+			if (nextFightResults != null) {
+				frs.addAll(nextFightResults);
+			}
+		} else if (nextFightResult != null) {
+			frs.add(nextFightResult);
+		}
+		
+		if (!frs.isEmpty()) {
 			KASPanel southPanel = new KASPanel();
-			southPanel.add(getNextFightPanel(), BorderLayout.CENTER);
+			int fightSize = frs.size();
+			
+			KASPanel nextFightsPanel = new KASPanel(new GridBagLayout());
+			
+			GridBagConstraints c = new GridBagConstraints();
+			for (int i = 0; i < fightSize; i ++) {
+				c.gridy = i;
+				placeNextFighters(nextFightsPanel, c, frs.get(i), fightSize > 1 ? i + 1 : null);
+			}
+			southPanel.add(nextFightsPanel, BorderLayout.CENTER);
 			southPanel.add(getButtonsPanel(), BorderLayout.SOUTH);
 			add(southPanel, BorderLayout.SOUTH);
-		}
-		else {
+		} else {
 			add(getButtonsPanel(), BorderLayout.SOUTH);
 		}
 	}
@@ -277,7 +300,6 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			
 			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			panel.add(getBtnNextRound());
-//			panel.add(btnSwitchFighters);
 			
 			buttonsPanel.add(panel, BorderLayout.WEST);
 			buttonsPanel.add(okButtonPanel, BorderLayout.EAST);
@@ -360,44 +382,47 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		}
 		return btnNextRound;
 	}
-
-	private KASPanel getNextFightPanel() {
-		if (nextFightPanel == null) {
-			nextFightPanel = new KASPanel(new GridLayout(1, 3));
+	
+	private void placeNextFighters(KASPanel nextFightPanel, GridBagConstraints c, FightResult fr, Integer fightNumber) {
+		c.gridx = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		
+		if (rulesManager.redFighterFromTheLeft()) {
+			c.weightx = 5;
+			nextFightPanel.add(createNextRedPanel(fr, FlowLayout.LEFT), c);
 			
-			if (rulesManager.redFighterFromTheLeft()) {
-				nextFightPanel.add(getNextRedPanel());
-				nextFightPanel.add(getLblNext());
-				nextFightPanel.add(getNextBluePanel());
-			} else {
-				nextFightPanel.add(getNextBluePanel());
-				nextFightPanel.add(getLblNext());
-				nextFightPanel.add(getNextRedPanel());
-			}
+			c.weightx = 1;
+			c.gridx = 1;
+			nextFightPanel.add(createLblNext(fightNumber), c);
 			
+			c.weightx = 5;
+			c.gridx = 2;
+			nextFightPanel.add(createNextBluePanel(fr, FlowLayout.RIGHT), c);
+		} else {
+			c.weightx = 5;
+			nextFightPanel.add(createNextBluePanel(fr, FlowLayout.LEFT), c);
+			
+			c.weightx = 1;
+			c.gridx = 1;
+			nextFightPanel.add(createLblNext(fightNumber), c);
+			
+			c.weightx = 5;
+			c.gridx = 2;
+			nextFightPanel.add(createNextRedPanel(fr, FlowLayout.RIGHT), c);
 		}
-		return nextFightPanel;
 	}
 
-	private GradientPanel getNextBluePanel() {
-		if (nextBluePanel == null) {
-			nextBluePanel = new GradientPanel(UIUtils.BLUE);
-			
-			nextBluePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			
-			nextBluePanel.add(getLblNextBlueFighter());
-		}
+	private GradientPanel createNextBluePanel(FightResult nextFightResult, int horizontalOrientation) {
+		GradientPanel nextBluePanel = new GradientPanel(UIUtils.BLUE);
+		nextBluePanel.setLayout(new FlowLayout(horizontalOrientation));
+		nextBluePanel.add(createLblNextBlueFighter(nextFightResult));
 		return nextBluePanel;
 	}
 
-	private GradientPanel getNextRedPanel() {
-		if (nextRedPanel == null) {
-			nextRedPanel = new GradientPanel(UIUtils.RED);
-			
-			nextRedPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			
-			nextRedPanel.add(getLblNextRedFighter());
-		}
+	private GradientPanel createNextRedPanel(FightResult nextFightResult, int horizontalOrientation) {
+		GradientPanel nextRedPanel = new GradientPanel(UIUtils.RED);
+		nextRedPanel.setLayout(new FlowLayout(horizontalOrientation));
+		nextRedPanel.add(createLblNextRedFighter(nextFightResult));
 		return nextRedPanel;
 	}
 	
@@ -407,37 +432,55 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		return lbl;
 	}
 	
+	private JButton createButton(int size) {
+		JButton btn = new JButton();
+		btn.setFont(new Font(btn.getFont().getName(), btn.getFont().getStyle(), size));
+		return btn;
+	}
 
-	private JLabel getLblNextRedFighter() {
-		if (lblNextRedFighter == null) {
-			lblNextRedFighter = createLabel(30);
-			
-			if (nextFightResult != null) {
-				lblNextRedFighter.setText(nextFightResult.getRedFighter().getChampionshipFighter().toShortString());
-			}
+	private JLabel createLblNextRedFighter(FightResult nextFightResult) {
+		JLabel lblNextRedFighter = createLabel(30);
+		
+		if (nextFightResult != null) {
+			lblNextRedFighter.setText(nextFightResult.getRedFighter().getChampionshipFighter().toShortString());
 		}
 		return lblNextRedFighter;
 	}
 
-	private JLabel getLblNextBlueFighter() {
-		if (lblNextBlueFighter == null) {
-			lblNextBlueFighter = createLabel(30);
-			
-			if (nextFightResult != null) {
-				lblNextBlueFighter.setText(nextFightResult.getBlueFighter().getChampionshipFighter().toShortString());
-			}
+	private JLabel createLblNextBlueFighter(FightResult nextFightResult) {
+		JLabel lblNextBlueFighter = createLabel(30);
+		
+		if (nextFightResult != null) {
+			lblNextBlueFighter.setText(nextFightResult.getBlueFighter().getChampionshipFighter().toShortString());
 		}
 		return lblNextBlueFighter;
 	}
 
-	private JLabel getLblNext() {
-		if (lblNext == null) {
-			lblNext = createLabel(30);
-			
-			lblNext.setText(uic.NEXT_FIGHT().toUpperCase());
-			lblNext.setHorizontalAlignment(SwingUtilities.CENTER);
+	private JComponent createLblNext(Integer fightNumber) {
+		final JComponent next;
+		String text = uic.NEXT_FIGHT().toUpperCase() + (fightNumber != null ? (" " + fightNumber) : "");
+		if (useAdvancedNextFightResults && (fightNumber == null || fightNumber.longValue() == 1)) {
+			JButton btn = createButton(20);
+			btn.addActionListener((e) -> {
+				int result = MessageHelper.showConfirmationMessage(
+						null,
+						uic.NEXT_FIGHT(),
+						uic.ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_FIGHT()
+				);
+				if (JOptionPane.YES_OPTION == result) {
+					getModelUI().nextFight();
+				}
+			});
+			btn.setText(text);
+			btn.setHorizontalAlignment(SwingUtilities.CENTER);
+			next = btn;
+		} else {
+			JLabel lbl = createLabel(20);
+			lbl.setText(text);
+			lbl.setHorizontalAlignment(SwingUtilities.CENTER);
+			next = lbl;
 		}
-		return lblNext;
+		return next;
 	}
-
+	
 }

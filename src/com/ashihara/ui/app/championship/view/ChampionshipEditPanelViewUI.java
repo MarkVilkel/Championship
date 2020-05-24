@@ -22,7 +22,6 @@ import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.enums.CM;
 import com.ashihara.enums.SC;
-import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.championship.model.IChampionshipEditModelUI;
 import com.ashihara.ui.app.fighter.view.FighterSearchPanel;
 import com.ashihara.ui.app.fighter.view.GenderRenderer;
@@ -35,6 +34,7 @@ import com.ashihara.ui.core.mvc.view.UIView;
 import com.ashihara.ui.core.panel.AddDeleteButtonsTablePanel;
 import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.core.panel.SaveCancelResetButtonPanel;
+import com.ashihara.ui.core.renderer.CheckBoxTableRenderer;
 import com.ashihara.ui.core.renderer.KASDefaultRenderer;
 import com.ashihara.ui.core.renderer.KASSmallHeaderRenderer;
 import com.ashihara.ui.core.table.KASColumn;
@@ -76,6 +76,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 	private JButton btnExportGroups;
 	private JButton btnImportGroups;
 	private JButton btnExportEachGroupToExcel;
+	private JButton btnOpenPlan;
 	
 
 	public ChampionshipEditPanelViewUI(IChampionshipEditModelUI modelUI) {
@@ -121,10 +122,12 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			getModelUI().linkClickedOnChampionshipFighter(value, columnId);
 		}
 		
+		@Override
 		public void onAdd(Integer countToAdd) {
 			getModelUI().addFighters();
 		}
 		
+		@Override
 		public void onDelete() {
 			super.onDelete();
 			getModelUI().deleteSelectedFighters();
@@ -155,10 +158,12 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 
 		}
 		
+		@Override
 		public void onAdd(Integer countToAdd) {
 			getModelUI().addGroupsByYearCategory();
 		}
 		
+		@Override
 		public void onDelete() {
 			super.onDelete();
 			getModelUI().deleteSelectedGroups();
@@ -185,6 +190,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			getModelUI().linkClickedOnGroup(value);
 		}
 		
+		@Override
 		public void setEnabled(boolean flag) {
 			super.setEnabled(flag);
 			updateExportBtn();
@@ -206,6 +212,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			championshipFighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.COUNTRY(), cmChampionshipFighter.getFighter().getCountry()));
 			championshipFighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.AGE(), cmChampionshipFighter.getFighter().getFullYearsOld()));
 			championshipFighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.WEIGHT(), cmChampionshipFighter.getFighter().getWeight()));
+			championshipFighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.SKILL(), cmChampionshipFighter.getFighter().getParticipanceInChampionshipsCount()));
 			championshipFighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.NUMBER(), cmChampionshipFighter.getNumber(), true));
 			
 			championshipFighterTable.showRowCount(uic.FIGHTERS_COUNT());
@@ -227,6 +234,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			groupTable.getTable().getKASModel().addColumn(new KASColumn(uic.YEAR_CATEGORY(), cmGroup.getYearWeightCategoryLink().getYearCategory()));
 			groupTable.getTable().getKASModel().addColumn(new KASColumn(uic.WEIGHT_CATEGORY(), cmGroup.getYearWeightCategoryLink().getWeightCategory()));
 			groupTable.getTable().getKASModel().addColumn(new KASColumn(uic.TATAMI(), cmGroup.getTatami()));
+			groupTable.getTable().getKASModel().addColumn(new KASColumn(uic.IN_PLAN(), cmGroup.getPlan(), new GroupPlanRenderer()));
 			
 			groupTable.showRowCount(uic.GROUPS_COUNT());
 			
@@ -252,11 +260,12 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 		getBtnExportGroups().setEnabled(isEnabled);
 	}
 	
-	public class GroupTypeRenderer extends KASDefaultRenderer {
+	public static class GroupTypeRenderer extends KASDefaultRenderer {
 		private static final long serialVersionUID = 1L;
 		
 		private SC.GROUP_TYPE groupType = new SC.GROUP_TYPE(); 
 		
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			if (value != null) {
 				value = groupType.getUICaption(value.toString(), uic);
@@ -266,7 +275,17 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			return comp;
 		}
 	}
-	
+
+	public static class GroupPlanRenderer extends CheckBoxTableRenderer {
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			Component comp = super.getTableCellRendererComponent(table, value != null ? true : false, isSelected, hasFocus, row, column);
+			return comp;
+		}
+	}
+
 
 	public SaveCancelResetButtonPanel getSaveCancelResetButtonPanel() {
 		if (saveCancelResetButtonPanel == null) {
@@ -291,7 +310,7 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 				}
 			};
 			
-			saveCancelResetButtonPanel = new SaveCancelResetButtonPanel(saveAl, cancelAl, resetAl);
+			saveCancelResetButtonPanel = new SaveCancelResetButtonPanel(saveAl, cancelAl, resetAl, getBtnOpenPlan());
 		}
 		
 		return saveCancelResetButtonPanel;
@@ -358,11 +377,13 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 	public YearWeightSearchPanel getYearWeightSearchPanel() {
 		if (yearWeightSearchPanel == null){
 			ActionListener searchAl =  new ActionListener(){
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					getModelUI().searchGroupsByYearWeight();
 				}
 			};
 			ActionListener clearAl =  new ActionListener(){
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					getModelUI().clearYearWeightCriteria();
 				}
@@ -507,6 +528,14 @@ public class ChampionshipEditPanelViewUI extends KASPanel implements UIView<ICha
 			cmbRules = new KASComboBox();
 		}
 		return cmbRules;
+	}
+
+	public JButton getBtnOpenPlan() {
+		if (btnOpenPlan == null) {
+			btnOpenPlan = UIFactory.createSmallPlanButton();
+			btnOpenPlan.addActionListener((e) -> getModelUI().openPlan());
+		}
+		return btnOpenPlan;
 	}
 
 }

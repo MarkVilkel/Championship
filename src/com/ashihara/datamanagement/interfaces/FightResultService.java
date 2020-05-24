@@ -13,6 +13,7 @@ import com.ashihara.datamanagement.pojo.ChampionshipFighter;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.ui.app.championship.data.RulesManager;
@@ -46,5 +47,7 @@ public interface FightResultService extends AKService {
 	) throws PersistenceException;
 	
 	FightResult performFightResultOnFightAction(FightResult fightResult) throws PersistenceException;
+	
+	List<FightResultForPlan> loadOrCreateFightResults(List<FightingGroup> grs, boolean finalsAtTheEnd) throws PersistenceException;
 
 }

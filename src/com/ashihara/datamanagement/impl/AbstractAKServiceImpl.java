@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.ashihara.datamanagement.core.session.AKServerSessionManager;
 import com.ashihara.datamanagement.core.session.AKServerSessionManagerImpl;
+import com.ashihara.datamanagement.interfaces.ChampionshipPlanService;
 import com.ashihara.datamanagement.interfaces.ChampionshipService;
 import com.ashihara.datamanagement.interfaces.CountryService;
 import com.ashihara.datamanagement.interfaces.FightResultService;
@@ -79,6 +80,10 @@ public abstract class AbstractAKServiceImpl {
 	
 	private UserService getUserService() {
 		return getServerServiceFactory().getService(UserService.class);
+	}
+
+	protected ChampionshipPlanService getChampionshipPlanService() {
+		return getServerServiceFactory().getService(ChampionshipPlanService.class);
 	}
 
 	protected FighterService getFighterService() {
@@ -168,6 +173,10 @@ public abstract class AbstractAKServiceImpl {
 	
 	protected CM.FightResult getCmFightResult() { 
 		return new CM.FightResult();
+	}
+	
+	protected CM.ChampionshipPlan getCmChampionshipPlan() { 
+		return new CM.ChampionshipPlan();
 	}
 	
 	

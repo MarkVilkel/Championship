@@ -284,8 +284,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 					else {
 						if (ApplicationManager.getInstance().isRegistered(FightJFrame.class)) {
 							MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
-						}
-						else {
+						} else {
 							FightResult nextRoundFightResult = createNextRoundFightResult(param);
 							nextRoundFightResult.setBlueFighter(param.getBlueFighter());
 							nextRoundFightResult.setRedFighter(param.getRedFighter());
@@ -305,8 +304,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 			public void run() {
 				if (ApplicationManager.getInstance().isRegistered(FightJFrame.class)) {
 					MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
-				}
-				else {
+				} else {
 					new FightJFrame(fightResult, fightSettings, false, nextRoundPerformer);
 				}
 			}

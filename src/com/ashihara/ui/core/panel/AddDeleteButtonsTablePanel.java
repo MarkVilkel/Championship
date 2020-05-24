@@ -89,8 +89,8 @@ public class AddDeleteButtonsTablePanel<T> extends KASPanel implements AddDelete
 			table = new KASTable<T>(getRowClass());
 			table.getKASModel().addTableModelListener(new TableModelListener(){
 				@Override
-				public void tableChanged(TableModelEvent arg0) {
-					getLblRowsCount().setText(String.valueOf(table.getKASModel().getRowCount()));
+				public void tableChanged(TableModelEvent event) {
+					tableModelChanged(event);
 					
 				}
 			});
@@ -104,6 +104,15 @@ public class AddDeleteButtonsTablePanel<T> extends KASPanel implements AddDelete
 		return table;
 	}
 	
+	protected void tableModelChanged(TableModelEvent event) {
+		long count = table.getKASModel().getRowCountWithoutFake();
+		updateRowCount(count);
+	}
+
+	protected void updateRowCount(long rowCount) {
+		getLblRowsCount().setText(String.valueOf(rowCount));		
+	}
+
 	public void selectedValueChanged(ListSelectionEvent event) {
 		getButtonsPanel().getBtnDelete().setEnabled(table.getSelectedRowCount() != 0);
 	}

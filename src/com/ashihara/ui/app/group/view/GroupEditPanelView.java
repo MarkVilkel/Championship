@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -46,6 +47,7 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 	private KASPanel detailsPanel;
 	private SaveCancelResetButtonPanel saveCancelResetButtonPanel;
 	private JButton btnStart;
+	private JCheckBox checkInPlan;
 	
 	private KASPanel tournamentActionPanel;
 	private KASPanel tournamentActionCenterPanel;
@@ -89,7 +91,7 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 			detailsPanel = new KASPanel();
 			FormLayout fl = new FormLayout(
 					"right:70dlu, 4dlu, pref, 10dlu",
-					"pref, 10dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 10dlu");
+					"pref, 10dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 10dlu");
 
 			CellConstraints cc = new CellConstraints();
 
@@ -114,6 +116,9 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 
 			builder.addLabel(uic.WEIGHT_CATEGORY()+": ", cc.xy(1, 13));
 			builder.add(getTxtWeightCategory(), cc.xy(3, 13));
+			
+			builder.addLabel(uic.IN_PLAN()+": ", cc.xy(1, 15));
+			builder.add(getCheckInPlan(), cc.xy(3, 15));
 		}
 		
 		return detailsPanel;
@@ -306,6 +311,14 @@ public class GroupEditPanelView extends KASPanel implements UIView<IGroupEditMod
 			mainSplitPane.setOneTouchExpandable(true);
 		}
 		return mainSplitPane;
+	}
+
+	public JCheckBox getCheckInPlan() {
+		if (checkInPlan == null) {
+			checkInPlan = new JCheckBox();
+			checkInPlan.setEnabled(false);
+		}
+		return checkInPlan;
 	}
 
 }

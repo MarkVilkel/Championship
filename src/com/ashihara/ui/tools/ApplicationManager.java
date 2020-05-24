@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -21,6 +20,7 @@ import javax.swing.SwingUtilities;
 import com.ashihara.datamanagement.core.session.AKClientSession;
 import com.ashihara.enums.UIC;
 import com.ashihara.enums.UICEnglish;
+import com.ashihara.ui.app.fight.FightJFrame;
 import com.ashihara.ui.app.main.model.IMainFrameModelUI;
 import com.ashihara.ui.app.main.view.MainFrame;
 import com.ashihara.ui.core.dialog.DialogCreator;
@@ -63,15 +63,9 @@ public class ApplicationManager {
 	}
 	
 	
-	public boolean isRegistered(Class<? extends Component> clazz){
-		synchronized (this) {
-			for (Component c : getComponents()) {
-				if (c.getClass() == clazz) {
-					return true;
-				}
-			}
-			return false;
-		}
+	public boolean isRegistered(Class<? extends Component> clazz) {
+		Component c = getRegistered(clazz);
+		return c != null;
 	}
 	
 	public boolean isRegistered(Component c){
@@ -79,6 +73,29 @@ public class ApplicationManager {
 			return getComponents().contains(c);
 		}
 	}
+	
+	public Component getRegistered(Class<? extends Component> clazz) {
+		synchronized (this) {
+			for (Component c : getComponents()) {
+				if (c.getClass() == clazz) {
+					return c;
+				}
+			}
+			return null;
+		}
+	}
+
+	public void tryBringToFront(Class<FightJFrame> clazz) {
+		Component c = getRegistered(clazz);
+		if (c == null) {
+			return;
+		} else if (c instanceof Window) {
+			Window frame = (Window) c;
+			frame.toFront();
+		}
+		
+	}
+
 	
 	public boolean unregisterComponent(Component c){
 		synchronized (this) {
@@ -232,6 +249,7 @@ public class ApplicationManager {
 	
 	public synchronized void setCursorForAll(final Cursor cursor){
 		SwingUtilities.invokeLater(new Runnable(){
+			@Override
 			public void run() {
 				synchronized (this) {
 					List<Component> components = new ArrayList<Component>();
@@ -328,7 +346,7 @@ public class ApplicationManager {
 	public <K extends Object, T extends AKIdentifiedDockable<K>> T openIdentifiedFrame(Class<T> clazz, K id, Object ... constructorParams){
 		boolean isUIBlocked = AKUIEventSender.stopAndCheckUIVisibleProgress();
 		
-		T frame = (T)ApplicationManager.getInstance().findIdentifiedComponent(clazz, id);
+		T frame = ApplicationManager.getInstance().findIdentifiedComponent(clazz, id);
 		try {
 			if (frame == null){
 				frame = UIFactory.createObject(clazz, constructorParams);
@@ -400,4 +418,5 @@ public class ApplicationManager {
 	public void setClientSession(AKClientSession clientSession) {
 		this.clientSession = clientSession;
 	}
+
 }

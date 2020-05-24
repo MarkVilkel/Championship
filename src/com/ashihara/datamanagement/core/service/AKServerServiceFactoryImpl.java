@@ -2,6 +2,7 @@ package com.ashihara.datamanagement.core.service;
 
 import java.lang.reflect.Proxy;
 
+import com.ashihara.datamanagement.impl.ChampionshipPlanServiceImpl;
 import com.ashihara.datamanagement.impl.ChampionshipServiceImpl;
 import com.ashihara.datamanagement.impl.CountryServiceImpl;
 import com.ashihara.datamanagement.impl.ExceptionServiceImpl;
@@ -15,6 +16,7 @@ import com.ashihara.datamanagement.impl.SecurityServiceImpl;
 import com.ashihara.datamanagement.impl.UserServiceImpl;
 import com.ashihara.datamanagement.impl.WeightCategoryServiceImpl;
 import com.ashihara.datamanagement.impl.YearCategoryServiceImpl;
+import com.ashihara.datamanagement.interfaces.ChampionshipPlanService;
 import com.ashihara.datamanagement.interfaces.ChampionshipService;
 import com.ashihara.datamanagement.interfaces.CountryService;
 import com.ashihara.datamanagement.interfaces.ExceptionService;
@@ -39,6 +41,7 @@ public class AKServerServiceFactoryImpl<T extends DMIdentifiedService> extends A
 		super(clientSession);
 	}
 
+	@Override
 	protected void initServices() {
 		register(SecurityService.class, new SecurityServiceImpl());
 		register(UserService.class, new UserServiceImpl());
@@ -49,6 +52,7 @@ public class AKServerServiceFactoryImpl<T extends DMIdentifiedService> extends A
 		register(WeightCategoryService.class, new WeightCategoryServiceImpl());
 		register(YearCategoryService.class, new YearCategoryServiceImpl());
 		register(ChampionshipService.class, new ChampionshipServiceImpl());
+		register(ChampionshipPlanService.class, new ChampionshipPlanServiceImpl());
 		register(FightingGroupService.class, new FightingGroupServiceImpl());
 		register(FightSettingsService.class, new FightSettingsServiceImpl());
 		register(FightResultService.class, new FightResultServiceImpl());

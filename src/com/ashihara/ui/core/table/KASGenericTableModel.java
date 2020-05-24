@@ -59,6 +59,27 @@ public class KASGenericTableModel <T> extends AbstractTableModel{
 		return getRows().size();	
 	}
 
+	public long getRowCountWithoutFake() {
+		if (rows == null || rows.isEmpty()) {
+			return 0;
+		}
+		
+		int count = 0;
+		
+		for (KASRow<T> row : rows) {
+			T data = row.getDataRow();
+			if (data instanceof FakeRow) {
+				FakeRow fr = (FakeRow) data;
+				if (!fr.isFake()) {
+					count ++;
+				}
+			} else {
+				count ++;
+			}
+		}
+		return count;	
+	}
+
 	@Override
 	public Object getValueAt(int row, int col){
 		KASColumn kasColumn = getColumns().get(col);

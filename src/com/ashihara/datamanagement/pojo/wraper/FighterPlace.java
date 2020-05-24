@@ -5,11 +5,13 @@
  */
 package com.ashihara.datamanagement.pojo.wraper;
 
+import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
 
 
 public class FighterPlace {
 	
+	private FightingGroup fightingGroup;
 	private GroupChampionshipFighter gcFighter;
 	private Integer place;
 	
@@ -23,6 +25,9 @@ public class FighterPlace {
 	public FighterPlace() {
 	}
 	
+	public FighterPlace(FightingGroup fightingGroup) {
+		this.fightingGroup = fightingGroup;
+	}
 	public FighterPlace(GroupChampionshipFighter gcFighter) {
 		this.gcFighter = gcFighter;
 		this.place = 0;
@@ -98,6 +103,10 @@ public class FighterPlace {
 
 	public void setWonByTKOCount(Long wonByTKOCount) {
 		this.wonByTKOCount = wonByTKOCount;
+	}
+
+	public FightingGroup getFightingGroup() {
+		return fightingGroup;
 	}
 
 }

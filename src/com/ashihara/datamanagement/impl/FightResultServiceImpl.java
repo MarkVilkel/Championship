@@ -5,12 +5,19 @@
  */
 package com.ashihara.datamanagement.impl;
 
+import static com.ashihara.datamanagement.impl.util.ObjectUtils.areTheSame;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.ashihara.datamanagement.impl.util.FightsScheduler;
 import com.ashihara.datamanagement.interfaces.FightResultService;
@@ -21,6 +28,7 @@ import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.Fighter;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FightResultReport;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
@@ -48,6 +56,11 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			newlyCreatedList = saveFightResults(newlyCreatedList);
 			fightResults.addAll(newlyCreatedList);
 		}
+		
+		fightResults.forEach(fr -> {
+			fr.setRedFighter(fr.getFirstFighter());
+			fr.setBlueFighter(fr.getSecondFighter());
+		});
 		
 		sortFightResultByCreationOrder(fightResults);
 		
@@ -294,7 +307,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			return fightSettings.getForDraw();
 		}
 	}
-	
+
 	@Override
 	public List<FighterPlace> loadGroupTournamentResults(FightingGroup fightingGroup) throws PersistenceException {
 		List<FighterPlace> result;
@@ -1004,21 +1017,6 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		return false;
 	}
 	
-	private boolean areTheSame(GroupChampionshipFighter f1, GroupChampionshipFighter f2) {
-		boolean matched = false;
-		if (f1 == null && f2 == null) {
-			matched = true;
-		}
-		else if (
-				f1 != null &&
-				f2 != null &&
-				f1.getId().equals(f2.getId())
-		) {
-			matched = true;
-		}
-		return matched;
-	}
-
 	private GroupChampionshipFighter detectSecondFighterFromPreviousFight(
 			FightResult fightResult,
 			List<FightResult> allFightResults,
@@ -1283,17 +1281,9 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		Boolean won = null;
 		
 		if (fr.getFirstFighterPoints() != null && fr.getSecondFighterPoints() != null) {
-			if (
-					Boolean.TRUE.equals(fr.getFirstFighterWinByTKO()) ||
-			        Boolean.TRUE.equals(fr.getFirstFighterWinByJudgeDecision()) ||
-			        fr.getFirstFighterPoints().longValue() > fr.getSecondFighterPoints().longValue()
-			) {
+			if (fr.isFirstFighterWon()) {
 				won = Boolean.TRUE;
-			} else if (
-					Boolean.TRUE.equals(fr.getSecondFighterWinByTKO()) ||
-			        Boolean.TRUE.equals(fr.getSecondFighterWinByJudgeDecision()) ||
-			        fr.getFirstFighterPoints().longValue() < fr.getSecondFighterPoints().longValue()
-			) {
+			} else if (fr.isSecondFighterWon()) {
 				won = Boolean.FALSE;
 			}
 		}
@@ -1301,4 +1291,92 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		return won;
 	}
 
+	@Override
+	public List<FightResultForPlan> loadOrCreateFightResults(List<FightingGroup> grs, boolean finalsAtTheEnd) throws PersistenceException {
+		List<FightingGroup> groups = new ArrayList<>(grs);
+		getChampionshipPlanService().sortGroupsForPlan(groups);
+		
+		Map<FightingGroup, List<FightResultForPlan>> result = new LinkedHashMap<>();
+		for (FightingGroup group : groups) {
+			if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
+				List<FightResult> frs = loadOrCreateRoundRobinLastFightResults(group);
+				List<FightResultForPlan> frsForPlan = frs.stream().map(fr -> new FightResultForPlan(fr, group, false)).collect(Collectors.toList());
+				result.put(group, frsForPlan);
+			} else if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
+				List<FightResult> frs = loadOrCreateOlympicFightResults(group);
+				List<GroupChampionshipFighter> fighters = getFightingGroupService().loadGroupChampionshipFighters(group);
+				
+				int levelsNumberCount = MathUtils.calculateOlympicFightLevelsNumber(fighters.size());
+				List<FightResultForPlan> frsForPlan = frs.stream().filter(fr -> fr.getOlympicLevel() + 1 < levelsNumberCount).map(fr -> new FightResultForPlan(fr, group, false)).collect(Collectors.toList());
+				
+				int totalFightsCount = MathUtils.calculateTotalFightsNumberForOlympicAnalytic(fighters.size());
+				int restFights = totalFightsCount - frs.size();
+				
+				for (int i = 0; i < restFights; i ++) {
+					frsForPlan.add(new FightResultForPlan(null, group, false));
+				}
+				result.put(group, frsForPlan);
+			}
+		}
+		
+		List<FightResultForPlan> organized = organize(result, finalsAtTheEnd);
+		
+		return organized;
+	}
+
+	private List<FightResultForPlan> organize(
+			Map<FightingGroup, List<FightResultForPlan>> frsMap,
+			boolean finalsAtTheEnd
+	) throws PersistenceException {
+		Map<FightingGroup, List<FightResultForPlan>> copy = new LinkedHashMap<>(frsMap);
+		
+		List<FightResultForPlan> ordinary = new ArrayList<>();
+		List<FightResultForPlan> finals = new ArrayList<>();
+		
+		while (!copy.isEmpty()) {
+			Set<FightingGroup> groups = new LinkedHashSet<>(copy.keySet());
+			for (FightingGroup group : groups) {
+				List<FightResultForPlan> frs = copy.get(group);
+				if (frs.isEmpty()) {
+					copy.remove(group);
+				} else {
+					FightResultForPlan fr = frs.remove(0);
+					if (
+							finalsAtTheEnd &&
+							isOlympic(fr) &&
+							frs.size() < 2
+					) {
+						finals.add(fr);
+					} else {
+						ordinary.add(fr);
+					}
+				}
+			}
+		}
+		
+		List<FightResultForPlan> result = new ArrayList<>();
+		result.addAll(ordinary);
+		
+		if (!finals.isEmpty()) {
+			FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
+			fakeFr.setNumberInPlan(getUIC().FINALS());
+			result.add(fakeFr);
+		}
+		result.addAll(finals);
+		
+		final AtomicInteger numberInPlan = new AtomicInteger();
+		result.forEach(fr -> {
+			if (fr.getNumberInPlan() == null) {
+				fr.setNumberInPlan(String.valueOf(numberInPlan.incrementAndGet()));	
+			}
+		});
+		
+		return result;
+	}
+
+	private boolean isOlympic(FightResultForPlan fr) {
+		return SC.GROUP_TYPE.OLYMPIC.equals(fr.getFightingGroup().getType());
+	}
+
 }
+

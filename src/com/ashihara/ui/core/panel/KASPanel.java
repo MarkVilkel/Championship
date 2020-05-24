@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -31,10 +32,15 @@ public class KASPanel extends JPanel{
 		this(new BorderLayout());
 	}
 	
-	public KASPanel(LayoutManager layout){
+	public KASPanel(LayoutManager layout) {
 		super(layout);
 	}
-	
+
+	public KASPanel(LayoutManager layout, Component c) {
+		super(layout);
+		add(c);
+	}
+
 	private void setEnabled(boolean b, Component component){
 		if (component instanceof Container){
 			if (component != this) {
@@ -54,6 +60,7 @@ public class KASPanel extends JPanel{
 		}
 	}
 	
+	@Override
 	public void setEnabled(boolean b){
 		setEnabled(b, this);
 		super.setEnabled(b);
@@ -69,6 +76,7 @@ public class KASPanel extends JPanel{
 	
 	protected ActionListener getDisposeParentAl(){
 		ActionListener AL = new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				disposeParent();
 			}
@@ -94,6 +102,7 @@ public class KASPanel extends JPanel{
 			this.alOk = alOk;
 		}
 		
+		@Override
 		public void keyPressed(KeyEvent key) {
 			if (key.getKeyCode() ==  KeyEvent.VK_ENTER) {
 				if (btnOk != null) {

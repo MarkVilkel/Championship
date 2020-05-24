@@ -16,4 +16,6 @@ public interface IFightModelUI<T extends UIView<?>> extends UIModel<T> {
 
 	void switchFighters();
 
+	void nextFight();
+
 }

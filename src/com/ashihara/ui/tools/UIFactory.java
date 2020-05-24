@@ -353,6 +353,19 @@ public class UIFactory {
 		return btn;
 	}
 	
+	public static JButton createSmallPlanButton() {
+		JButton btn = createPlanButton();
+		btn.setPreferredSize(new Dimension(80, DEFAULT_BTN_HEIGHT));
+		return btn;
+	}
+	
+	public static JButton createPlanButton() {
+		JButton btn = new JButton(uic.PLAN());
+		btn.setToolTipText(uic.CHAMPIONSHIP_PLAN());
+		btn.setIcon(ResourceHelper.getImageIcon(ResourceHelper.PAGE));
+		return btn;
+	}
+	
 	public static JButton createSmallOkButton() {
 		JButton btn = createOkButton();
 		btn.setPreferredSize(new Dimension(80, DEFAULT_BTN_HEIGHT));
@@ -583,6 +596,12 @@ public class UIFactory {
 		KASLinkLabel link = new KASLinkLabel(uic.CANCEL());
 		link.setIcon(ResourceHelper.getImageIcon(ResourceHelper.CANCEL));
 		return link;
+	}
+
+	public static JButton createFightButton() {
+		JButton btn = new JButton(uic.FIGHT());
+		btn.setIcon(ResourceHelper.getImageIcon(ResourceHelper.START));
+		return btn;
 	}
 
 	public static JButton createSmallUploadButton() {

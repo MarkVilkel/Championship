@@ -18,6 +18,8 @@ public class FightingGroup extends BaseDo {
 	
 	private Championship championship;
 	private YearWeightCategoryLink yearWeightCategoryLink;
+	private ChampionshipPlan plan;
+	private Integer orderInPlan;
 	
 	public String getName() {
 		return name;
@@ -35,6 +37,7 @@ public class FightingGroup extends BaseDo {
 		this.championship = championship;
 	}
 
+	@Override
 	public String toString() {
 		if (getName() != null) {
 			return getName();
@@ -75,20 +78,43 @@ public class FightingGroup extends BaseDo {
 		this.gender = gender;
 	}
 
+	public String getTatami() {
+		return tatami;
+	}
+
+	public void setTatami(String tatami) {
+		this.tatami = tatami;
+	}
+
+	public ChampionshipPlan getPlan() {
+		return plan;
+	}
+
+	public void setPlan(ChampionshipPlan plan) {
+		this.plan = plan;
+	}
+	
+	public Integer getOrderInPlan() {
+		return orderInPlan;
+	}
+
+	public void setOrderInPlan(Integer orderInPlan) {
+		this.orderInPlan = orderInPlan;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((championship == null) ? 0 : championship.hashCode());
+		result = prime * result + ((championship == null) ? 0 : championship.hashCode());
 		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((orderInPlan == null) ? 0 : orderInPlan.hashCode());
+		result = prime * result + ((plan == null) ? 0 : plan.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((tatami == null) ? 0 : tatami.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime
-				* result
-				+ ((yearWeightCategoryLink == null) ? 0
-						: yearWeightCategoryLink.hashCode());
+		result = prime * result + ((yearWeightCategoryLink == null) ? 0 : yearWeightCategoryLink.hashCode());
 		return result;
 	}
 
@@ -116,10 +142,25 @@ public class FightingGroup extends BaseDo {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (orderInPlan == null) {
+			if (other.orderInPlan != null)
+				return false;
+		} else if (!orderInPlan.equals(other.orderInPlan))
+			return false;
+		if (plan == null) {
+			if (other.plan != null)
+				return false;
+		} else if (!plan.equals(other.plan))
+			return false;
 		if (status == null) {
 			if (other.status != null)
 				return false;
 		} else if (!status.equals(other.status))
+			return false;
+		if (tatami == null) {
+			if (other.tatami != null)
+				return false;
+		} else if (!tatami.equals(other.tatami))
 			return false;
 		if (type == null) {
 			if (other.type != null)
@@ -132,14 +173,6 @@ public class FightingGroup extends BaseDo {
 		} else if (!yearWeightCategoryLink.equals(other.yearWeightCategoryLink))
 			return false;
 		return true;
-	}
-
-	public String getTatami() {
-		return tatami;
-	}
-
-	public void setTatami(String tatami) {
-		this.tatami = tatami;
 	}
 
 }

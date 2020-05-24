@@ -48,6 +48,7 @@
         
         <mapping resource="com/ashihara/datamanagement/xml/FightSettings.hbm.xml"/>
         <mapping resource="com/ashihara/datamanagement/xml/FightResult.hbm.xml"/>
+        <mapping resource="com/ashihara/datamanagement/xml/ChampionshipPlan.hbm.xml"/>
 
     </session-factory>
 </hibernate-configuration>

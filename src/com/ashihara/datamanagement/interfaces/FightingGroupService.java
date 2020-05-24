@@ -19,22 +19,24 @@ import com.rtu.exception.PersistenceException;
 
 public interface FightingGroupService extends AKService {
 
-	public List<FightingGroup> loadGroups(Championship championship) throws PersistenceException;
-	public List<YearCategory> getYearCategoriesFromList(List<FightingGroup> groups);
-	public void deleteGroups(List<FightingGroup> groups) throws PersistenceException;
-	public void createGroupsYear(Championship championship, List<YearCategory> selectedYearCategories) throws PersistenceException, AKBusinessException;
-	public List<FightingGroup> saveGroups(List<FightingGroup> groups) throws PersistenceException;
-	public FightingGroup saveGroup(FightingGroup group) throws PersistenceException;
-	public void createGroupsByYearWeight(Championship championship, List<YearWeightCategoryLink> list) throws PersistenceException;
-	public List<FightingGroup> filterGroups(Championship championship, YearWeightCategoryLink pattern) throws PersistenceException;
+	List<FightingGroup> loadGroups(Championship championship) throws PersistenceException;
+	List<YearCategory> getYearCategoriesFromList(List<FightingGroup> groups);
+	void deleteGroups(List<FightingGroup> groups) throws PersistenceException;
+	void createGroupsYear(Championship championship, List<YearCategory> selectedYearCategories) throws PersistenceException, AKBusinessException;
+	List<FightingGroup> saveGroups(List<FightingGroup> groups) throws PersistenceException;
+	FightingGroup saveGroup(FightingGroup group) throws PersistenceException;
+	void createGroupsByYearWeight(Championship championship, List<YearWeightCategoryLink> list) throws PersistenceException;
+	List<FightingGroup> filterGroups(Championship championship, YearWeightCategoryLink pattern) throws PersistenceException;
 	
-	public FightingGroup reload(FightingGroup fightingGroup) throws PersistenceException;
-	public FightingGroup save(FightingGroup fightingGroup) throws PersistenceException;
-	public void performGroupChampionshipFighters(List<GroupChampionshipFighter> gcfListToSave, List<GroupChampionshipFighter> gcfListToDelete) throws PersistenceException;
-	public List<GroupChampionshipFighter> loadGroupChampionshipFighters(FightingGroup fightingGroup) throws PersistenceException;
+	FightingGroup reload(FightingGroup fightingGroup) throws PersistenceException;
+	FightingGroup save(FightingGroup fightingGroup) throws PersistenceException;
+	void performGroupChampionshipFighters(List<GroupChampionshipFighter> gcfListToSave, List<GroupChampionshipFighter> gcfListToDelete) throws PersistenceException;
+	List<GroupChampionshipFighter> loadGroupChampionshipFighters(FightingGroup fightingGroup) throws PersistenceException;
 	
-	public void setupLevelsForOlympicGroupChampionshipFighters(List<GroupChampionshipFighter> fighters) throws PersistenceException;
-	public GroupChampionshipFighter loadOrCreateGroupChampionshipFighter(FightingGroup group, ChampionshipFighter championshipFighter) throws PersistenceException;
-	public GroupChampionshipFighter saveGroupChampionshipFighter(GroupChampionshipFighter groupChampionshipFighter) throws PersistenceException;
-	public List<FightingGroup> loadStartedWithRealFightResultsGroups(Championship championship) throws PersistenceException;
+	void setupLevelsForOlympicGroupChampionshipFighters(List<GroupChampionshipFighter> fighters) throws PersistenceException;
+	GroupChampionshipFighter loadOrCreateGroupChampionshipFighter(FightingGroup group, ChampionshipFighter championshipFighter) throws PersistenceException;
+	GroupChampionshipFighter saveGroupChampionshipFighter(GroupChampionshipFighter groupChampionshipFighter) throws PersistenceException;
+	List<FightingGroup> loadStartedWithRealFightResultsGroups(Championship championship) throws PersistenceException;
+	List<FightingGroup> loadStartedGroups(Championship championship) throws PersistenceException;
+	void sortFightingGroups(List<FightingGroup> groups);
 }

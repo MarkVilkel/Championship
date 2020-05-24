@@ -17,6 +17,7 @@ import com.ashihara.datamanagement.core.persistence.exception.AKValidationExcept
 import com.ashihara.datamanagement.interfaces.MigrationService;
 import com.ashihara.datamanagement.pojo.Championship;
 import com.ashihara.datamanagement.pojo.ChampionshipFighter;
+import com.ashihara.datamanagement.pojo.ChampionshipPlan;
 import com.ashihara.datamanagement.pojo.Country;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.Fighter;
@@ -33,6 +34,7 @@ import com.ashihara.ui.app.championship.view.ChampionshipEditPanelViewUI;
 import com.ashihara.ui.app.fighter.FighterDetailsDialog;
 import com.ashihara.ui.app.fighter.FighterSearchDialog;
 import com.ashihara.ui.app.group.GroupDetailsFrame;
+import com.ashihara.ui.app.plan.ChampionshipPlanEditFrame;
 import com.ashihara.ui.app.utils.ComboUIHelper;
 import com.ashihara.ui.app.yearCategory.YearCategorySearchDialog;
 import com.ashihara.ui.app.yearWeight.YearWeightCategoryLinkSearchDialog;
@@ -233,6 +235,7 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 		getViewUI().getChampionshipFighterTablePanel().setEnabled(visibleFlag);
 		getViewUI().getGroupTablePanel().setEnabled(visibleFlag);
 		getViewUI().getCmbRules().setEnabled(!visibleFlag);
+		getViewUI().getBtnOpenPlan().setEnabled(visibleFlag);
 	}
 	
 	private void copyFromUIChampiohshipOnly() {
@@ -488,6 +491,19 @@ public class ChampionshipEditModelUI extends AKAbstractModelUI<ChampionshipEditP
 		} catch (Exception e) {
 			MessageHelper.handleException(getViewUI(), e);
 		}
+	}
+
+	@Override
+	public void openPlan() {
+		if(championship != null && championship.getId() != null) {
+			try {
+				ChampionshipPlan plan = getChampionshipPlanService().loadOrCreate(championship);
+				appManager.openIdentifiedFrame(ChampionshipPlanEditFrame.class, plan.getId(), plan);
+			} catch (Exception e) {
+				MessageHelper.handleException(getViewUI(), e);
+			}
+		}
+		
 	}
 
 }

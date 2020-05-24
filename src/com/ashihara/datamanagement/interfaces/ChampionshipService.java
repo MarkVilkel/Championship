@@ -36,5 +36,5 @@ public interface ChampionshipService extends AKService {
 	Championship loadChampionshipById(Long id) throws PersistenceException;
 	List<Championship> loadChampionshipByName(String name) throws PersistenceException;
 	ChampionshipFighter loadOrCreateChampionshipFighter(Championship championship, Fighter fighter) throws PersistenceException;
-
+	
 }

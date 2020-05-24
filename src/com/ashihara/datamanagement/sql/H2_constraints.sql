@@ -75,3 +75,20 @@ alter table year_weight_category_link
 add CONSTRAINT FK9D0C8BD6270E206A FOREIGN KEY (year_category)
 REFERENCES year_category (id)
 ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
+For Championship Plan
+
+alter table CHAMPIONSHIP_PLAN
+drop constraint FK56846103484EAD99;
+alter table CHAMPIONSHIP_PLAN
+add CONSTRAINT FK56846103484EAD99 FOREIGN KEY (championship)
+REFERENCES championship (id)
+ON UPDATE NO ACTION ON DELETE CASCADE;
+
+alter table fighting_group
+drop constraint FK30D761B22ECBDBE6;
+alter table fighting_group
+add CONSTRAINT FK30D761B22ECBDBE6 FOREIGN KEY (PLAN)
+REFERENCES CHAMPIONSHIP_PLAN (id)
+ON UPDATE NO ACTION ON DELETE CASCADE;

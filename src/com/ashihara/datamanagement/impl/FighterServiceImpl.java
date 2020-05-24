@@ -13,7 +13,10 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.ashihara.datamanagement.core.persistence.exception.AKBusinessException;
 import com.ashihara.datamanagement.interfaces.FighterService;
@@ -78,7 +81,10 @@ public class FighterServiceImpl extends AbstractAKServiceImpl implements Fighter
 			hql.addExpression(ExpressionHelper.not(ExpressionHelper.in(getCmFighter(), exceptFighters)));
 		}
 		
-		return getHelper().loadByHqlQuery(hql);
+		List<Fighter> result = getHelper().loadByHqlQuery(hql);
+		fillParticipanceInChampionshipsCount(result);
+		
+		return result;
 	}
 
 	@Override
@@ -220,6 +226,28 @@ public class FighterServiceImpl extends AbstractAKServiceImpl implements Fighter
 		}
 		
 		return result.get(0);
+	}
+	
+	@Override
+	public void fillParticipanceInChampionshipsCount(List<Fighter> fighters) throws PersistenceException {
+		if (fighters == null || fighters.isEmpty()) {
+			return;
+		}
+		
+		HqlQuery<ChampionshipFighter> hql = getHelper().createHqlQuery(ChampionshipFighter.class, getCmChampionshipFighter());
+		hql.addExpression(ExpressionHelper.in(getCmChampionshipFighter().getFighter(), fighters));
+		List<ChampionshipFighter> result = getHelper().loadByHqlQuery(hql);
+		Map<Long, AtomicInteger> map = new HashMap<>();
+		
+		for (ChampionshipFighter cf : result) {
+			map.computeIfAbsent(cf.getFighter().getId(), (c) -> new AtomicInteger()).incrementAndGet();
+		}
+		
+		for (Fighter fighter : fighters) {
+			AtomicInteger count = map.get(fighter.getId());
+			int participance = count != null ? count.get() : 0;
+			fighter.setParticipanceInChampionshipsCount(participance);
+		}
 	}
 
 }

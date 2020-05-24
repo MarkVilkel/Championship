@@ -106,4 +106,9 @@ public class AshiharaStyleRulesManager implements RulesManager {
 		return 6L;
 	}
 
+	@Override
+	public boolean canExceedMaxPointsCount() {
+		return true;
+	}
+
 }

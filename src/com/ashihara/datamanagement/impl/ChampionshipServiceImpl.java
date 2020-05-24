@@ -7,6 +7,7 @@ package com.ashihara.datamanagement.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ashihara.datamanagement.interfaces.ChampionshipService;
 import com.ashihara.datamanagement.pojo.Championship;
@@ -40,7 +41,9 @@ public class ChampionshipServiceImpl extends AbstractAKServiceImpl implements Ch
 		
 		hql.addExpression(ExpressionHelper.eq(getCmChampionshipFighter().getChampionship(), championship));
 		
-		return getHelper().loadByHqlQuery(hql);
+		List<ChampionshipFighter> result = getHelper().loadByHqlQuery(hql);
+		
+		return result;
 	}
 
 	@Override
@@ -171,8 +174,10 @@ public class ChampionshipServiceImpl extends AbstractAKServiceImpl implements Ch
 				hql.addExpression(ExpressionHelper.eq(getCmChampionshipFighter().getFighter().getGender(), pattern.getGender()));
 			}
 		}
+		List<ChampionshipFighter> result = getHelper().loadByHqlQuery(hql);
+		getFighterService().fillParticipanceInChampionshipsCount(result.stream().map(cf -> cf.getFighter()).collect(Collectors.toList()));
 		
-		return getHelper().loadByHqlQuery(hql);
+		return result;
 	}
 
 	@Override

@@ -102,4 +102,9 @@ public class JosuiStyleRulesManager implements RulesManager {
 		return null;
 	}
 
+	@Override
+	public boolean canExceedMaxPointsCount() {
+		return false;
+	}
+
 }

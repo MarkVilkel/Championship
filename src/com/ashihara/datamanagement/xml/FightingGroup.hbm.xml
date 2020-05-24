@@ -27,11 +27,14 @@
     	<many-to-one lazy="false" column="YEAR_WEIGHT_CATEGORY_LINK" name="yearWeightCategoryLink" class="com.ashihara.datamanagement.pojo.YearWeightCategoryLink" not-null="true">
     	</many-to-one>
     	
+    	<many-to-one lazy="false" column="PLAN" name="plan" class="com.ashihara.datamanagement.pojo.ChampionshipPlan" not-null="false">
+    	</many-to-one>
+    	
         <property column="NAME" name="name" not-null="true" insert="true" update="true" type="java.lang.String"/>
         <property column="TYPE" name="type" not-null="false" insert="true" update="true" type="java.lang.String"/>
         <property column="STATUS" name="status" not-null="true" insert="true" update="true" type="java.lang.String"/>
         <property column="GENDER" name="gender" not-null="false" insert="true" update="true" type="java.lang.String"/>
         <property column="TATAMI" name="tatami" not-null="false" insert="true" update="true" type="java.lang.String"/>
-        
+        <property column="ORDER_IN_PLAN" name="orderInPlan" not-null="false" insert="true" update="true" type="java.lang.Integer"/>
     </class>
 </hibernate-mapping>

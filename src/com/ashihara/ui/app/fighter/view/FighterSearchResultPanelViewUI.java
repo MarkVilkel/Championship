@@ -76,15 +76,18 @@ public class FighterSearchResultPanelViewUI extends KASPanel implements LinkClic
 			}
 		}
 		
+		@Override
 		public void selectedValueChanged(ListSelectionEvent event) {
 			super.selectedValueChanged(event);
 			getBtnSelect().setEnabled(getTable().getSelectedRowCount() != 0);
 		}
 
+		@Override
 		public void onAdd(Integer countToAdd) {
 			getModelUI().onAddTableRows(countToAdd);
 		}
 		
+		@Override
 		public void onDelete() {
 			super.onDelete();
 			getModelUI().deleteSelectedTableRows();
@@ -112,6 +115,7 @@ public class FighterSearchResultPanelViewUI extends KASPanel implements LinkClic
 			fighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.AGE(), cmFighter.getFullYearsOld()));
 			fighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.KYU(), cmFighter.getKyu()));
 			fighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.DAN(), cmFighter.getDan()));
+			fighterTable.getTable().getKASModel().addColumn(new KASColumn(uic.SKILL(), cmFighter.getParticipanceInChampionshipsCount()));
 			
 			fighterTable.showRowCount(uic.FIGHTERS_COUNT());
 			
@@ -120,15 +124,18 @@ public class FighterSearchResultPanelViewUI extends KASPanel implements LinkClic
 		return fighterTable;
 	}
 	
+	@Override
 	public void linkClicked(Fighter value, String columnId) {
 		getModelUI().onLinkClicked(value, columnId);
 	}
 
 
+	@Override
 	public IFighterSearchResultModelUI getModelUI() {
 		return modelUI;
 	}
 
+	@Override
 	public void setModelUI(IFighterSearchResultModelUI modelUI) {
 		this.modelUI = modelUI;		
 	}

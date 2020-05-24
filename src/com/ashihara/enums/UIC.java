@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.swing.Icon;
-
 public interface UIC extends Serializable {
 	String ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_ROUND();
 	String VALUE_MUST_BE_UNIQUE();
@@ -58,6 +56,8 @@ public interface UIC extends Serializable {
 	String ATTACH();
 	String CAN_NOT_CONNECT_TO_THE_DATA_BASE();
 	String CHAMPIONSHIP();
+	String CHAMPIONSHIP_PLAN();
+	String PLAN();
 	String PRESET();
 	String FIGHTERS();
 	String FIGHTER();
@@ -275,4 +275,14 @@ public interface UIC extends Serializable {
 	String ASHIHARA();
 	String WIN_BY_TKO();
 	String BY_TKO();
+	String SELECT_GROUPS();
+	String IN_PLAN();
+	String PLAN_FOR();
+	String NR();
+	String NO_NEXT();
+	String SHOW_NEXT_FIGHTS();
+	String ARE_YOU_SURE_YOU_WANT_TO_START_THE_NEXT_FIGHT();
+	String SKILL();
+	String FINALS_AT_THE_END();
+	String FINALS();
 }

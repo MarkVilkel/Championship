@@ -25,28 +25,34 @@ public class KASColumn extends TableColumn{
 	private Boolean isEditable;
 	
 	public static final Attribute COUNT_COLUMN = new Attribute(){
+		@Override
 		public String getAttributeName() {
 			return "COUNT_COLUMN";
 		}
+		@Override
 		public String getAttributePath() {
 			return getAttributeName();
 		}
 	};
 	public static final Attribute NOTHING_TO_DO_COLUMN = new Attribute() {
+		@Override
 		public String getAttributeName() {
 			return "NOTHING_TO_DO_COLUMN";
 		}
 
+		@Override
 		public String getAttributePath() {
 			return "NOTHING_TO_DO_COLUMN";
 		}
 	};
 	
 	public static final Attribute RETURN_WHOLE_OBJECT_COLUMN = new Attribute() {
+		@Override
 		public String getAttributeName() {
 			return "RETURN_WHOLE_OBJECT_COLUMN";
 		}
 
+		@Override
 		public String getAttributePath() {
 			return "RETURN_WHOLE_OBJECT_COLUMN";
 		}
@@ -68,10 +74,12 @@ public class KASColumn extends TableColumn{
 	
 	public static KASColumn createFakeLinkColumn(String columnName, final String cellCaption){
 		KASColumn col = new KASColumn(columnName, new Attribute(){
+			@Override
 			public String getAttributeName() {
 				return cellCaption;
 			}
 
+			@Override
 			public String getAttributePath() {
 				return getAttributeName();
 			}
@@ -84,10 +92,12 @@ public class KASColumn extends TableColumn{
 
 	public static KASColumn createFakeCountLinkColumn(final String columnName){
 		KASColumn col = new KASColumn(columnName, new Attribute(){
+			@Override
 			public String getAttributeName() {
 				return columnName;
 			}
 
+			@Override
 			public String getAttributePath() {
 				return getAttributeName();
 			}
@@ -107,7 +117,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(){
-		super();
 		setIsEditable(true);
 		setCellRenderer(new KASDefaultRenderer());
 		setHeaderRenderer(new KASHeaderRenderer());
@@ -131,7 +140,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName, Boolean isEditable){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(isEditable);
@@ -140,7 +148,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(false);
@@ -149,7 +156,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName, TableCellRenderer renderer){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(false);
@@ -158,7 +164,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName, Boolean isEditable, TableCellRenderer renderer){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(isEditable);
@@ -167,7 +172,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName, Boolean isEditable, TableCellEditor editor){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(isEditable);
@@ -177,7 +181,6 @@ public class KASColumn extends TableColumn{
 	}
 	
 	public KASColumn(String columnName, Attribute propertyName, Boolean isEditable, TableCellEditor editor, TableCellRenderer renderer){
-		super();
 		setColumnName(columnName);
 		setAttr(propertyName);
 		setIsEditable(isEditable);
@@ -230,9 +233,11 @@ public class KASColumn extends TableColumn{
 	
 	public void setAttribute(final String attribute) {
 		this.attribute = new Attribute(){
+			@Override
 			public String getAttributeName() {
 				return attribute;
 			}
+			@Override
 			public String getAttributePath() {
 				return getAttributeName();
 			}

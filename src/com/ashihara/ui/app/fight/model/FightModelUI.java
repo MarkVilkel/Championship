@@ -5,7 +5,7 @@
  */
 package com.ashihara.ui.app.fight.model;
 
-import javax.swing.ImageIcon;
+import java.util.List;
 
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
@@ -27,34 +27,44 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 	private FightResult fightResult;
 	private final FightSettings fightSettings;
 	
-	private final UIStatePerformer<FightResult> callbacker;
+	private final UIStatePerformer<FightResult> nextRoundCallbacker;
+	private final UIStatePerformer<FightResult> nextFightCallbacker;
 	
 	private boolean nextRoundWasClicked = false;
+	private boolean nextFightWasClicked = false;
 	
 	private final RulesManager rulesManager;
+	
+	private final boolean advancedNextFights;
 	
 	public FightModelUI(
 			FightResult fightResult,
 			FightSettings fightSettings,
 			boolean isNextRound,
-			UIStatePerformer<FightResult> callbacker
+			UIStatePerformer<FightResult> nextRoundCallbacker,
+			boolean advancedNextFights,
+			List<FightResult> nextFights,
+			UIStatePerformer<FightResult> nextFightCallbacker
 	) {
 		this.fightResult = fightResult;
-		this.callbacker = callbacker;
+		this.nextRoundCallbacker = nextRoundCallbacker;
 		this.fightSettings = fightSettings;
+		this.advancedNextFights = advancedNextFights;
+		this.nextFightCallbacker = nextFightCallbacker;
 		
-		if (NextFightManager.getInstance().getNextFightResult() != null && !isNextRound) {
-			this.fightResult = NextFightManager.getInstance().getNextFightResult();
-			
-			if (
-					this.fightResult.getBlueFighter().getId().equals(fightResult.getBlueFighter().getId()) &&
-					this.fightResult.getRedFighter().getId().equals(fightResult.getRedFighter().getId())
-			) {
-				NextFightManager.getInstance().setNextFightResult(null);
-				NextFightManager.getInstance().setNextUiStatePerformer(null);
-			}
-			else {
-				NextFightManager.getInstance().setNextFightResult(fightResult);
+		if (!advancedNextFights) {
+			if (NextFightManager.getInstance().getNextFightResult() != null && !isNextRound) {
+				this.fightResult = NextFightManager.getInstance().getNextFightResult();
+				
+				if (
+						this.fightResult.getBlueFighter().getId().equals(fightResult.getBlueFighter().getId()) &&
+						this.fightResult.getRedFighter().getId().equals(fightResult.getRedFighter().getId())
+				) {
+					NextFightManager.getInstance().setNextFightResult(null);
+					NextFightManager.getInstance().setNextUiStatePerformer(null);
+				} else {
+					NextFightManager.getInstance().setNextFightResult(fightResult);
+				}
 			}
 		}
 		
@@ -63,7 +73,9 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		
 		this.viewUI = new FightPanel(
 				this.fightResult,
+				advancedNextFights,
 				NextFightManager.getInstance().getNextFightResult(),
+				nextFights,
 				fightSettings,
 				AKUIEventSender.newInstance(this),
 				rulesManager
@@ -90,14 +102,18 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		viewUI.dispose();
 		saveFightResult();
 		
-		if (!nextRoundWasClicked) {
+		if (!nextRoundWasClicked && !advancedNextFights) {
 			UIStatePerformer<FightResult> performer = NextFightManager.getInstance().getNextUiStatePerformer();
 			if (performer != null) {
-				NextFightManager.getInstance().setNextUiStatePerformer(callbacker);
+				NextFightManager.getInstance().setNextUiStatePerformer(nextRoundCallbacker);
 				performer.performUIState(null);
 			}
 			else {
-				callbacker.performUIState(null);
+				nextRoundCallbacker.performUIState(null);
+			}
+		} else {
+			if (nextFightCallbacker != null) {
+				nextFightCallbacker.performUIState(nextFightWasClicked ? fightResult : null);
 			}
 		}
 	}
@@ -224,7 +240,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		saveFightResult();
 		
 		getViewUI().disposeParent();
-		callbacker.performUIState(fightResult);
+		nextRoundCallbacker.performUIState(fightResult);
 	}
 
 	@Override
@@ -232,4 +248,13 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		
 	}
 
+	@Override
+	public void nextFight() {
+		nextFightWasClicked = true;
+		
+		saveFightResult();
+		
+		getViewUI().disposeParent();
+	}
+	
 }
