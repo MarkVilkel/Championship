@@ -142,7 +142,7 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 
 	@Override
 	public void linkClicked(FightResultForPlan value, String columnId) {
-		if (uic.GROUP().equals(columnId)) {
+		if (uic.GROUP().equals(columnId) && value.getFightingGroup() != null) {
 			openGroup(value.getFightingGroup());
 		}
 	}
@@ -165,7 +165,7 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 
 	@Override
 	public void linkClicked(FighterPlace value, String columnId) {
-		if (uic.GROUP().equals(columnId)) {
+		if (uic.GROUP().equals(columnId) && value.getFightingGroup() != null) {
 			openGroup(value.getFightingGroup());
 		}
 	}
@@ -234,11 +234,12 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 				break;
 			}
 			FightResultForPlan frfp = all.get(index);
-			FightResult fr = frfp.getFightResult();
-			if (fr == null) {
+			if (frfp.isFake()) {
 				//surrogate group
 				continue;
 			}
+			
+			FightResult fr = frfp.getFightResult();
 			if (
 					fr != null &&
 					fr.getFirstFighter() != null &&

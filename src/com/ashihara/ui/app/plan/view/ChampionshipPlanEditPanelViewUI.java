@@ -168,8 +168,8 @@ public class ChampionshipPlanEditPanelViewUI extends KASPanel implements UIView<
 			for (int i = 0; i < fightsTable.getTable().getColumnCount(); i++) {
 				TableColumn c = fightsTable.getTable().getColumnModel().getColumn(i);
 				if (i == 0) {
-					c.setMaxWidth(40);
-					c.setPreferredWidth(40);
+					c.setMaxWidth(70);
+					c.setPreferredWidth(70);
 				} else if (i == 3 || i == 6) {
 					c.setMaxWidth(70); 
 				} else if (i == 4 || i == 7) {

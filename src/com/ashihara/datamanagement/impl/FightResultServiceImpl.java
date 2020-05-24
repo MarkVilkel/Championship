@@ -1358,19 +1358,54 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		result.addAll(ordinary);
 		
 		if (!finals.isEmpty()) {
-			FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
-			fakeFr.setNumberInPlan(getUIC().FINALS());
-			result.add(fakeFr);
+			finals = organizeFinals(finals);
+			result.addAll(finals);
 		}
-		result.addAll(finals);
 		
 		final AtomicInteger numberInPlan = new AtomicInteger();
 		result.forEach(fr -> {
-			if (fr.getNumberInPlan() == null) {
+			if (!fr.isFake()) {
 				fr.setNumberInPlan(String.valueOf(numberInPlan.incrementAndGet()));	
 			}
 		});
 		
+		return result;
+	}
+
+	private List<FightResultForPlan> organizeFinals(List<FightResultForPlan> finals) throws PersistenceException {
+		
+		Map<FightingGroup, List<FightResultForPlan>> finalsMap = new LinkedHashMap<>();
+		for (FightResultForPlan frfp : finals) {
+			finalsMap.computeIfAbsent(frfp.getFightingGroup(), (f) -> new ArrayList<>()).add(frfp);
+		}
+		
+		List<FightResultForPlan> result = new ArrayList<>();
+		int iteration = 0;
+		while (!finalsMap.isEmpty()) {
+			if (iteration == 0) {
+				FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
+				fakeFr.setNumberInPlan(getUIC().SEMI_FINALS());
+				result.add(fakeFr);
+			} else {
+				FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
+				fakeFr.setNumberInPlan(getUIC().FINALS());
+				result.add(fakeFr);
+			}
+			Set<FightingGroup> groups = new LinkedHashSet<>(finalsMap.keySet());
+			for (FightingGroup group : groups) {
+				List<FightResultForPlan> frs = finalsMap.get(group);
+				if (frs.isEmpty()) {
+					finalsMap.remove(group);
+				} else if (frs.size() >= 2 || iteration >= 1) {
+					FightResultForPlan fr = frs.remove(0);
+					result.add(fr);
+					if (frs.isEmpty()) {
+						finalsMap.remove(group);
+					}
+				}
+			}
+			iteration++;
+		}
 		return result;
 	}
 

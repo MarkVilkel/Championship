@@ -38,6 +38,7 @@ public class ChampionshipPlanServiceImpl extends AbstractAKServiceImpl implement
 		if (plan == null) {
 			plan = new ChampionshipPlan();
 			plan.setChampionship(championship);
+			plan.setFinalsAtTheEnd(false);
 			plan = getHelper().save(plan);
 		}
 		return plan;
