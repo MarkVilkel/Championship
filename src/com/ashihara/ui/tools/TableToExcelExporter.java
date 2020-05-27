@@ -250,7 +250,7 @@ public class TableToExcelExporter {
 				for (FightingGroup group : fightResults.keySet()) {
 					i++;
 					
-					HSSFSheet sheet = book.createSheet(group.toString());
+					HSSFSheet sheet = book.createSheet(i + ") " + group.toString());
 					
 					List<FightResult> fr = fightResults.get(group);
 					String title = toTitle(group, uic);
