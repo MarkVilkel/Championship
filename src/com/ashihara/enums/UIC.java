@@ -285,5 +285,7 @@ public interface UIC extends Serializable {
 	String SKILL();
 	String FINALS_AT_THE_END();
 	String FINALS();
+	String FINAL();
 	String SEMI_FINALS();
+	String SEMI_FINAL();
 }

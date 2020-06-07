@@ -1395,4 +1395,14 @@ public class UICEnglish implements UIC {
 		return "Semi finals:";
 	}
 
+	@Override
+	public String FINAL() {
+		return "Final";
+	}
+
+	@Override
+	public String SEMI_FINAL() {
+		return "Semi final";
+	}
+
 }

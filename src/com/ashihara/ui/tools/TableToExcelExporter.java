@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -29,6 +30,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.enums.SC;
 import com.ashihara.enums.UIC;
 import com.ashihara.ui.core.file.ExcelFileFilter;
@@ -90,6 +92,8 @@ public class TableToExcelExporter {
 		HSSFWorkbook book = new HSSFWorkbook();
 		HSSFSheet sheet = book.createSheet();
 		
+		sheet.setDefaultColumnWidth(ROW_WIDTH);
+		
 		int x = 0;
 		for (JTable table : tables){
 			drawTableToBook(book, sheet, table, x, 0);
@@ -106,6 +110,8 @@ public class TableToExcelExporter {
 		FileOutputStream fileOut = new FileOutputStream(file);
 		HSSFWorkbook book = new HSSFWorkbook();
 		HSSFSheet sheet = book.createSheet();
+		
+		sheet.setDefaultColumnWidth(ROW_WIDTH);
 		
 		drawTableToBook(book, sheet, excelable, 0, 0);
 		
@@ -155,16 +161,17 @@ public class TableToExcelExporter {
 	
 	private static void drawTableToBook(HSSFWorkbook book, HSSFSheet sheet, IExcelable excelable, int colOffset, int rowOffset){
 		
-        HSSFCellStyle tableHeaderStyle = createStyle(book, 20, true, HSSFCellStyle.ALIGN_CENTER, new HSSFColor.WHITE().getIndex()); 
-        HSSFCellStyle rowStyle = createStyle(book, 18, false, HSSFCellStyle.ALIGN_LEFT, new HSSFColor.WHITE().getIndex());
+        HSSFCellStyle tableHeaderStyle = createStyle(book, 20, true, HSSFCellStyle.ALIGN_CENTER, new HSSFColor.WHITE().getIndex(), true); 
+        HSSFCellStyle rowStyle = createStyle(book, 18, false, HSSFCellStyle.ALIGN_LEFT, new HSSFColor.WHITE().getIndex(), true);
 
         for (int col = 0; col < excelable.getColumnCount(); col++) {
         	int excelColumn = col + colOffset;
         	
         	HSSFCellUtil.createCell(sheet.createRow(0), excelColumn, excelable.getHeader(col), tableHeaderStyle);
-            for (int row = 0; row < excelable.getRowCount(); row++){
+        	HSSFCellUtil.createCell(sheet.createRow(1), excelColumn, "", tableHeaderStyle);
+            for (int row = 1; row < excelable.getRowCount(); row++){
             	int excelRow = row + rowOffset;
-            	String val = excelable.getCell(row, col);
+            	String val = excelable.getCell(row - 1, col);
             	HSSFCellUtil.createCell(sheet.createRow(excelRow+1), excelColumn, val, rowStyle);
             }
         }
@@ -186,22 +193,30 @@ public class TableToExcelExporter {
     		int fontSize,
     		boolean fontBold,
     		short alignment,
-    		Short foreground
+    		Short foreground,
+    		boolean needBorders
     ) { 
         HSSFFont font = createFont(wb, fontSize, fontBold);
-        return createStyle(wb, font, alignment, foreground);
+        return createStyle(wb, font, alignment, foreground, needBorders);
     }
 
     private static HSSFCellStyle createStyle(
     		HSSFWorkbook wb,
     		HSSFFont font,
     		short alignment,
-    		Short foreground
+    		Short foreground,
+    		boolean needBorders
     ) { 
         HSSFCellStyle style = wb.createCellStyle();
         if (foreground != null) {
         	style.setFillForegroundColor(foreground);
         	style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        }
+        if (needBorders) {
+        	style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        	style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        	style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        	style.setBorderTop(HSSFCellStyle.BORDER_THIN);
         }
         
         style.setFont(font);
@@ -256,9 +271,9 @@ public class TableToExcelExporter {
 					String title = toTitle(group, uic);
 					
 					if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
-						drawWholeTreeToExcel(title, fr, book, sheet);
+						drawOlympicFightResultsToExcel(title, fr, book, sheet);
 					} else if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
-						drawToExcelAsTable(uic, title, fr, book, sheet);
+						drawRoundRobinFightResultsToExcel(uic, title, fr, book, sheet);
 					} else {
 						throw new IllegalArgumentException("Unsupported group type " + group.getType());
 					}
@@ -271,7 +286,94 @@ public class TableToExcelExporter {
 		}
 	}
 
-	private static void drawToExcelAsTable(
+	
+	
+	public static void drawPlanToExcel(
+			List<FightResultForPlan> fightResults,
+			String initialFileName,
+			UIC uic
+	) throws IOException {
+		if (initialFileName.length() > 0) {
+			initialFileName += " ";
+		}
+		
+		initialFileName += uic.FORMAT_DATE(new Date());
+		
+		
+		File file = FileUtils.getSavePath(new ExcelFileFilter(), initialFileName);
+		
+		if (file != null) {
+			try (FileOutputStream fileOut = new FileOutputStream(file)) {
+				HSSFWorkbook book = new HSSFWorkbook();
+				
+				HSSFSheet sheet = book.createSheet("plan");
+				drawPlanFightResultsToExcel(uic, fightResults, book, sheet);
+				
+				book.write(fileOut);
+				fileOut.close();
+				openFileWithSystemEditor(file);
+			}
+		}
+	}
+	
+	
+	private static void drawPlanFightResultsToExcel(
+			UIC uic,
+			List<FightResultForPlan> items,
+			HSSFWorkbook book,
+			HSSFSheet sheet
+	) {
+		
+		sheet.setDefaultColumnWidth(ROW_WIDTH);
+		
+        HSSFCellStyle tableHeaderStyle = createStyle(book, 20, true, HSSFCellStyle.ALIGN_CENTER, null, true);
+        
+        HSSFColor lightRed = getLightRedColor(book);
+        
+        HSSFCellStyle redStyle = createCellStyle(book, lightRed, true);
+        redStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        HSSFCellStyle redStyleLeft = createCellStyle(book, lightRed, true);
+        
+        HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE(), true);
+        whiteStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        HSSFCellStyle whiteStyleLeft = createCellStyle(book, new HSSFColor.WHITE(), true);
+        
+        HSSFCellUtil.createCell(sheet.createRow(1), 0, uic.NR(), tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 1, uic.GROUP(), tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 2, uic.FIGHTER() + " 1", tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 3, uic.POINTS(), tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 4, uic.RESULT_SCORE(), tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 5, uic.FIGHTER() + " 2", tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 6, uic.POINTS(), tableHeaderStyle);
+        HSSFCellUtil.createCell(sheet.createRow(1), 7, uic.RESULT_SCORE(), tableHeaderStyle);
+        
+        int row = 3;
+        for (FightResultForPlan frfp : items) {
+        	HSSFCellUtil.createCell(sheet.createRow(row), 0, frfp.getNumberInPlan(), whiteStyleLeft);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 1, toString(frfp.getFightingGroup()), whiteStyleLeft);
+        	
+        	HSSFCellUtil.createCell(sheet.createRow(row), 2, emptyIfNpe(() -> frfp.getFightResult().getFirstFighter().getChampionshipFighter().toString()), redStyleLeft);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 3, emptyIfNpe(() -> toString(frfp.getFightResult().getFirstFighterPoints())), redStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 4, emptyIfNpe(() -> toString(frfp.getFightResult().getFirstFighterPointsForWin())), redStyle);
+        	
+        	HSSFCellUtil.createCell(sheet.createRow(row), 5, emptyIfNpe(() -> frfp.getFightResult().getSecondFighter().getChampionshipFighter().toString()), whiteStyleLeft);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 6, emptyIfNpe(() -> toString(frfp.getFightResult().getSecondFighterPoints())), whiteStyle);
+        	HSSFCellUtil.createCell(sheet.createRow(row), 7, emptyIfNpe(() -> toString(frfp.getFightResult().getSecondFighterPointsForWin())), whiteStyle);
+        		
+        	row ++;
+        }
+	}
+
+	private static String emptyIfNpe(Supplier<String> s) {
+		try {
+			return s.get();
+		} catch (NullPointerException e) {
+			return "";
+		}
+	}
+
+	
+	private static void drawRoundRobinFightResultsToExcel(
 			UIC uic,
 			String title,
 			List<FightResult> fightResults,
@@ -281,19 +383,19 @@ public class TableToExcelExporter {
 		
 		sheet.setDefaultColumnWidth(ROW_WIDTH);
 		
-        HSSFCellStyle tableHeaderStyle = createStyle(book, 20, true, HSSFCellStyle.ALIGN_CENTER, null);
+        HSSFCellStyle tableHeaderStyle = createStyle(book, 20, true, HSSFCellStyle.ALIGN_CENTER, null, true);
         
         HSSFColor lightRed = getLightRedColor(book);
         
-        HSSFCellStyle redStyle = createCellStyle(book, lightRed);
+        HSSFCellStyle redStyle = createCellStyle(book, lightRed, true);
         redStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        HSSFCellStyle redStyleLeft = createCellStyle(book, lightRed);
+        HSSFCellStyle redStyleLeft = createCellStyle(book, lightRed, true);
         
-        HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
+        HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE(), true);
         whiteStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        HSSFCellStyle whiteStyleLeft = createCellStyle(book, new HSSFColor.WHITE());
+        HSSFCellStyle whiteStyleLeft = createCellStyle(book, new HSSFColor.WHITE(), true);
         
-		HSSFCellStyle headerStyle = createHeaderCellStyle(book, new HSSFColor.WHITE());
+		HSSFCellStyle headerStyle = createHeaderCellStyle(book, new HSSFColor.WHITE(), false);
 		HSSFRow headerRow = sheet.createRow(TITLE_Y_POS);
 		headerRow.setHeightInPoints(ROW_HEIGHT);
 		HSSFCellUtil.createCell(headerRow, 2, title, headerStyle);
@@ -326,7 +428,7 @@ public class TableToExcelExporter {
 		return obj.toString();
 	}
 
-	public static void drawWholeTreeToExcel(
+	public static void drawOlympicFightResultsToExcel(
 			String title,
 			List<FightResult> fightResults,
 			String initialFileName,
@@ -342,24 +444,24 @@ public class TableToExcelExporter {
 		File file = FileUtils.getSavePath(new ExcelFileFilter(), initialFileName);
 		
 		if (file != null) {
-			drawWholeTreeToExcel(title, fightResults, file);
+			drawOlympicFightResultsToExcel(title, fightResults, file);
 		}
 	}
 
 	
-	private static void drawWholeTreeToExcel(String title, List<FightResult> fightResults, File file) throws IOException {
+	private static void drawOlympicFightResultsToExcel(String title, List<FightResult> fightResults, File file) throws IOException {
 		FileOutputStream fileOut = new FileOutputStream(file);
 		HSSFWorkbook book = new HSSFWorkbook();
 		HSSFSheet sheet = book.createSheet();
 		
-		drawWholeTreeToExcel(title, fightResults, book, sheet);
+		drawOlympicFightResultsToExcel(title, fightResults, book, sheet);
 		
         book.write(fileOut);
         fileOut.close();
         openFileWithSystemEditor(file);
 	}
 	
-	private static void drawWholeTreeToExcel(
+	private static void drawOlympicFightResultsToExcel(
 			String title,
 			List<FightResult> fightResults,
 			HSSFWorkbook book,
@@ -369,7 +471,7 @@ public class TableToExcelExporter {
 		sheet.setDefaultColumnWidth(ROW_WIDTH);
 		
 		
-		HSSFCellStyle headerStyle = createHeaderCellStyle(book, new HSSFColor.WHITE());
+		HSSFCellStyle headerStyle = createHeaderCellStyle(book, new HSSFColor.WHITE(), false);
 		HSSFRow headerRow = sheet.createRow(TITLE_Y_POS);
 		headerRow.setHeightInPoints(ROW_HEIGHT);
 		HSSFCellUtil.createCell(headerRow, 2, title, headerStyle);
@@ -379,8 +481,8 @@ public class TableToExcelExporter {
 
 		HSSFColor lightRed = getLightRedColor(book);
 		
-		HSSFCellStyle redStyle = createCellStyle(book, lightRed);
-		HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
+		HSSFCellStyle redStyle = createCellStyle(book, lightRed, true);
+		HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE(), true);
 		
 		for (FightResult fr : fightResults) {
 			
@@ -432,9 +534,9 @@ public class TableToExcelExporter {
 		
 		HSSFColor lightRed = getLightRedColor(book);
 		
-		HSSFCellStyle redStyle = createCellStyle(book, lightRed);
-		HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE());
-		HSSFCellStyle lineStyle = createLineCellStyle(book, new HSSFColor.WHITE());
+		HSSFCellStyle redStyle = createCellStyle(book, lightRed, true);
+		HSSFCellStyle whiteStyle = createCellStyle(book, new HSSFColor.WHITE(), true);
+		HSSFCellStyle lineStyle = createLineCellStyle(book, new HSSFColor.WHITE(), false);
 		
 		int x = 0;
 		boolean twoSemiFinals = false;
@@ -530,9 +632,9 @@ public class TableToExcelExporter {
 		return f.getChampionshipFighter().toString();
 	}
 
-	private static HSSFCellStyle createLineCellStyle(HSSFWorkbook book, HSSFColor color) {
-		HSSFCellStyle rowStyle = createStyle(book, 8, true, HSSFCellStyle.ALIGN_CENTER, color.getIndex());
-		rowStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+	private static HSSFCellStyle createLineCellStyle(HSSFWorkbook book, HSSFColor color, boolean needBorders) {
+		HSSFCellStyle rowStyle = createStyle(book, 8, true, HSSFCellStyle.ALIGN_CENTER, color.getIndex(), needBorders);
+		rowStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 		return rowStyle;
 	}
 
@@ -548,17 +650,13 @@ public class TableToExcelExporter {
         return font;
 	}
 	
-	private static HSSFCellStyle createCellStyle(HSSFWorkbook book, HSSFColor color) {
-		HSSFCellStyle rowStyle = createStyle(book, createFont(book, 18, true), HSSFCellStyle.ALIGN_LEFT, color.getIndex());
-		rowStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
-		rowStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-		rowStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-		rowStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+	private static HSSFCellStyle createCellStyle(HSSFWorkbook book, HSSFColor color, boolean needBorders) {
+		HSSFCellStyle rowStyle = createStyle(book, createFont(book, 18, true), HSSFCellStyle.ALIGN_LEFT, color.getIndex(), needBorders);
 		return rowStyle;
 	}
 
-	private static HSSFCellStyle createHeaderCellStyle(HSSFWorkbook book, HSSFColor color) {
-		HSSFCellStyle rowStyle = createStyle(book, 22, true, HSSFCellStyle.ALIGN_LEFT, color.getIndex());
+	private static HSSFCellStyle createHeaderCellStyle(HSSFWorkbook book, HSSFColor color, boolean needBorders) {
+		HSSFCellStyle rowStyle = createStyle(book, 22, true, HSSFCellStyle.ALIGN_LEFT, color.getIndex(), needBorders);
 		return rowStyle;
 	}
 	

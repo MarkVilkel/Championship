@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,8 @@ public class TimePanel extends KASPanel {
 	
 	private Timer timer;
 	private final String tatami;
+	private final String fightNumber;
+	private final String fightInfo;
 	private final long roundNumberForUI;
 	
 	private final int LBL_SIZE = 35;
@@ -52,8 +55,11 @@ public class TimePanel extends KASPanel {
 	
 	private JLabel lblTime;
 	private JLabel lblTatami;
+	private JLabel lblFightNumber;
+	private JLabel lblFightInfo;
 	private JLabel lblRoundNumber;
 	private KASPanel buttonsPanel;
+	private KASPanel infoPanel;
 	
 	private State state;
 	
@@ -65,11 +71,15 @@ public class TimePanel extends KASPanel {
 	public TimePanel(
 			String tatami,
 			long roundNumberForUI,
-			long time
+			long time,
+			String fightNumber,
+			String fightInfo
 	) {
 		this.tatami = tatami;
 		this.roundNumberForUI = roundNumberForUI;
 		this.time = time;
+		this.fightNumber = fightNumber;
+		this.fightInfo = fightInfo;
 		
 		init();
 		pause();
@@ -86,7 +96,7 @@ public class TimePanel extends KASPanel {
 	private void init() {
 		setLayout(new BorderLayout());
 		
-		add(getLblTatami(), BorderLayout.WEST);
+		add(getInfoPanel(), BorderLayout.WEST);
 		add(getLblRoundNumber(), BorderLayout.EAST);
 		add(getLblTime(), BorderLayout.CENTER);
 		add(getButtonsPanel(), BorderLayout.SOUTH);
@@ -282,7 +292,8 @@ public class TimePanel extends KASPanel {
 	
 	private JLabel getLblTatami() {
 		if (lblTatami == null) {
-			lblTatami = new JLabel(uic.TATAMI() + " - " + tatami);
+			String text = uic.TATAMI() + " - " + tatami;
+			lblTatami = new JLabel(text);
 			
 			Font font = lblTatami.getFont();
 			lblTatami.setFont(new Font(font.getName(), font.getStyle(), LBL_SIZE));
@@ -350,6 +361,47 @@ public class TimePanel extends KASPanel {
 			});
 		}
 		return btn3Minutes;
+	}
+
+	public KASPanel getInfoPanel() {
+		if (infoPanel == null) {
+			int rows = 1;
+			if (fightNumber != null) {
+				rows++;
+			}
+			if (fightInfo != null) {
+				rows++;
+			}
+			infoPanel = new KASPanel(new GridLayout(rows, 1));
+			infoPanel.add(getLblTatami());
+			if (fightNumber != null) {
+				infoPanel.add(getLblFightNumber());
+			}
+			if (fightInfo != null) {
+				infoPanel.add(getLblFightInfo());
+			}
+		}
+		return infoPanel;
+	}
+
+	public JLabel getLblFightNumber() {
+		if (lblFightNumber == null) {  
+			lblFightNumber = new JLabel(uic.NR() + " " + fightNumber);
+			Font font = lblFightNumber.getFont();
+			lblFightNumber.setFont(new Font(font.getName(), font.getStyle(), LBL_SIZE));
+			lblFightNumber.setHorizontalAlignment(SwingUtilities.CENTER);
+		}
+		return lblFightNumber;
+	}
+
+	public JLabel getLblFightInfo() {
+		if (lblFightInfo == null) {  
+			lblFightInfo = new JLabel(fightInfo);
+			Font font = lblFightInfo.getFont();
+			lblFightInfo.setFont(new Font(font.getName(), font.getStyle(), LBL_SIZE));
+			lblFightInfo.setHorizontalAlignment(SwingUtilities.CENTER);
+		}
+		return lblFightInfo;
 	}
 
 }

@@ -49,7 +49,7 @@ public class AddDeleteButtonsTablePanel<T> extends KASPanel implements AddDelete
 	private String searchCriteriaIsEnabledSoResultMightBeNotFullCaption = uic.SEARCH_CRITERIA_IS_ENABLED_SO_THERE_COULD_BE_SOME_MORE_ENTRIES();
 	
 	private String addDeleteButtonsPanelPosition = AddDeleteRowPanel.BOTTOM;
-	private JButton btnExportToExcel;
+	protected JButton btnExportToExcel;
 	
 	public AddDeleteButtonsTablePanel(Class<T> rowClass, String notNumberErrorMessage, String notPositiveNumberErrorMessage){
 		this(rowClass);

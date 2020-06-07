@@ -15,12 +15,18 @@ public class FightResultForPlan implements FakeRow {
 	private final FightResult fightResult;
 	private final FightingGroup fightingGroup;
 	private String numberInPlan;
+	private boolean isFinal;
+	private boolean isSemiFinal;
 	private final boolean fake;
 	
 	public FightResultForPlan() {
 		this(null, null, false);
 	}
-	
+
+	public FightResultForPlan(FightResult fightResult) {
+		this(fightResult, null, false);
+	}
+
 	public FightResultForPlan(
 			FightResult fightResult,
 			FightingGroup fightingGroup,
@@ -81,6 +87,22 @@ public class FightResultForPlan implements FakeRow {
 	@Override
 	public boolean isFake() {
 		return fake;
+	}
+
+	public boolean isFinal() {
+		return isFinal;
+	}
+
+	public void setFinal(boolean isFinal) {
+		this.isFinal = isFinal;
+	}
+
+	public boolean isSemiFinal() {
+		return isSemiFinal;
+	}
+
+	public void setSemiFinal(boolean isSemiFinal) {
+		this.isSemiFinal = isSemiFinal;
 	}
 
 }

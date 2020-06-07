@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.ashihara.datamanagement.interfaces.ChampionshipPlanService;
 import com.ashihara.datamanagement.pojo.Championship;
@@ -54,6 +55,14 @@ public class ChampionshipPlanServiceImpl extends AbstractAKServiceImpl implement
 
 	@Override
 	public void removeFromPlan(List<FightingGroup> groups) throws PersistenceException {
+		if (groups == null) {
+			return;
+		}
+		groups = groups.stream().filter(g -> g != null).collect(Collectors.toList());
+		if (groups.isEmpty()) {
+			return;
+		}
+		
 		groups.forEach(e -> {e.setPlan(null); e.setOrderInPlan(null);});
 		getFightingGroupService().saveGroups(groups);
 	}

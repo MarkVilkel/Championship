@@ -213,8 +213,10 @@ public class FightResult extends BaseDo {
 		this.secondFighterWinByTKO = secondFighterWinByTKO;
 	}
 
-	public boolean isFirstFighterWon() {
+	public boolean isFirstFighterWon(long criticalWarningCount) {
 		boolean result =
+						getFirstFighterFirstCategoryWarnings() != null && getFirstFighterFirstCategoryWarnings() >= criticalWarningCount ||
+						getFirstFighterSecondCategoryWarnings() != null && getFirstFighterSecondCategoryWarnings() >= criticalWarningCount ||
 						Boolean.TRUE.equals(getFirstFighterWinByTKO()) ||
 						Boolean.TRUE.equals(getFirstFighterWinByJudgeDecision()) ||
 						(getFirstFighterPoints() != null && getSecondFighterPoints() != null && getFirstFighterPoints().longValue() > getSecondFighterPoints().longValue())
@@ -222,8 +224,10 @@ public class FightResult extends BaseDo {
 		return result;
 	}
 
-	public boolean isSecondFighterWon() {
+	public boolean isSecondFighterWon(long criticalWarningCount) {
 		boolean result =
+				getSecondFighterFirstCategoryWarnings() != null && getSecondFighterFirstCategoryWarnings() >= criticalWarningCount ||
+				getSecondFighterFirstCategoryWarnings() != null && getSecondFighterSecondCategoryWarnings() >= criticalWarningCount ||
 				Boolean.TRUE.equals(getSecondFighterWinByTKO()) ||
 			    Boolean.TRUE.equals(getSecondFighterWinByJudgeDecision()) ||
 			    (getFirstFighterPoints() != null && getSecondFighterPoints() != null && getFirstFighterPoints().longValue() < getSecondFighterPoints().longValue())

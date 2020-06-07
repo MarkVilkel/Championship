@@ -46,7 +46,7 @@ public interface FightResultService extends AKService {
 			ChampionshipFighter secondFighter
 	) throws PersistenceException;
 	
-	FightResult performFightResultOnFightAction(FightResult fightResult) throws PersistenceException;
+	FightResult performFightResultOnFightAction(FightResult fightResult, RulesManager rulesManager) throws PersistenceException;
 	
 	List<FightResultForPlan> loadOrCreateFightResults(List<FightingGroup> grs, boolean finalsAtTheEnd) throws PersistenceException;
 

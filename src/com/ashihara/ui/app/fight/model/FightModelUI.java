@@ -10,6 +10,7 @@ import java.util.List;
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.championship.data.RulesManagerFactory;
 import com.ashihara.ui.app.fight.view.FightPanel;
@@ -24,11 +25,12 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 	
 	private FightPanel viewUI;
 	
+	private FightResultForPlan frfp;
 	private FightResult fightResult;
 	private final FightSettings fightSettings;
 	
-	private final UIStatePerformer<FightResult> nextRoundCallbacker;
-	private final UIStatePerformer<FightResult> nextFightCallbacker;
+	private final UIStatePerformer<FightResultForPlan> nextRoundCallbacker;
+	private final UIStatePerformer<FightResultForPlan> nextFightCallbacker;
 	
 	private boolean nextRoundWasClicked = false;
 	private boolean nextFightWasClicked = false;
@@ -38,15 +40,16 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 	private final boolean advancedNextFights;
 	
 	public FightModelUI(
-			FightResult fightResult,
+			FightResultForPlan frfp,
 			FightSettings fightSettings,
 			boolean isNextRound,
-			UIStatePerformer<FightResult> nextRoundCallbacker,
+			UIStatePerformer<FightResultForPlan> nextRoundCallbacker,
 			boolean advancedNextFights,
-			List<FightResult> nextFights,
-			UIStatePerformer<FightResult> nextFightCallbacker
+			List<FightResultForPlan> nextFights,
+			UIStatePerformer<FightResultForPlan> nextFightCallbacker
 	) {
-		this.fightResult = fightResult;
+		this.frfp = frfp;
+		this.fightResult = frfp.getFightResult();
 		this.nextRoundCallbacker = nextRoundCallbacker;
 		this.fightSettings = fightSettings;
 		this.advancedNextFights = advancedNextFights;
@@ -72,7 +75,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		this.rulesManager = RulesManagerFactory.getRulesManager(gcf.getFightingGroup().getChampionship().getRules(), uic);
 		
 		this.viewUI = new FightPanel(
-				this.fightResult,
+				this.frfp,
 				advancedNextFights,
 				NextFightManager.getInstance().getNextFightResult(),
 				nextFights,
@@ -103,7 +106,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		saveFightResult();
 		
 		if (!nextRoundWasClicked && !advancedNextFights) {
-			UIStatePerformer<FightResult> performer = NextFightManager.getInstance().getNextUiStatePerformer();
+			UIStatePerformer<FightResultForPlan> performer = NextFightManager.getInstance().getNextUiStatePerformer();
 			if (performer != null) {
 				NextFightManager.getInstance().setNextUiStatePerformer(nextRoundCallbacker);
 				performer.performUIState(null);
@@ -113,7 +116,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 			}
 		} else {
 			if (nextFightCallbacker != null) {
-				nextFightCallbacker.performUIState(nextFightWasClicked ? fightResult : null);
+				nextFightCallbacker.performUIState(nextFightWasClicked ? frfp : null);
 			}
 		}
 	}
@@ -122,7 +125,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 	public void saveFightResult() {
 		try {
 			copyFromUI();
-			fightResult = getFightResultService().performFightResultOnFightAction(fightResult);
+			fightResult = getFightResultService().performFightResultOnFightAction(fightResult, rulesManager);
 		} catch (PersistenceException e) {
 			MessageHelper.handleException(getViewUI(), e);
 		}
@@ -240,7 +243,7 @@ public class FightModelUI extends AKAbstractModelUI<FightPanel> implements IFigh
 		saveFightResult();
 		
 		getViewUI().disposeParent();
-		nextRoundCallbacker.performUIState(fightResult);
+		nextRoundCallbacker.performUIState(frfp);
 	}
 
 	@Override

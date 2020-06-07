@@ -15,6 +15,7 @@ import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.championship.data.RulesManager;
@@ -151,9 +152,9 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 	) {
 		
 		if (uic.ACTION().equals(columnId)) {
-			final UIStatePerformer<FightResult> nextRoundPerformer = new UIStatePerformer<FightResult>() {
+			final UIStatePerformer<FightResultForPlan> nextRoundPerformer = new UIStatePerformer<FightResultForPlan>() {
 				@Override
-				public void performUIState(FightResult param) {
+				public void performUIState(FightResultForPlan param) {
 					try {
 						if (param == null) {
 							reset();
@@ -164,11 +165,11 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 								MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
 							}
 							else {
-								FightResult nextRoundFightResult = createNextRoundFightResult(param);
-								nextRoundFightResult.setBlueFighter(param.getBlueFighter());
-								nextRoundFightResult.setRedFighter(param.getRedFighter());
+								FightResult nextRoundFightResult = createNextRoundFightResult(param.getFightResult());
+								nextRoundFightResult.setBlueFighter(param.getFightResult().getBlueFighter());
+								nextRoundFightResult.setRedFighter(param.getFightResult().getRedFighter());
 								
-								new FightJFrame(nextRoundFightResult, fightSettings, true, this);
+								new FightJFrame(new FightResultForPlan(nextRoundFightResult), fightSettings, true, this);
 							}
 						}
 						
@@ -188,7 +189,7 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 						value.setRedFighter(value.getFirstFighter());
 						value.setBlueFighter(value.getSecondFighter());
 						
-						new FightJFrame(value, fightSettings, false, nextRoundPerformer);
+						new FightJFrame(new FightResultForPlan(value), fightSettings, false, nextRoundPerformer);
 					}
 				}
 			});
@@ -199,9 +200,9 @@ public class TableRoundRobinSystemModel extends AbstractFightSystemModel<TableRo
 
 			NextFightManager.getInstance().setNextFightResult(value);
 			NextFightManager.getInstance().setNextUiStatePerformer(
-					new UIStatePerformer<FightResult>() {
+					new UIStatePerformer<FightResultForPlan>() {
 						@Override
-						public void performUIState(FightResult param) {
+						public void performUIState(FightResultForPlan param) {
 							reset();
 						}
 					}

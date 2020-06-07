@@ -8,6 +8,7 @@ package com.ashihara.ui.app.plan.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -18,6 +19,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.TableColumn;
 
+import com.ashihara.datamanagement.pojo.ChampionshipPlan;
 import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.CM;
@@ -31,6 +33,8 @@ import com.ashihara.ui.core.panel.KASPanel;
 import com.ashihara.ui.core.panel.SaveCancelResetButtonPanel;
 import com.ashihara.ui.core.panel.SimpleTablePanel;
 import com.ashihara.ui.core.table.KASColumn;
+import com.ashihara.ui.tools.MessageHelper;
+import com.ashihara.ui.tools.TableToExcelExporter;
 import com.ashihara.ui.tools.UIFactory;
 
 public class ChampionshipPlanEditPanelViewUI extends KASPanel implements UIView<IChampionshipPlanEditModelUI> {
@@ -47,8 +51,10 @@ public class ChampionshipPlanEditPanelViewUI extends KASPanel implements UIView<
 	private final RulesManager rulesManager;
 	private JButton btnStartFight;
 	private JCheckBox showNext, finalsAtTheEnd;
+	private final ChampionshipPlan plan;
 	
-	public ChampionshipPlanEditPanelViewUI(IChampionshipPlanEditModelUI modelUI, RulesManager rulesManager) {
+	public ChampionshipPlanEditPanelViewUI(ChampionshipPlan plan, IChampionshipPlanEditModelUI modelUI, RulesManager rulesManager) {
+		this.plan = plan;
 		this.modelUI = modelUI;
 		this.rulesManager = rulesManager;
 		
@@ -97,6 +103,26 @@ public class ChampionshipPlanEditPanelViewUI extends KASPanel implements UIView<
 			getButtonsPanel().getBtnDelete().setEnabled(selected);
 			perfromStartFightEnabled();
 		}
+		
+		@Override
+		public JButton getBtnExportToExcel() {
+			if (btnExportToExcel == null){
+				btnExportToExcel = UIFactory.createExcelButton();
+				btnExportToExcel.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							String caption = "Plan for " + plan.getChampionship().getName();
+							TableToExcelExporter.drawPlanToExcel(getTable().getKASModel().getDataRows(), caption, uic);
+						} catch (IOException e) {
+							MessageHelper.handleException(null, e);
+						}
+					}
+				});
+			}
+			return btnExportToExcel;
+		}
+
 	}
 
 	private KASPanel getButtonPanels() {

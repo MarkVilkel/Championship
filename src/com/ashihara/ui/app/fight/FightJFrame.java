@@ -13,8 +13,8 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.enums.UIC;
 import com.ashihara.ui.app.fight.model.FightModelUI;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
@@ -25,8 +25,8 @@ public class FightJFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	protected static UIC uic = ApplicationManager.getInstance().getUic();
 	
-	private final FightResult fightResult;
-	private final UIStatePerformer<FightResult> nextRoundCallbacker;
+	private final FightResultForPlan frfp;
+	private final UIStatePerformer<FightResultForPlan> nextRoundCallbacker;
 	private final FightSettings fightSettings;
 	
 	private FightModelUI fightModelUI;
@@ -36,36 +36,36 @@ public class FightJFrame extends JFrame {
 	
 	private final WindowAdapter windowAdapter;
 	private final boolean advancedNextFights;
-	private final List<FightResult> nextFights;
-	private final UIStatePerformer<FightResult> closeCallbacker;
+	private final List<FightResultForPlan> nextFights;
+	private final UIStatePerformer<FightResultForPlan> closeCallbacker;
 
 
 	public FightJFrame(
-			FightResult fightResult,
+			FightResultForPlan frfp,
 			FightSettings fightSettings,
 			boolean isNextRound,
-			UIStatePerformer<FightResult> callbacker
+			UIStatePerformer<FightResultForPlan> callbacker
 	) {
-		this(fightResult, fightSettings, isNextRound, callbacker, false, null, null);
+		this(frfp, fightSettings, isNextRound, callbacker, false, null, null);
 	}
 
 	public FightJFrame(
-			FightResult fightResult,
+			FightResultForPlan frfp,
 			FightSettings fightSettings,
 			boolean isNextRound,
-			UIStatePerformer<FightResult> nextRoundCallbacker,
+			UIStatePerformer<FightResultForPlan> nextRoundCallbacker,
 			boolean advancedNextFights,
-			List<FightResult> nextFights,
-			UIStatePerformer<FightResult> closeCallbacker
+			List<FightResultForPlan> nextFights,
+			UIStatePerformer<FightResultForPlan> closeCallbacker
 	) {
 		super(
-				fightResult.getRedFighter().getChampionshipFighter().getFighter().toString() +
+				frfp.getFightResult().getRedFighter().getChampionshipFighter().getFighter().toString() +
 				" VS " +
-				fightResult.getBlueFighter().getChampionshipFighter().getFighter().toString() +
+				frfp.getFightResult().getBlueFighter().getChampionshipFighter().getFighter().toString() +
 				" " +
 				uic.FIGHT());
 		
-		this.fightResult = fightResult;
+		this.frfp = frfp;
 		this.nextRoundCallbacker = nextRoundCallbacker;
 		this.isNextRound = isNextRound;
 		this.fightSettings = fightSettings;
@@ -112,7 +112,7 @@ public class FightJFrame extends JFrame {
 
 	private FightModelUI getFightModelUI() {
 		if (fightModelUI == null) {
-			fightModelUI = new FightModelUI(fightResult, fightSettings, isNextRound, nextRoundCallbacker, advancedNextFights, nextFights, closeCallbacker);
+			fightModelUI = new FightModelUI(frfp, fightSettings, isNextRound, nextRoundCallbacker, advancedNextFights, nextFights, closeCallbacker);
 		}
 		return fightModelUI;
 	}

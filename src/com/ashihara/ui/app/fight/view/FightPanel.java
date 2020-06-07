@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.championship.data.RulesManager;
 import com.ashihara.ui.app.fight.model.IFightModelUI;
@@ -42,9 +43,9 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final FightResult fightResult;
+	private final FightResultForPlan frfp;
 	private final FightResult nextFightResult;
-	private final List<FightResult> nextFightResults;
+	private final List<FightResultForPlan> nextFightResults;
 	private final boolean useAdvancedNextFightResults;
 	
 	private final FightSettings fightSettings;
@@ -60,15 +61,15 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	private final RulesManager rulesManager;
 	
 	public FightPanel(
-			FightResult fightResult,
+			FightResultForPlan frfp,
 			boolean useAdvancedNextFightResults,
 			FightResult nextFightResult,
-			List<FightResult> nextFightResults,
+			List<FightResultForPlan> nextFightResults,
 			FightSettings fightSettings,
 			IFightModelUI<?> modelUI,
 			RulesManager rulesManager
 	) {
-		this.fightResult = fightResult;
+		this.frfp = frfp;
 		this.useAdvancedNextFightResults = useAdvancedNextFightResults;
 		this.nextFightResult = nextFightResult;
 		this.nextFightResults = nextFightResults;
@@ -84,13 +85,13 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		add(getFightersPanel(), BorderLayout.CENTER);
 		
 		
-		List<FightResult> frs = new ArrayList<>();
+		List<FightResultForPlan> frs = new ArrayList<>();
 		if (useAdvancedNextFightResults) {
 			if (nextFightResults != null) {
 				frs.addAll(nextFightResults);
 			}
 		} else if (nextFightResult != null) {
-			frs.add(nextFightResult);
+			frs.add(new FightResultForPlan(nextFightResult, null, false));
 		}
 		
 		if (!frs.isEmpty()) {
@@ -100,9 +101,12 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			KASPanel nextFightsPanel = new KASPanel(new GridBagLayout());
 			
 			GridBagConstraints c = new GridBagConstraints();
+			boolean showButton = true;
 			for (int i = 0; i < fightSize; i ++) {
 				c.gridy = i;
-				placeNextFighters(nextFightsPanel, c, frs.get(i), fightSize > 1 ? i + 1 : null);
+				FightResultForPlan frfp = frs.get(i);
+				placeNextFighters(nextFightsPanel, c, frfp.getFightResult(), toInteger(frfp.getNumberInPlan()), showButton, getInfo(frfp));
+				showButton = false;
 			}
 			southPanel.add(nextFightsPanel, BorderLayout.CENTER);
 			southPanel.add(getButtonsPanel(), BorderLayout.SOUTH);
@@ -112,10 +116,28 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		}
 	}
 
+	private String getInfo(FightResultForPlan frfp) {
+		String info = null;
+		if (frfp.isSemiFinal()) {
+			info = uic.SEMI_FINAL();
+		} else if (frfp.isFinal()) {
+			info = uic.FINAL();
+		}
+		return info;
+	}
+
+	private Integer toInteger(String str) {
+		try {
+			return Integer.valueOf(str);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public FighterBattleInfoPanel getFirstFighterBattleInfoPanel() {
 		if (firstFighterBattleInfoPanel == null) {
 			firstFighterBattleInfoPanel = new FighterBattleInfoPanel(
-					fightResult.getRedFighter().getChampionshipFighter(),
+					frfp.getFightResult().getRedFighter().getChampionshipFighter(),
 					UIUtils.RED,
 					rulesManager
 			);
@@ -182,7 +204,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	public FighterBattleInfoPanel getSecondFighterBattleInfoPanel() {
 		if (secondFighterBattleInfoPanel == null) {
 			secondFighterBattleInfoPanel = new FighterBattleInfoPanel(
-					fightResult.getBlueFighter().getChampionshipFighter(),
+					frfp.getFightResult().getBlueFighter().getChampionshipFighter(),
 					UIUtils.BLUE,
 					rulesManager
 			);
@@ -245,17 +267,19 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 	
 	public TimePanel getTimePanel() {
 		if (timePanel == null) {
-			long roundNumber = fightResult.getRoundNumber().longValue();
+			long roundNumber = frfp.getFightResult().getRoundNumber().longValue();
 			long roundNumberForUI = roundNumber;
 			
-			if (fightResult.getFirstFighter() != null && SC.GROUP_TYPE.OLYMPIC.equals(fightResult.getFirstFighter().getFightingGroup().getType())) {
+			if (frfp.getFirstFighter() != null && SC.GROUP_TYPE.OLYMPIC.equals(frfp.getFirstFighter().getFightingGroup().getType())) {
 				roundNumberForUI ++;
 			}
 			
 			timePanel = new TimePanel(
 					fightSettings.getTatami(),
 					roundNumberForUI,
-					fightSettings.getTimeForRound(roundNumberForUI)
+					fightSettings.getTimeForRound(roundNumberForUI),
+					frfp.getNumberInPlan(),
+					getInfo(frfp)
 			);
 			
 			if (roundNumberForUI >= rulesManager.getMaxRoundsCount()) {
@@ -383,7 +407,14 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		return btnNextRound;
 	}
 	
-	private void placeNextFighters(KASPanel nextFightPanel, GridBagConstraints c, FightResult fr, Integer fightNumber) {
+	private void placeNextFighters(
+			KASPanel nextFightPanel,
+			GridBagConstraints c,
+			FightResult fr,
+			Integer fightNumber,
+			boolean showButton,
+			String info
+	) {
 		c.gridx = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
@@ -393,7 +424,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			
 			c.weightx = 1;
 			c.gridx = 1;
-			nextFightPanel.add(createLblNext(fightNumber), c);
+			nextFightPanel.add(createLblNext(fightNumber, info, showButton), c);
 			
 			c.weightx = 5;
 			c.gridx = 2;
@@ -404,7 +435,7 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 			
 			c.weightx = 1;
 			c.gridx = 1;
-			nextFightPanel.add(createLblNext(fightNumber), c);
+			nextFightPanel.add(createLblNext(fightNumber, info, showButton), c);
 			
 			c.weightx = 5;
 			c.gridx = 2;
@@ -456,10 +487,10 @@ public class FightPanel extends KASPanel implements UIView<IFightModelUI<?>> {
 		return lblNextBlueFighter;
 	}
 
-	private JComponent createLblNext(Integer fightNumber) {
+	private JComponent createLblNext(Integer fightNumber, String info, boolean showButton) {
 		final JComponent next;
-		String text = uic.NEXT_FIGHT().toUpperCase() + (fightNumber != null ? (" " + fightNumber) : "");
-		if (useAdvancedNextFightResults && (fightNumber == null || fightNumber.longValue() == 1)) {
+		String text = uic.NEXT_FIGHT().toUpperCase() + (fightNumber != null ? (" " + fightNumber) : "") +  (info == null ? "" : (" " + info));
+		if (useAdvancedNextFightResults && (fightNumber == null || showButton)) {
 			JButton btn = createButton(20);
 			btn.addActionListener((e) -> {
 				int result = MessageHelper.showConfirmationMessage(

@@ -21,6 +21,7 @@ import com.ashihara.datamanagement.pojo.FightResult;
 import com.ashihara.datamanagement.pojo.FightSettings;
 import com.ashihara.datamanagement.pojo.FightingGroup;
 import com.ashihara.datamanagement.pojo.GroupChampionshipFighter;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.datamanagement.pojo.wraper.FighterPlace;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.app.championship.data.RulesManager;
@@ -185,9 +186,9 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 					public void actionPerformed(ActionEvent e) {
 						NextFightManager.getInstance().setNextFightResult(fightResult);
 						NextFightManager.getInstance().setNextUiStatePerformer(
-								new UIStatePerformer<FightResult>() {
+								new UIStatePerformer<FightResultForPlan>() {
 									@Override
-									public void performUIState(FightResult param) {
+									public void performUIState(FightResultForPlan param) {
 										try {
 											reset();
 										} catch (PersistenceException e) {
@@ -274,9 +275,9 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	}
 
 	private void startFight(final FightResult fightResult) {
-		final UIStatePerformer<FightResult> nextRoundPerformer = new UIStatePerformer<FightResult>() {
+		final UIStatePerformer<FightResultForPlan> nextRoundPerformer = new UIStatePerformer<FightResultForPlan>() {
 			@Override
-			public void performUIState(FightResult param) {
+			public void performUIState(FightResultForPlan param) {
 				try {
 					if (param == null) {
 						reset();
@@ -285,11 +286,11 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 						if (ApplicationManager.getInstance().isRegistered(FightJFrame.class)) {
 							MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
 						} else {
-							FightResult nextRoundFightResult = createNextRoundFightResult(param);
-							nextRoundFightResult.setBlueFighter(param.getBlueFighter());
-							nextRoundFightResult.setRedFighter(param.getRedFighter());
+							FightResult nextRoundFightResult = createNextRoundFightResult(param.getFightResult());
+							nextRoundFightResult.setBlueFighter(param.getFightResult().getBlueFighter());
+							nextRoundFightResult.setRedFighter(param.getFightResult().getRedFighter());
 							
-							new FightJFrame(nextRoundFightResult, fightSettings, true, this);
+							new FightJFrame(new FightResultForPlan(nextRoundFightResult), fightSettings, true, this);
 						}
 					}
 					
@@ -305,7 +306,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 				if (ApplicationManager.getInstance().isRegistered(FightJFrame.class)) {
 					MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
 				} else {
-					new FightJFrame(fightResult, fightSettings, false, nextRoundPerformer);
+					new FightJFrame(new FightResultForPlan(fightResult), fightSettings, false, nextRoundPerformer);
 				}
 			}
 		});
@@ -385,7 +386,7 @@ public class OlympicSystemModel extends AbstractFightSystemModel<OlympicSystemPa
 	public void exportWholeTreeToExcel() {
 		try {
 			List<FightResult> fightResults = getFightResultService().loadOrCreateOlympicFightResults(group);
-			TableToExcelExporter.drawWholeTreeToExcel(TableToExcelExporter.toTitle(group, uic), fightResults, uic.OLYMPIC_TREE_FIGH_RESULTS(), uic);			
+			TableToExcelExporter.drawOlympicFightResultsToExcel(TableToExcelExporter.toTitle(group, uic), fightResults, uic.OLYMPIC_TREE_FIGH_RESULTS(), uic);			
 		} catch (Exception e) {
 			MessageHelper.handleException(getViewUI(), e);
 		}

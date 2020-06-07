@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.ashihara.datamanagement.pojo.FightResult;
+import com.ashihara.datamanagement.pojo.wraper.FightResultForPlan;
 import com.ashihara.enums.SC;
 import com.ashihara.ui.core.interfaces.UIStatePerformer;
 import com.ashihara.ui.tools.ApplicationManager;
@@ -15,7 +16,7 @@ public class NextFightManager {
 	
 	private List<NextFightChangeListener> listeners = new Vector<NextFightChangeListener>();
 	private FightResult nextFightResult;
-	private UIStatePerformer<FightResult> nextUiStatePerformer;
+	private UIStatePerformer<FightResultForPlan> nextUiStatePerformer;
 	
 	
 	private NextFightManager() {
@@ -65,11 +66,11 @@ public class NextFightManager {
 		fireNextFightChanged(nextFightResult);
 	}
 
-	public synchronized UIStatePerformer<FightResult> getNextUiStatePerformer() {
+	public synchronized UIStatePerformer<FightResultForPlan> getNextUiStatePerformer() {
 		return nextUiStatePerformer;
 	}
 
-	public synchronized void setNextUiStatePerformer(UIStatePerformer<FightResult> nextUiStatePerformer) {
+	public synchronized void setNextUiStatePerformer(UIStatePerformer<FightResultForPlan> nextUiStatePerformer) {
 		this.nextUiStatePerformer = nextUiStatePerformer;
 	}
 	

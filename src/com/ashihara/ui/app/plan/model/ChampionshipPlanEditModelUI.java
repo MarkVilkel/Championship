@@ -36,7 +36,7 @@ import com.ashihara.ui.tools.MessageHelper;
 import com.rtu.exception.PersistenceException;
 
 public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipPlanEditPanelViewUI>
-									implements IChampionshipPlanEditModelUI<ChampionshipPlanEditPanelViewUI>, DialogCallBackListener, UIStatePerformer<FightResult> {
+									implements IChampionshipPlanEditModelUI<ChampionshipPlanEditPanelViewUI>, DialogCallBackListener, UIStatePerformer<FightResultForPlan> {
 	
 	private ChampionshipPlanEditPanelViewUI viewUI;
 
@@ -46,7 +46,7 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 	
 	public ChampionshipPlanEditModelUI(ChampionshipPlan plan) {
 		this.plan = plan;
-		this.viewUI = new ChampionshipPlanEditPanelViewUI(AKUIEventSender.newInstance(this), RulesManagerFactory.getRulesManager(plan.getChampionship().getRules(), uic));
+		this.viewUI = new ChampionshipPlanEditPanelViewUI(plan, AKUIEventSender.newInstance(this), RulesManagerFactory.getRulesManager(plan.getChampionship().getRules(), uic));
 		this.rulesManager = RulesManagerFactory.getRulesManager(plan.getChampionship().getRules(), uic);
 		this.viewUI.getModelUI().reloadFights();
 	}
@@ -82,7 +82,7 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 			List<FightResultForPlan> fightResults = getFightResultService().loadOrCreateFightResults(groups, finalsAtTheEnd);
 			
 			getViewUI().getFightsTable().getTable().getKASModel().setDataRows(fightResults);
-			int selectedIndex = findFirstFightIndex(fightResults);
+			int selectedIndex = findFirstFightIndex(fightResults, rulesManager);
 			if (selectedIndex >= 0) {
 				getViewUI().getFightsTable().getTable().setRowSelectionInterval(selectedIndex, selectedIndex);
 			}
@@ -91,17 +91,17 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 		}
 	}
 
-	private int findFirstFightIndex(List<FightResultForPlan> fightResults) {
+	private int findFirstFightIndex(List<FightResultForPlan> fightResults, RulesManager rulesManager) {
 		for (int i = 0; i < fightResults.size(); i++) {
 			FightResultForPlan item = fightResults.get(i);
-			if (canFight(item)) {
+			if (canFight(item, rulesManager)) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
-	private boolean canFight(FightResultForPlan item) {
+	private boolean canFight(FightResultForPlan item, RulesManager rulesManager) {
 		if (item == null) {
 			return false;
 		}
@@ -114,8 +114,8 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 				fr != null &&
 				fr.getFirstFighter() != null &&
 				fr.getSecondFighter() != null &&
-				!fr.isFirstFighterWon() &&
-				!fr.isSecondFighterWon()
+				!fr.isFirstFighterWon(rulesManager.getMaxPenaltyCount()) &&
+				!fr.isSecondFighterWon(rulesManager.getMaxPenaltyCount())
 		) {
 			return true;
 		} else {
@@ -185,33 +185,32 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 	}
 	
 	private void doStartFight(FightResultForPlan frfp, boolean withNext) {
-		final UIStatePerformer<FightResult> nextRoundPerformer = new UIStatePerformer<FightResult>() {
+		final UIStatePerformer<FightResultForPlan> nextRoundPerformer = new UIStatePerformer<FightResultForPlan>() {
 			@Override
-			public void performUIState(FightResult param) {
+			public void performUIState(FightResultForPlan param) {
 				if (param == null) {
 					reloadFights();
 				} else {
-					final List<FightResult> nextFights = withNext ? getNextFights(param) : null;
+					final List<FightResultForPlan> nextFights = withNext ? getNextFights(param) : null;
 					showFightFrame(this, param, true, nextFights);
 				}
 			}
 		};
 		
 		if (frfp != null) {
-			final List<FightResult> nextFights = withNext ? getNextFights(frfp.getFightResult()) : null;
+			final List<FightResultForPlan> nextFights = withNext ? getNextFights(frfp) : null;
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					FightResult value = frfp.getFightResult();
-					showFightFrame(nextRoundPerformer, value, false, nextFights);
+					showFightFrame(nextRoundPerformer, frfp, false, nextFights);
 				}
 			});
 		}
 	}
 	
-	private List<FightResult> getNextFights(FightResult currentFightResult) {
+	private List<FightResultForPlan> getNextFights(FightResultForPlan currentFightResult) {
 		int currentIndex = getIndex(currentFightResult);
-		List<FightResult> result = new ArrayList<>();
+		List<FightResultForPlan> result = new ArrayList<>();
 		if (currentIndex < 0) {
 			return result;
 		}
@@ -245,11 +244,11 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 					fr.getFirstFighter() != null &&
 					fr.getSecondFighter() != null
 			) {
-				if (fr.isFirstFighterWon() || fr.isSecondFighterWon()) {
+				if (fr.isFirstFighterWon(rulesManager.getMaxPenaltyCount()) || fr.isSecondFighterWon(rulesManager.getMaxPenaltyCount())) {
 					//skip finished fight
 					continue;
 				} else {
-					result.add(fr);
+					result.add(frfp);
 				}
 			} else {
 				break;
@@ -259,7 +258,7 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 		return result;
 	}
 	
-	private int getIndex(FightResult currentFR) {
+	private int getIndex(FightResultForPlan currentFR) {
 		KASGenericTableModel<FightResultForPlan> model = getViewUI().getFightsTable().getTable().getKASModel();
 		for (int i = 0; i < model.getRowCount(); i++) {
 			FightResultForPlan frfp = model.getDataRow(i);
@@ -277,22 +276,25 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 	}
 
 	private void showFightFrame(
-			UIStatePerformer<FightResult> nextRoundPerformer,
-			FightResult fr,
+			UIStatePerformer<FightResultForPlan> nextRoundPerformer,
+			FightResultForPlan frfp,
 			boolean createNextRound,
-			List<FightResult> nextFights
+			List<FightResultForPlan> nextFights
 	) {
 		try {
 			if (ApplicationManager.getInstance().isRegistered(FightJFrame.class)) {
 				MessageHelper.showInformtionMessage(null, uic.FIGHT_WINDOW_IS_ALREADY_OPENED_CLOSE_IT_FIRST());
 			} else {
-				final FightResult nextRoundFightResult;
+				final FightResultForPlan nextRoundFightResult;
 				if (createNextRound) {
-					nextRoundFightResult = createNextRoundFightResult(fr);
-					nextRoundFightResult.setBlueFighter(fr.getBlueFighter());
-					nextRoundFightResult.setRedFighter(fr.getRedFighter());
+					nextRoundFightResult = new FightResultForPlan(createNextRoundFightResult(frfp.getFightResult()));
+					nextRoundFightResult.setFinal(frfp.isFinal());
+					nextRoundFightResult.setSemiFinal(frfp.isSemiFinal());
+					nextRoundFightResult.setNumberInPlan(frfp.getNumberInPlan());
+					nextRoundFightResult.getFightResult().setBlueFighter(frfp.getFightResult().getBlueFighter());
+					nextRoundFightResult.getFightResult().setRedFighter(frfp.getFightResult().getRedFighter());
 				} else {
-					nextRoundFightResult = fr;
+					nextRoundFightResult = frfp;
 				}
 				
 				new FightJFrame(nextRoundFightResult, fightSettings, true, nextRoundPerformer, true, nextFights, this);
@@ -313,10 +315,10 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 	}
 
 	@Override
-	public void performUIState(FightResult param) {
+	public void performUIState(FightResultForPlan param) {
 		reloadFights();
 		if (param != null) {
-			List<FightResult> nextFights = getNextFights(param);
+			List<FightResultForPlan> nextFights = getNextFights(param);
 			if (nextFights != null && !nextFights.isEmpty()) {
 				FightResultForPlan frfp = find(nextFights.get(0));
 				doStartFight(frfp, getViewUI().getShowNext().isSelected());
@@ -324,11 +326,11 @@ public class ChampionshipPlanEditModelUI extends AKAbstractModelUI<ChampionshipP
 		}
 	}
 
-	private FightResultForPlan find(FightResult fightResult) {
+	private FightResultForPlan find(FightResultForPlan fightResult) {
 		KASGenericTableModel<FightResultForPlan> model = getViewUI().getFightsTable().getTable().getKASModel();
 		List<FightResultForPlan> all = model.getDataRows();
 		for (FightResultForPlan f : all) {
-			if (f.getFightResult() != null && f.getFightResult().getId().equals(fightResult.getId())) {
+			if (f.getFightResult() != null && f.getFightResult().getId().equals(fightResult.getFightResult().getId())) {
 				return f;
 			}
 		}
