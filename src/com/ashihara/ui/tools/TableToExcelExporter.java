@@ -43,9 +43,11 @@ public class TableToExcelExporter {
 	private final static short ROW_WIDTH = 60;
 	private final static short TITLE_Y_POS = 0;
 	private final static short TITLE_Y_OFFSET = 2;
+	private final static int MAX_TITLE_LENGTH = 25;
 	
 	public static String toTitle(FightingGroup group, UIC uic) {
-		return group.getName() + ", " + SC.GENDER.getCaption(group.getGender(), uic) + ", " + uic.TATAMI() + " " + group.getTatami();
+		String title = group.getName();
+		return title.length() > MAX_TITLE_LENGTH ? title.substring(0, MAX_TITLE_LENGTH) : title;
 	}
 	
 	public static void drawTableToExcel(JTable table, UIC uic) throws IOException{
@@ -265,7 +267,7 @@ public class TableToExcelExporter {
 				for (FightingGroup group : fightResults.keySet()) {
 					i++;
 					
-					HSSFSheet sheet = book.createSheet(i + ") " + group.toString());
+					HSSFSheet sheet = book.createSheet(i + ") " + toTitle(group, uic));
 					
 					List<FightResult> fr = fightResults.get(group);
 					String title = toTitle(group, uic);
