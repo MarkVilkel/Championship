@@ -156,6 +156,10 @@ public class FightResult extends BaseDo {
 	public void setOlympicPositionOnLevel(Long olympicPositionOnLevel) {
 		this.olympicPositionOnLevel = olympicPositionOnLevel;
 	}
+	public boolean isFinalOrSemiFinal(int olympicLevelsNumber) {
+		boolean result = olympicLevel != null && olympicLevelsNumber - 2 == olympicLevel.longValue();
+		return result;
+	}
 
 	@Override
 	public String toString() {

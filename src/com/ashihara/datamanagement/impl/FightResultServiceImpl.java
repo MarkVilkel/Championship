@@ -1305,14 +1305,14 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			if (SC.GROUP_TYPE.ROUND_ROBIN.equals(group.getType())) {
 				List<FightResult> frs = loadOrCreateRoundRobinLastFightResults(group);
 				List<FightResultForPlan> frsForPlan = frs.stream().map(fr -> new FightResultForPlan(fr, group, false)).collect(Collectors.toList());
-				sort(frsForPlan);
+				sort(frsForPlan, null);
 				result.put(group, frsForPlan);
 			} else if (SC.GROUP_TYPE.OLYMPIC.equals(group.getType())) {
 				List<FightResult> frs = loadOrCreateOlympicFightResults(group);
 				List<GroupChampionshipFighter> fighters = getFightingGroupService().loadGroupChampionshipFighters(group);
 				
-				int levelsNumberCount = MathUtils.calculateOlympicFightLevelsNumber(fighters.size());
-				List<FightResultForPlan> frsForPlan = frs.stream().filter(fr -> fr.getOlympicLevel() + 1 < levelsNumberCount).map(fr -> new FightResultForPlan(fr, group, false)).collect(Collectors.toList());
+				int olympicLevelsNumber = MathUtils.calculateOlympicFightLevelsNumber(fighters.size());
+				List<FightResultForPlan> frsForPlan = frs.stream().filter(fr -> fr.getOlympicLevel() + 1 < olympicLevelsNumber).map(fr -> new FightResultForPlan(fr, group, false)).collect(Collectors.toList());
 				
 				int totalFightsCount = MathUtils.calculateTotalFightsNumberForOlympicAnalytic(fighters.size());
 				int restFights = totalFightsCount - frs.size();
@@ -1321,7 +1321,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 					frsForPlan.add(new FightResultForPlan(null, group, false));
 				}
 				
-				sort(frsForPlan);
+				sort(frsForPlan, olympicLevelsNumber);
 				result.put(group, frsForPlan);
 			}
 		}
@@ -1331,8 +1331,26 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		return organized;
 	}
 	
-	private void sort(List<FightResultForPlan> list) { 
+	private void sort(List<FightResultForPlan> list, Integer olympicLevelsNumber) { 
 		list.sort((o1, o2) -> {
+			if (olympicLevelsNumber != null) {
+				if (
+						o1.getFightResult() != null &&
+						o1.getFightResult().isFinalOrSemiFinal(olympicLevelsNumber) &&
+						(!present(o2.getFightResult()) || !o2.getFightResult().isFinalOrSemiFinal(olympicLevelsNumber))
+				) {
+					return 1;
+				}
+				
+				if (
+						o2.getFightResult() != null &&
+						o2.getFightResult().isFinalOrSemiFinal(olympicLevelsNumber) &&
+						(!present(o1.getFightResult()) || !o1.getFightResult().isFinalOrSemiFinal(olympicLevelsNumber))
+				) {
+					return -1;
+				}
+			}
+			
 			if (!present(o1.getFightResult()) && !present(o2.getFightResult())) {
 				return 1;
 			} else if (present(o1.getFightResult()) && !present(o2.getFightResult())) {
@@ -1340,9 +1358,28 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 			} else if (!present(o1.getFightResult()) && present(o2.getFightResult())) {
 				return 1;
 			} else {
-				return Long.compare(o1.getFightResult().getId(), o2.getFightResult().getId());
+				FightResult initialFightResult1 = findFirstFightResult(o1.getFightResult()); 
+				FightResult initialFightResult2 = findFirstFightResult(o2.getFightResult());
+				if (
+						olympicLevelsNumber != null &&
+						initialFightResult1.isFinalOrSemiFinal(olympicLevelsNumber.intValue()) &&
+						initialFightResult2.isFinalOrSemiFinal(olympicLevelsNumber.intValue())
+				) {
+					/*
+					 * Move fight for the first place to the end of list
+					 */
+					return initialFightResult2.getOlympicPositionOnLevel().compareTo(initialFightResult1.getOlympicPositionOnLevel());
+				}
+				return Long.compare(initialFightResult1.getId(), initialFightResult2.getId());
 			}
 		});
+	}
+
+	private FightResult findFirstFightResult(FightResult fightResult) {
+		while (fightResult.getPreviousRoundFightResult() != null) {
+			fightResult = fightResult.getPreviousRoundFightResult();
+		}
+		return fightResult;
 	}
 
 	private boolean present(FightResult fr) {
@@ -1356,7 +1393,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		Map<FightingGroup, List<FightResultForPlan>> copy = new LinkedHashMap<>(frsMap);
 		
 		List<FightResultForPlan> ordinary = new ArrayList<>();
-		List<FightResultForPlan> finals = new ArrayList<>();
+		List<FightResultForPlan> finalsAndSemifinals = new ArrayList<>();
 		
 		while (!copy.isEmpty()) {
 			Set<FightingGroup> groups = new LinkedHashSet<>(copy.keySet());
@@ -1369,9 +1406,9 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 					if (
 							finalsAtTheEnd &&
 							isOlympic(fr) &&
-							frs.size() < 2
+							frs.size() < 4
 					) {
-						finals.add(fr);
+						finalsAndSemifinals.add(fr);
 					} else {
 						ordinary.add(fr);
 					}
@@ -1382,9 +1419,9 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		List<FightResultForPlan> result = new ArrayList<>();
 		result.addAll(ordinary);
 		
-		if (!finals.isEmpty()) {
-			finals = organizeFinals(finals);
-			result.addAll(finals);
+		if (!finalsAndSemifinals.isEmpty()) {
+			finalsAndSemifinals = organizeFinalsAndSemiFinals(finalsAndSemifinals);
+			result.addAll(finalsAndSemifinals);
 		}
 		
 		final AtomicInteger numberInPlan = new AtomicInteger();
@@ -1397,33 +1434,37 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 		return result;
 	}
 
-	private List<FightResultForPlan> organizeFinals(List<FightResultForPlan> finals) throws PersistenceException {
+	private List<FightResultForPlan> organizeFinalsAndSemiFinals(List<FightResultForPlan> finalsAndSemiFinals) throws PersistenceException {
 		
-		Map<FightingGroup, List<FightResultForPlan>> finalsMap = new LinkedHashMap<>();
-		for (FightResultForPlan frfp : finals) {
-			finalsMap.computeIfAbsent(frfp.getFightingGroup(), (f) -> new ArrayList<>()).add(frfp);
+		Map<FightingGroup, List<FightResultForPlan>> finalsSemiFinalsByGroup = new LinkedHashMap<>();
+		for (FightResultForPlan frfp : finalsAndSemiFinals) {
+			finalsSemiFinalsByGroup.computeIfAbsent(frfp.getFightingGroup(), (f) -> new ArrayList<>()).add(frfp);
 		}
 		
 		List<FightResultForPlan> result = new ArrayList<>();
 		int iteration = 0;
 		Boolean isFinal = null;
-		while (!finalsMap.isEmpty()) {
-			if (iteration == 0) {
-				FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
-				fakeFr.setNumberInPlan(getUIC().SEMI_FINALS());
-				result.add(fakeFr);
+		while (!finalsSemiFinalsByGroup.isEmpty()) {
+			if (iteration <= 1) {
+				if (iteration < 1) {
+					FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
+					fakeFr.setNumberInPlan(getUIC().SEMI_FINALS());
+					result.add(fakeFr);
+				}
 				isFinal = Boolean.FALSE;
 			} else {
-				FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
-				fakeFr.setNumberInPlan(getUIC().FINALS());
-				result.add(fakeFr);
+				if (iteration < 3) {
+					FightResultForPlan fakeFr = new FightResultForPlan(null, null, true);
+					fakeFr.setNumberInPlan(getUIC().FINALS());
+					result.add(fakeFr);
+				}
 				isFinal = Boolean.TRUE;
 			}
-			Set<FightingGroup> groups = new LinkedHashSet<>(finalsMap.keySet());
+			Set<FightingGroup> groups = new LinkedHashSet<>(finalsSemiFinalsByGroup.keySet());
 			for (FightingGroup group : groups) {
-				List<FightResultForPlan> frs = finalsMap.get(group);
+				List<FightResultForPlan> frs = finalsSemiFinalsByGroup.get(group);
 				if (frs.isEmpty()) {
-					finalsMap.remove(group);
+					finalsSemiFinalsByGroup.remove(group);
 				} else if (frs.size() >= 2 || iteration >= 1) {
 					FightResultForPlan fr = frs.remove(0);
 					if (isFinal != null) {
@@ -1435,7 +1476,7 @@ public class FightResultServiceImpl extends AbstractAKServiceImpl implements Fig
 					}
 					result.add(fr);
 					if (frs.isEmpty()) {
-						finalsMap.remove(group);
+						finalsSemiFinalsByGroup.remove(group);
 					}
 				}
 			}
